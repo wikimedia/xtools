@@ -161,6 +161,7 @@
 	"num-days": "{{PLURAL:$1|ڏينھن}}",
 	"num-minutes": "{{PLURAL:$1|منٽ}}",
 	"num-months": "{{PLURAL:$1|مھينو|مھينا}}",
+	"num-seconds": "{{PLURAL:$1|سيڪنڊ}}",
 	"num-sitelinks": "\n{{PLURAL:$1|سائيٽ ڳنڍڻو|سائيٽ ڳنڍڻا}}",
 	"num-weeks": "{{PLURAL:$1|ھفتو|ھفتا}}",
 	"optional": "اختياري",
