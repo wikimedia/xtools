@@ -25,7 +25,6 @@
 .DS_Store
 /mrb_prepcommit.sh
 i18n_helper.js
-coverage.xml
 
 ###> squizlabs/php_codesniffer ###
 /.phpcs-cache
@@ -36,6 +35,8 @@ coverage.xml
 .phpunit
 .phpunit.result.cache
 /phpunit.xml
+/coverage
+/coverage.xml
 ###< symfony/phpunit-bridge ###
 
 ###> symfony/webpack-encore-bundle ###

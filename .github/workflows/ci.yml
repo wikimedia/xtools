@@ -1,63 +1,9 @@
-name: CI
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-jobs:
-  build:
-    env:
-      APP_ENV: test
-
-    strategy:
-      matrix:
-        php: [ '8.2', '8.3', '8.4' ]
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Validate composer.json and composer.lock
-      run: composer validate --strict
-
-    - name: Cache Composer packages
-      id: composer-cache
-      uses: actions/cache@v3
-      with:
-        path: vendor
-        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-php-
-
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.2'
-        extensions: curl, intl, json, pdo
-        ini-values: xdebug.mode=coverage
-        coverage: xdebug
-
-    - name: Read .nvmrc
-      run: echo ::set-output name=NODE_VERSION::$(cat .nvmrc)
-      id: nvm
-
-    - name: Set up Node ${{ steps.nvm.outputs.NODE_VERSION }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ steps.nvm.outputs.NODE_VERSION }}
-
-    - name: Install dependencies
-      run: |
-        composer install --prefer-dist --no-progress
-        npm ci
 
     - name: Run test suite
       run: |
-        composer run-script test
-        npm run test
+        composer test
+        npm test
         npm run build
         git status
         git status | grep "nothing to commit, working tree clean"

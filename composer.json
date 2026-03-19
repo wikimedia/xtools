@@ -72,14 +72,15 @@
     },
     "scripts": {
         "test": [
-            "./vendor/bin/phpcs -s . --ignore=/home/scrutinizer/build/node_modules",
-            "./vendor/bin/phpunit tests --coverage-clover=coverage.xml",
-            "./vendor/bin/minus-x check ."
+            "phpunit",
+            "phpcs -p -s",
+            "minus-x check ."
         ],
         "fix": [
-            "./vendor/bin/phpcbf .",
-            "./vendor/bin/minus-x fix ."
+            "phpcbf",
+            "minus-x fix ."
         ],
+        "cover": "phpunit --coverage-html coverage",
         "auto-scripts": {
             "cache:clear": "symfony-cmd",
             "assets:install %PUBLIC_DIR%": "symfony-cmd"

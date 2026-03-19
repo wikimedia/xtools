@@ -1,11 +1,6 @@
 {
   "name": "xtools",
-  "description": "A suite of tools to analyze page, user and project data of MediaWiki websites",
-  "license": "GPL-3.0-or-later",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/x-tools/xtools.git"
-  },
+  "private": true,
   "scripts": {
     "build": "encore production --progress",
     "test": "banana-checker i18n/",
@@ -19,6 +14,5 @@
     "sass": "^1.62.0",
     "sass-loader": "^13.0.0",
     "webpack-notifier": "^1.15.0"
-  },
-  "private": true
+  }
 }
