@@ -30,6 +30,8 @@ class TestAdapter extends WebTestCase {
 				'dbName' => 'test_wiki',
 				'lang' => 'en',
 			] );
+		$repo->method( 'isInDbLists' )
+			->willReturn( true );
 		return $repo;
 	}
 

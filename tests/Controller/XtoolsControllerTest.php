@@ -42,11 +42,37 @@ class XtoolsControllerTest extends ControllerTestAdapter {
 	 * @return XtoolsController
 	 */
 	private function getControllerWithRequest(
-		array $requestParams = [], array $methodOverrides = []
+		array $requestParams = [],
+		array $methodOverrides = [],
+		bool $mockReplicationCheck = false
 	): XtoolsController {
 		$session = $this->createSession( $this->client );
 		$requestStack = $this->getRequestStack( $session, $requestParams );
 
+		if ( $mockReplicationCheck ) {
+			$projectRepo = $this->createMock( \App\Repository\ProjectRepository::class );
+			$projectRepo->expects( static::once() )
+				->method( 'isInDbLists' )
+				->willReturn( true );
+			$projectRepo->expects( static::once() )
+				->method( 'getOne' )
+				->willReturn( [
+					'dbName' => 'a',
+					'url' => 'https://en.wikipedia.org',
+				] );
+			$projectRepo->method( 'getMetadata' )
+				->willReturn( [
+					'namespaces' => [ 1 => "Talk" ]
+				] );
+			$projectRepo->method( 'getProject' )
+				->willReturnCallback( static function ( $arg ) use ( $projectRepo ) {
+					$project = new \App\Model\Project( $arg );
+					$project->setRepository( $projectRepo );
+					return $project;
+				} );
+		} else {
+			$projectRepo = static::getContainer()->get( 'App\Repository\ProjectRepository' );
+		}
 		return new OverridableXtoolsController(
 			static::getContainer(),
 			$requestStack,
@@ -55,7 +81,7 @@ class XtoolsControllerTest extends ControllerTestAdapter {
 			$session->getFlashBag(),
 			static::getContainer()->get( 'eight_points_guzzle.client.xtools' ),
 			$this->i18n,
-			static::getContainer()->get( 'App\Repository\ProjectRepository' ),
+			$projectRepo,
 			static::getContainer()->get( 'App\Repository\UserRepository' ),
 			static::getContainer()->get( 'App\Repository\PageRepository' ),
 			static::getContainer()->get( 'twig' ),
@@ -420,21 +446,21 @@ class XtoolsControllerTest extends ControllerTestAdapter {
 		$this->getControllerWithRequest( [
 			'project' => 'fr.wikipedia',
 			'user' => '174.197.128.0/18',
-		] );
+		], [], true );
 
 		static::expectException( XtoolsHttpException::class );
 		static::expectExceptionMessage( 'The requested IP range is larger than the CIDR limit of /16.' );
 		$this->getControllerWithRequest( [
 			'project' => 'fr.wikipedia',
 			'user' => '174.197.128.0/1',
-		] );
+		], [], true );
 	}
 
 	public function testAddFullPageTitlesAndContinue(): void {
 		$controller = $this->getControllerWithRequest( [
 			'project' => 'test.wikipedia',
 			'limit' => 2,
-		] );
+		], [], true );
 		$out = [ 'foo' => 'bar' ];
 		$data = [
 			[ 'page_title' => 'Test_page', 'namespace' => 0, 'timestamp' => '2020-01-02T12:59:59' ],
@@ -466,7 +492,7 @@ class XtoolsControllerTest extends ControllerTestAdapter {
 		$controller = $this->getControllerWithRequest( [
 			'project' => 'en.wikipedia',
 			'categories' => 'Foo|Bar|Baz',
-		] );
+		], [], true );
 		$controller->addFlashMessage( 'warning', 'You had better watch yourself!' );
 		$response = json_decode(
 			$controller->getFormattedApiResponse(

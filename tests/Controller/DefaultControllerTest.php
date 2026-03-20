@@ -97,11 +97,7 @@ class DefaultControllerTest extends ControllerTestAdapter {
 	public function testNamespaces(): void {
 		// Test 404 (for single-wiki setups, that wiki's namespaces are always returned).
 		$this->client->request( 'GET', '/api/project/namespaces/wiki.that.doesnt.exist.org' );
-		if ( $this->isSingle ) {
-			static::assertEquals( 200, $this->client->getResponse()->getStatusCode() );
-		} else {
-			static::assertEquals( 404, $this->client->getResponse()->getStatusCode() );
-		}
+		static::assertEquals( 404, $this->client->getResponse()->getStatusCode() );
 
 		if ( !$this->isSingle && static::getContainer()->getParameter( 'app.is_wmf' ) ) {
 			$this->client->request( 'GET', '/api/project/namespaces/fr.wikipedia.org' );
@@ -121,11 +117,7 @@ class DefaultControllerTest extends ControllerTestAdapter {
 	public function testAssessments(): void {
 		// Test 404 (for single-wiki setups, that wiki's namespaces are always returned).
 		$this->client->request( 'GET', '/api/project/assessments/wiki.that.doesnt.exist.org' );
-		if ( $this->isSingle ) {
-			static::assertEquals( 200, $this->client->getResponse()->getStatusCode() );
-		} else {
-			static::assertEquals( 404, $this->client->getResponse()->getStatusCode() );
-		}
+		static::assertEquals( 404, $this->client->getResponse()->getStatusCode() );
 
 		if ( static::getContainer()->getParameter( 'app.is_wmf' ) ) {
 			$this->client->request( 'GET', '/api/project/assessments/en.wikipedia.org' );

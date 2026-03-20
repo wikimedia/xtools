@@ -127,9 +127,12 @@ abstract class Repository {
 		$dbList = [];
 		$exists = true;
 		$i = 0;
+		$sql = "SELECT DISTINCT table_schema
+                FROM information_schema.tables";
 
 		while ( true ) {
 			$i += 1;
+			// We check both the lists at noc.wikimedia.org
 			$response = $this->guzzle->request( 'GET', self::DBLISTS_URL . "s$i.dblist", [ 'http_errors' => false ] );
 			$exists = in_array(
 				$response->getStatusCode(),
@@ -140,10 +143,23 @@ abstract class Repository {
 				break;
 			}
 
+			// And the presence of the actual replicas, due to a certain number
+			// of incidents: T322466, T420632, etc.
+			$checkReplication = true;
+			try {
+				$replicatedProjects = $this->executeProjectsQuery( "s$i", $sql )->fetchFirstColumn();
+			} catch ( \Throwable ) {
+				// AGF
+				$checkReplication = false;
+			}
+
 			$lines = explode( "\n", $response->getBody()->getContents() );
 			foreach ( $lines as $line ) {
 				$line = trim( $line );
-				if ( preg_match( '/^#/', $line ) !== 1 && $line !== '' ) {
+				if ( preg_match( '/^#/', $line ) !== 1 &&
+					$line !== '' &&
+					( !$checkReplication || in_array( $line . "_p", $replicatedProjects ) )
+				) {
 					// Skip comments and blank lines.
 					$dbList[$line] = "s$i";
 				}
@@ -156,6 +172,16 @@ abstract class Repository {
 
 		// Cache for one week.
 		return $this->setCache( $cacheKey, $dbList, 'P1W' );
+	}
+
+	/**
+	 * Check if a project is in the dblists and replicated.
+	 * (Separate function for easier mocking).
+	 * @param string $dbName
+	 * @return bool
+	 */
+	public function isInDbLists( string $dbName ): bool {
+		return $dbName !== '' && ( $this->getDbList()[ $dbName ] ?? false );
 	}
 
 	/*****************

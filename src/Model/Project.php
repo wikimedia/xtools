@@ -107,7 +107,8 @@ class Project extends Model {
 	 * @return bool
 	 */
 	public function exists(): bool {
-		return !empty( $this->getDomain() );
+		return !empty( $this->getDomain() )
+			&& $this->repository->isInDbLists( $this->getDatabaseName() );
 	}
 
 	/**
@@ -214,8 +215,7 @@ class Project extends Model {
 	 * @return string[] Keys are IDs, values are names.
 	 */
 	public function getNamespaces(): array {
-		$metadata = $this->getMetadata();
-		return $metadata['namespaces'];
+		return $this->getMetadata()['namespaces'] ?? [];
 	}
 
 	/**

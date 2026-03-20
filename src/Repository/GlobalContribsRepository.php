@@ -175,11 +175,13 @@ class GlobalContribsRepository extends Repository {
 		$queriesBySlice = [];
 
 		foreach ( $dbNames as $dbName ) {
-			$slice = $this->getDbList()[$dbName];
-			// actor_revision table only includes users who have made at least one edit.
-			$actorTable = $this->getTableName( $dbName, 'actor', 'revision' );
-			$queriesBySlice[$slice][] = "SELECT '$dbName' AS `dbName`, actor_id " .
-				"FROM $actorTable WHERE $whereClause";
+			if ( array_key_exists( $dbName, $this->getDbList() ) ) {
+				$slice = $this->getDbList()[$dbName];
+				// actor_revision table only includes users who have made at least one edit.
+				$actorTable = $this->getTableName( $dbName, 'actor', 'revision' );
+				$queriesBySlice[$slice][] = "SELECT '$dbName' AS `dbName`, actor_id " .
+					"FROM $actorTable WHERE $whereClause";
+			}
 		}
 
 		$actorIds = [];
