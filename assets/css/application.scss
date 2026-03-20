@@ -261,8 +261,8 @@ $tooltip-shadow: #ccc;
         box-shadow: 5px 5px 8px #CCC;
         margin: 0;
         top: 0;
-        width: auto;
-        white-space: nowrap;
+        max-width: max-content;
+        font-size: 1em;
     }
 }
 .table-sticky-header {
