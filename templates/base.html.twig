@@ -249,8 +249,8 @@
                 {# The release process is documented at https://www.mediawiki.org/wiki/XTools/Development#Releases #}
                 &copy; {{ 'jan-2008'|date_format('Y') }}-{{ 'now'|date_format('Y') }}
                 &middot;
-                <a href="https://github.com/x-tools/xtools/releases/tag/{{ version }}" target="_blank" title="Current XTools version">v.{{ version }}</a>
-                (<a href="https://github.com/x-tools/xtools/tree/{{ hash() }}" target="_blank" title="Current code revision">r.{{ shortHash() }}</a>)
+                <a href="https://gerrit.wikimedia.org/r/plugins/gitiles/labs/xtools/+/refs/tags/{{ version }}" target="_blank" title="Current XTools version">v.{{ version }}</a>
+                (<a href="https://gerrit.wikimedia.org/r/plugins/gitiles/labs/xtools/+/{{ hash() }}" target="_blank" title="Current code revision">r.{{ shortHash() }}</a>)
                 &middot;
                 {{ layout.apiLink }}
                 &middot;
