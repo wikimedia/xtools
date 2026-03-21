@@ -463,12 +463,10 @@ class AppExtension extends AbstractExtension {
 	 * @return string
 	 */
 	public function sizeFormat( int $bytes, int $precision = 2 ): string {
-		$base = log( $bytes, 1024 );
+		$base = $bytes === 0 ? 0 : log( $bytes, 1024 );
 		$suffixes = [ '', 'kilobytes', 'megabytes', 'gigabytes', 'terabytes' ];
 
-		$index = floor( $base );
-
-		if ( (int)$index === 0 ) {
+		if ( (int)floor( $base ) === 0 ) {
 			return $this->numberFormat( $bytes );
 		}
 

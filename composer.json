@@ -64,9 +64,10 @@
         "wikimedia/ip-utils": "^5.0"
     },
     "require-dev": {
-        "dms/phpunit-arraysubset-asserts": "^0.4.0",
+        "dms/phpunit-arraysubset-asserts": "^0.5.0",
         "mediawiki/mediawiki-codesniffer": "^48.0.0",
         "mediawiki/minus-x": "^1.0.0",
+        "phpunit/phpunit": "^10.0",
         "symfony/browser-kit": "~6.4",
         "symfony/phpunit-bridge": "~6.4"
     },
