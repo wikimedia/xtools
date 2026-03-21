@@ -203,13 +203,14 @@ class EditTest extends TestAdapter {
 	 * Test some basic getters.
 	 */
 	public function testGetters(): void {
-		$edit = $this->getEditFactory();
+		$edit = $this->getEditFactory( [ 'tags' => json_encode( [ 'A', 'B' ] ) ] );
 		static::assertSame( '2017', $edit->getYear() );
 		static::assertSame( '01', $edit->getMonth() );
 		static::assertEquals( 12, $edit->getLength() );
 		static::assertEquals( 2, $edit->getSize() );
 		static::assertEquals( 2, $edit->getLengthChange() );
 		static::assertEquals( 'Testuser', $edit->getUser()->getUsername() );
+		static::assertContains( 'A', $edit->getTags() );
 	}
 
 	/**

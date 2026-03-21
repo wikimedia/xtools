@@ -95,11 +95,11 @@
 {% endif %}
 |-
 | {{ msg('small-edits') }}*
-| {% verbatim %}{{FORMATNUM:{% endverbatim %}{{ ec.countSmallEdits }}}}{% if ec.countLast5000 %} ({{ ((ec.countSmallEdits / ec.countLast5000) * 100)|percent_format }})
+| {% verbatim %}{{FORMATNUM:{% endverbatim %}{{ ec.editData.small_edits }}}}{% if ec.countLast5000 %} ({{ ((ec.editData.small_edits / ec.countLast5000) * 100)|percent_format }})
 {% endif %}
 |-
 | {{ msg('large-edits') }}*
-| {% verbatim %}{{FORMATNUM:{% endverbatim %}{{ ec.countLargeEdits }}}}{% if ec.countLast5000 %} ({{ ((ec.countLargeEdits / ec.countLast5000) * 100)|percent_format }})
+| {% verbatim %}{{FORMATNUM:{% endverbatim %}{{ ec.editData.large_edits }}}}{% if ec.countLast5000 %} ({{ ((ec.editData.large_edits / ec.countLast5000) * 100)|percent_format }})
 {% endif %}
 |}
 

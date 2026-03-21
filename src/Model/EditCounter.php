@@ -44,10 +44,10 @@ class EditCounter extends Model {
 	protected array $timeCardData;
 
 	/**
-	 * Revision size data, with keys 'average_size', 'large_edits' and 'small_edits'.
+	 * Various data on the last 5000 edits.
 	 * @var string[] As returned by the DB, unconverted to int or float
 	 */
-	protected array $editSizeData;
+	protected array $editData;
 
 	/**
 	 * Duration of the longest block in seconds; -1 if indefinite,
@@ -959,15 +959,15 @@ class EditCounter extends Model {
 	}
 
 	/**
-	 * Get average edit size, and number of large and small edits.
-	 * @return array
+	 * Get average edit size, number of large and small edits, and change tags.
+	 * @return array With keys "sizes", "average_size", "small_edits", "large_edits", "tag_lists".
 	 */
-	public function getEditSizeData(): array {
-		if ( !isset( $this->editSizeData ) ) {
-			$this->editSizeData = $this->repository
-				->getEditSizeData( $this->project, $this->user );
+	public function getEditData(): array {
+		if ( !isset( $this->editData ) ) {
+			$this->editData = $this->repository
+				->getEditData( $this->project, $this->user );
 		}
-		return $this->editSizeData;
+		return $this->editData;
 	}
 
 	/**
@@ -980,21 +980,36 @@ class EditCounter extends Model {
 	}
 
 	/**
-	 * Get the number of edits under 20 bytes of the user's past 5000 edits.
-	 * @return int
+	 * Get the ProofreadPage tagged quality changes in the last 5000 edits.
+	 * @return int[] With Project::PRP_* constants and 'total' as keys
 	 */
-	public function countSmallEdits(): int {
-		$editSizeData = $this->getEditSizeData();
-		return isset( $editSizeData['small_edits'] ) ? (int)$editSizeData['small_edits'] : 0;
-	}
-
-	/**
-	 * Get the total number of edits over 1000 bytes of the user's past 5000 edits.
-	 * @return int
-	 */
-	public function countLargeEdits(): int {
-		$editSizeData = $this->getEditSizeData();
-		return isset( $editSizeData['large_edits'] ) ? (int)$editSizeData['large_edits'] : 0;
+	public function countQualityChanges(): array {
+		$editData = $this->getEditData();
+		$res = [
+			Project::PRP_NO_TEXT => 0,
+			Project::PRP_NOT_PROOFREAD => 0,
+			Project::PRP_PROBLEMATIC => 0,
+			Project::PRP_PROOFREAD => 0,
+			Project::PRP_VALIDATED => 0,
+			'total' => 0,
+		];
+		$tagLists = $editData['tag_lists'] ?? [];
+		foreach ( $tagLists as $list ) {
+			if ( $list !== null ) {
+				$found = false;
+				foreach ( $list as $tag ) {
+					if ( preg_match( '/^proofreadpage\-quality[0-4]$/', $tag ) ) {
+						$res[intval( substr( $tag, -1 ) )] += 1;
+						$found = true;
+						break;
+					}
+				}
+				if ( $found ) {
+					$res['total'] += 1;
+				}
+			}
+		}
+		return $res;
 	}
 
 	/**
@@ -1002,11 +1017,11 @@ class EditCounter extends Model {
 	 * @return int
 	 */
 	public function countAutoEdits(): int {
-		$editSizeData = $this->getEditSizeData();
-		if ( !isset( $editSizeData['tag_lists'] ) ) {
+		$editData = $this->getEditData();
+		if ( !isset( $editData['tag_lists'] ) ) {
 			return 0;
 		}
-		$tags = json_decode( $editSizeData['tag_lists'] );
+		$tags = $editData['tag_lists'];
 		$autoTags = $this->autoEditsHelper->getTags( $this->project );
 		return count(
 			// Number
@@ -1033,9 +1048,9 @@ class EditCounter extends Model {
 	 * @return float Size in bytes.
 	 */
 	public function averageEditSize(): float {
-		$editSizeData = $this->getEditSizeData();
-		if ( isset( $editSizeData['average_size'] ) ) {
-			return round( (float)$editSizeData['average_size'], 3 );
+		$editData = $this->getEditData();
+		if ( isset( $editData['average_size'] ) ) {
+			return round( (float)$editData['average_size'], 3 );
 		} else {
 			return 0;
 		}

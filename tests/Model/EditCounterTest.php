@@ -739,4 +739,65 @@ class EditCounterTest extends TestAdapter {
 			],
 		];
 	}
+
+	/**
+	 * Test counting of edit data
+	 * @dataProvider editDataProvider
+	 * @param array $data
+	 * @param array $qualityChanges
+	 * @param int|float $averageSize
+	 * @param int $autoEdits
+	 */
+	public function testEditData(
+		array $data,
+		array $qualityChanges,
+		$averageSize,
+		int $autoEdits,
+	): void {
+		$this->autoEdits->expects( isset( $data['tag_lists'] ) ? static::once() : static::never() )
+			->method( "getTags" )
+			->willReturn( [
+				'AWB',
+			] );
+		$this->editCounterRepo->expects( static::once() )
+			->method( "getEditData" )
+			->willReturn( $data );
+		static::assertEquals( $qualityChanges, $this->editCounter->countQualityChanges() );
+		static::assertEquals( $averageSize, $this->editCounter->averageEditSize() );
+		static::assertEquals( $autoEdits, $this->editCounter->countAutoEdits() );
+	}
+
+	/**
+	 * Data for self::testEditData
+	 * @return array
+	 */
+	public function editDataProvider(): array {
+		return [
+			[
+				[
+					'tag_lists' => [
+						[ 'randomtag', 'proofreadpage-quality1' ],
+						[ 'proofreadpage-quality2', 'proofreadpage-quality0' ],
+						[ 'AWB' ],
+						[ 'proofreadpage-quality2', 'AWB' ],
+						[ 'proofreadpage-quality3', 'a' ],
+						[ 'proofreadpagequality0', 'proofreadpage-quality3' ],
+						[ 'prp-quality0', 'proofreadpage-quality3' ],
+					],
+					'average_size' => 3.1415926,
+				],
+				[ 0 => 0, 1 => 1, 2 => 2, 3 => 3, 4 => 0, 'total' => 6 ],
+				3.142,
+				2,
+			],
+			[
+				[
+					// Empty
+				],
+				[ 0 => 0, 1 => 0, 2 => 0, 3 => 0, 4 => 0, 'total' => 0 ],
+				0,
+				0,
+			],
+		];
+	}
 }

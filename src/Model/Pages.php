@@ -255,6 +255,11 @@ class Pages extends Model {
 			if ( self::REDIR_NONE !== $this->redirects ) {
 				$counts[$ns]['redirects'] = (int)$row['redirects'];
 			}
+			if ( $this->project->isPrpPage( $ns ) ) {
+				foreach ( Project::PRP_LEVELS as $level ) {
+					$counts[$ns]["prp_quality$level"] = (int)$row["prp_quality$level"];
+				}
+			}
 		}
 
 		$this->countsByNamespace = $counts;
@@ -473,6 +478,10 @@ class Pages extends Model {
 					'category' => $attrs['category'],
 					'projects' => json_decode( $row['pap_project_title'] ?? '[]' ),
 				];
+			}
+
+			if ( array_key_exists( 'prp_quality', $row ) ) {
+				$pageData['prp_quality'] = (int)$row['prp_quality'];
 			}
 
 			$results[$row['namespace']][] = $pageData;

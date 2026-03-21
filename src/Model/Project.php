@@ -26,6 +26,16 @@ class Project extends Model {
 	protected bool $userOptedIn;
 
 	/**
+	 * ProofreadPage quality levels
+	 */
+	public const PRP_NO_TEXT = 0;
+	public const PRP_NOT_PROOFREAD = 1;
+	public const PRP_PROBLEMATIC = 2;
+	public const PRP_PROOFREAD = 3;
+	public const PRP_VALIDATED = 4;
+	public const PRP_LEVELS = [ 0, 1, 2, 3, 4 ];
+
+	/**
 	 * Create a new Project.
 	 * @param string $nameUnnormalized The project's database name or URL.
 	 */
@@ -64,6 +74,31 @@ class Project extends Model {
 		} else {
 			return $this->pageAssessments->isEnabled();
 		}
+	}
+
+	/**
+	 * Whether or not this namespace is the Page namespace (of ProofreadPage).
+	 * Or true if it is 'all'.
+	 * @param int|string $namespace Namespace ID, or 'all'.
+	 * @return bool
+	 */
+	public function isPrpPage( int|string $namespace ): bool {
+		return $this->hasProofreadPage() &&
+			(
+				$namespace === 'all' ||
+				$this->getCanonicalNamespace( $namespace ) === 'Page'
+			);
+	}
+
+	/**
+	 * Get the list of the names of each ProofreadPage
+	 * quality level. Keys are self::PRP_* constants.
+	 * @return string[]
+	 * Just returns a Repository result.
+	 * @codeCoverageIgnore
+	 */
+	public function getPrpQualityNames(): array {
+		return $this->repository->getPrpQualityNames( $this );
 	}
 
 	/**
@@ -232,6 +267,17 @@ class Project extends Model {
 	}
 
 	/**
+	 * Get the canonical namespace name for a namespace ID.
+	 * Or null if the namespace does not exist.
+	 * @param int $namespace
+	 * @return ?string
+	 */
+	public function getCanonicalNamespace( int $namespace ): ?string {
+		$canonicalNamespaces = $this->getMetadata()['canonical_namespaces'];
+		return $canonicalNamespaces[$namespace] ?? null;
+	}
+
+	/**
 	 * Get the title of the Main Page.
 	 * @return string
 	 */
@@ -259,6 +305,15 @@ class Project extends Model {
 	public function hasPageTriage(): bool {
 		$extensions = $this->getInstalledExtensions();
 		return in_array( 'PageTriage', $extensions );
+	}
+
+	/**
+	 * Get if this Wiki has the ProofreadPage extension.
+	 * @return bool
+	 */
+	public function hasProofreadPage(): bool {
+		$extensions = $this->getInstalledExtensions();
+		return in_array( 'ProofreadPage', $extensions );
 	}
 
 	/**

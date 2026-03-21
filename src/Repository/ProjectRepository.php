@@ -253,6 +253,7 @@ class ProjectRepository extends Repository {
 		$metadata = [
 			'general' => [],
 			'namespaces' => [],
+			'canonical_namespaces' => [],
 			'tempAccountPatterns' => $res['query']['autocreatetempuser']['matchPatterns'] ?? null,
 		];
 
@@ -304,7 +305,10 @@ class ProjectRepository extends Repository {
 				continue;
 			}
 
-			$metadata['namespaces'][$namespace['id']] = $name;
+			if ( $name !== null ) {
+				$metadata['namespaces'][$namespace['id']] = $name;
+			}
+			$metadata['canonical_namespaces'][$namespace['id']] = $namespace['canonical'] ?? null;
 		}
 	}
 
@@ -368,6 +372,33 @@ class ProjectRepository extends Repository {
 		return $this->setCache( $cacheKey, array_map( static function ( $extension ) {
 			return $extension['name'];
 		}, $extensions ), 'PT1H' );
+	}
+
+	/**
+	 * Get the list of the localized names for each ProofreadPage quality
+	 * on this wiki. Keys are the Project::PRP_ constants.
+	 * @param Project $project
+	 * @return string[]
+	 */
+	public function getPrpQualityNames( Project $project ): array {
+		$cacheKey = $this->getCacheKey( func_get_args(), "project_prp_levels" );
+		if ( $this->cache->hasItem( $cacheKey ) ) {
+			return $this->cache->getItem( $cacheKey )->get();
+		}
+
+		$res = json_decode( $this->guzzle->request( 'GET', $project->getApiUrl(), [ 'query' => [
+			'action' => 'query',
+			'meta' => 'proofreadinfo',
+			'prpiprop' => 'qualitylevels',
+			'format' => 'json',
+		] ] )->getBody()->getContents(), true );
+
+		$qualityLevels = $res['query']['proofreadqualitylevels'] ?? [];
+
+		// Cache for one week (will change extremely rarely) and return.
+		return $this->setCache( $cacheKey, array_map( static function ( $level ) {
+			return $level['category'];
+		}, $qualityLevels ), 'P1W' );
 	}
 
 	/**

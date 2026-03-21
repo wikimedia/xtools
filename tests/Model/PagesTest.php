@@ -200,10 +200,13 @@ class PagesTest extends TestAdapter {
 	}
 
 	public function testSingleNamespace(): void {
-		// Also does the ProofreadPage tests.
+			// Also does the ProofreadPage tests.
 		$project = $this->createMock( Project::class );
 		$project->method( 'hasPageAssessments' )
 			->willReturn( false );
+		$project->method( 'isPrpPage' )
+			->with( 104 )
+			->willReturn( true );
 		$project->method( 'getNamespaces' )
 			->willReturn( [ 0 => 'Main', 1 => 'Talk', 104 => 'Page' ] );
 		$pages = new Pages( $this->pagesRepo, $project, $this->user, 104, 'all' );
@@ -231,12 +234,18 @@ class PagesTest extends TestAdapter {
 				'deleted' => 0,
 				'redirects' => 1,
 				'total_length' => 20,
+				'prp_quality0' => 0,
+				'prp_quality1' => 0,
+				'prp_quality2' => 0,
+				'prp_quality3' => 1,
+				'prp_quality4' => 0,
 			] ] );
 		$pages->setRepository( $pagesRepo );
 		static::assertFalse( $pages->isMultiNamespace() );
 		static::assertEquals( '2025-01-01T00:00:00Z', $pages->getLastTimestamp() );
 		static::assertSame( 1, $pages->getNumPages() );
 		$counts = $pages->getCounts();
+		static::assertSame( 1, $counts[104]['prp_quality3'] );
 	}
 
 	public function setPagesResults(): void {

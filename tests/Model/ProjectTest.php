@@ -96,17 +96,43 @@ class ProjectTest extends TestAdapter {
 	}
 
 	/**
+	 * Each namespace has a language-independent canonical name.
+	 */
+	public function testCanonicalNamespaces(): void {
+		$projectRepo = $this->getProjectRepo();
+		$projectRepo->expects( static::once() )
+			->method( 'getMetadata' )
+			->willReturn( [
+				'canonical_namespaces' => [ 0 => '', 1 => 'Talk', 104 => 'Page' ],
+			] );
+		$projectRepo->expects( static::once() )
+			->method( 'getInstalledExtensions' )
+			->willReturn( [ 'ProofreadPage' ] );
+
+		$project = new Project( 'testWiki' );
+		$project->setRepository( $projectRepo );
+		static::assertTrue( $project->isPrpPage( 104 ) );
+
+		// Tests that getMetadata was in fact called only once and cached afterwards
+		static::assertSame( '', $project->getCanonicalNamespace( 0 ) );
+
+		// Ensure we default to null when not found
+		static::assertSame( null, $project->getCanonicalNamespace( -1 ) );
+	}
+
+	/**
 	 * A project has a list of installed extensions
 	 */
 	public function testExtensions(): void {
 		$projectRepo = $this->getProjectRepo();
 		$projectRepo->expects( static::once() )
 			->method( 'getInstalledExtensions' )
-			->willReturn( [ 'NoThing', 'VisualEditor' ] );
+			->willReturn( [ 'NoThing', 'ProofreadPage' ] );
 
 		$project = new Project( 'testWiki' );
 		$project->setRepository( $projectRepo );
-		static::assertTrue( $project->hasVisualEditor() );
+		static::assertTrue( $project->hasProofreadPage() );
+		static::assertFalse( $project->hasVisualEditor() );
 		static::assertFalse( $project->hasPageTriage() );
 	}
 
