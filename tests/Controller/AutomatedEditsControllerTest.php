@@ -53,6 +53,10 @@ class AutomatedEditsControllerTest extends ControllerTestAdapter {
 			'/autoedits/en.wikipedia/Example/1/2018-01-01/2018-02-01',
 			'/nonautoedits-contributions/en.wikipedia/Example/1/2018-01-01/2018-02-01/2018-01-15T12:00:00',
 			'/autoedits-contributions/en.wikipedia/Example/1/2018-01-01/2018-02-01/2018-01-15T12:00:00',
+			// T420807
+			'/autoedits-contributions/en.wikipedia.org/Example?tool=delsort',
+			// T418067
+			'/autoedits-contributions/en.wikipedia.org/Example?tool=MoveToDraft',
 		] );
 	}
 
@@ -70,6 +74,27 @@ class AutomatedEditsControllerTest extends ControllerTestAdapter {
 			'/api/user/automated_editcount/en.wikipedia/Example/1/2018-01-01/2018-02-01/2018-01-15T12:00:00',
 			'/api/user/automated_edits/en.wikipedia/Example/1/2018-01-01/2018-02-01/2018-01-15T12:00:00',
 		] );
+	}
+
+	/**
+	 * Test automated tools endpoint.
+	 */
+	public function testAutomatedTools(): void {
+		if ( !static::getContainer()->getParameter( 'app.is_wmf' ) ) {
+			// Untestable :(
+			return;
+		}
+
+		$url = '/api/project/automated_tools/en.wikipedia';
+		$this->client->request( 'GET', $url );
+		$response = $this->client->getResponse();
+		static::assertEquals( 200, $response->getStatusCode() );
+		static::assertEquals( 'application/json', $response->headers->get( 'content-type' ) );
+
+		$data = json_decode( $response->getContent(), true );
+		static::assertEquals( 'en.wikipedia.org', $data['project'] );
+		static::assertArrayHasKey( 'Huggle', $data['tools'] );
+		static::assertArrayHasKey( 'Twinkle', $data['tools'] );
 	}
 
 	/**
@@ -103,6 +128,26 @@ class AutomatedEditsControllerTest extends ControllerTestAdapter {
 	}
 
 	/**
+	 * Test automated edits endpoint.
+	 */
+	public function testAutomatedEdits(): void {
+		if ( !static::getContainer()->getParameter( 'app.is_wmf' ) ) {
+			// Untestable :(
+			return;
+		}
+		$url = '/api/user/automated_edits/en.wikipedia/MusikVarmint?tool=Huggle';
+		$this->client->request( 'GET', $url );
+		$response = $this->client->getResponse();
+		static::assertEquals( 200, $response->getStatusCode() );
+		static::assertEquals( 'application/json', $response->headers->get( 'content-type' ) );
+		$data = json_decode( $response->getContent(), true );
+		static::assertSame( 'Huggle', $data['tool'] );
+		// User:MusikVarmint on enwiki should have at least 50 edits using Huggle,
+		// and 50 is the per-page max for this endpoint.
+		static::assertCount( 50, $data['automated_edits'] );
+	}
+
+	/**
 	 * Test nonautomated edits endpoint.
 	 */
 	public function testNonautomatedEdits(): void {
@@ -111,13 +156,13 @@ class AutomatedEditsControllerTest extends ControllerTestAdapter {
 			return;
 		}
 
+		// This test account *should* never edit again and be safe for testing...
 		$url = '/api/user/nonautomated_edits/en.wikipedia/ThisIsaTest/all';
 		$this->client->request( 'GET', $url );
 		$response = $this->client->getResponse();
 		static::assertEquals( 200, $response->getStatusCode() );
 		static::assertEquals( 'application/json', $response->headers->get( 'content-type' ) );
 
-		// This test account *should* never edit again and be safe for testing...
 		static::assertCount( 1, json_decode( $response->getContent(), true )['nonautomated_edits'] );
 	}
 }

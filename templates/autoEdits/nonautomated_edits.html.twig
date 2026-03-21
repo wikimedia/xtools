@@ -39,7 +39,7 @@
                         data-start="{{ ae.startDate }}"
                         data-end="{{ ae.endDate }}"
                         data-namespace="{{ ae.namespace }}"
-                        data-offset="{{ ae.offsetISO ? ae.offsetISO : (ae.nonAutomatedEdits|first).UTCTimestamp }}"
+                        data-offset="{{ ae.offsetISO(ae.nonAutomatedEdits) }}"
                         data-limit="{{ ae.limit }}"
                         data-target="nonautoedits">
 {% endif %}

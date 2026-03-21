@@ -12,8 +12,8 @@ $(function () {
 	if ($toolSelector.length) {
 		xtools.autoedits.fetchTools = function (project) {
 			$toolSelector.prop('disabled', true);
-			$.get('/api/project/automated_tools/' + project).done(function (tools) {
-				if (tools.error) {
+			$.get('/api/project/automated_tools/' + project).done(function ( { error, tools } ) {
+				if (error) {
 					$toolSelector.prop('disabled', false);
 					return; // Abort, project was invalid.
 				}

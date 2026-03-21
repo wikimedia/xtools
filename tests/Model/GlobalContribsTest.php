@@ -117,6 +117,6 @@ class GlobalContribsTest extends TestAdapter {
 		$edits = $this->globalContribs->globalEdits();
 
 		static::assertCount( 1, $edits );
-		static::assertEquals( 'My user page', $edits['1514764800-1']->getComment() );
+		static::assertEquals( 'My user page', $edits[0]->getComment() );
 	}
 }

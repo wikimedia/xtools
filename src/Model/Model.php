@@ -156,9 +156,15 @@ abstract class Model {
 
 	/**
 	 * Get the offset timestamp as a formatted ISO timestamp.
+	 * @param ?Edit[] $list If provided and the offset is not set, the offset will be set
+	 *   to the timestamp of the first item in the list.
 	 * @return null|string
 	 */
-	public function getOffsetISO(): ?string {
-		return is_int( $this->offset ) ? date( 'Y-m-d\TH:i:s', $this->offset ) : null;
+	public function getOffsetISO( ?array $list = null ): ?string {
+		$offset = is_int( $this->offset ) ? date( 'Y-m-d\TH:i:s', $this->offset ) : null;
+		if ( $list && !$offset ) {
+			return $list[0]->getUTCTimestamp();
+		}
+		return $offset;
 	}
 }

@@ -348,12 +348,16 @@ class AutoEditsRepository extends UserRepository {
 
 		if ( $tagIds != '' ) {
 			$tagJoin = "LEFT OUTER JOIN $tagTable ON (ct_rev_id = revs.rev_id)";
-			$condsTool[] = $tool ? "(ct_tag_id IN ($tagIds)
-                AND NOT EXISTS (
-                    SELECT 1 from $tagTable
-                    WHERE ct_rev_id = revs.rev_id
-                    " . ( $tagExcludesIds == '' ? "" : "AND (ct_tag_id IN ($tagExcludesIds))" ) . "
-                ))" : "ct_tag_id IN ($tagIds)";
+			if ( $tool && $tagExcludesIds ) {
+				$condsTool[] = "(ct_tag_id IN ($tagIds)
+				AND NOT EXISTS (
+					SELECT 1 from $tagTable
+					WHERE ct_rev_id = revs.rev_id
+					AND (ct_tag_id IN ($tagExcludesIds))
+				))";
+			} else {
+				$condsTool[] = "ct_tag_id IN ($tagIds)";
+			}
 		}
 
 		// IP range handling.
@@ -364,6 +368,12 @@ class AutoEditsRepository extends UserRepository {
 			$ipcJoin = "JOIN $ipcTable ON rev_id = ipc_rev_id";
 			$whereClause = 'ipc_hex BETWEEN :startIp AND :endIp';
 			[ $params['startIp'], $params['endIp'] ] = IPUtils::parseRange( $user->getUsername() );
+		}
+
+		if ( $condsTool ) {
+			$condsTool = "AND (" . implode( ' OR ', $condsTool ) . ")";
+		} else {
+			$condsTool = "";
 		}
 
 		$sql = "SELECT
@@ -384,7 +394,7 @@ class AutoEditsRepository extends UserRepository {
                 WHERE $whereClause
                 $revDateConditions
                 $condNamespace
-                AND (" . implode( ' OR ', $condsTool ) . ")
+                $condsTool
                 GROUP BY revs.rev_id
                 ORDER BY revs.rev_timestamp DESC
                 LIMIT $limit";

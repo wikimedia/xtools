@@ -134,7 +134,7 @@ class DefaultControllerTest extends ControllerTestAdapter {
 			$response = (array)json_decode( $this->client->getResponse()->getContent(), true );
 			static::assertEquals( 'en.wikipedia.org', $response['project'] );
 			static::assertArraySubset(
-				[ 'FA', 'A', 'GA', 'bplus', 'B', 'C', 'Start' ],
+				[ 'FA', 'A', 'GA', 'B', 'C', 'Start' ],
 				array_keys( $response['assessments']['class'] )
 			);
 

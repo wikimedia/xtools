@@ -157,7 +157,7 @@ class GlobalContribs extends Model {
 
 		// Sort and prune, before adding more.
 		krsort( $globalEdits );
-		$this->globalEdits = array_slice( $globalEdits, 0, $this->limit );
+		$this->globalEdits = array_values( array_slice( $globalEdits, 0, $this->limit ) );
 
 		return $this->globalEdits;
 	}
