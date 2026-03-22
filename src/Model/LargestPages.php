@@ -9,6 +9,7 @@ use App\Repository\Repository;
 
 /**
  * A LargestPages provides a list of the largest pages on a project.
+ * @codeCoverageIgnore
  */
 class LargestPages extends Model {
 	/**

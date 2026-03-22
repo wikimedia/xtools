@@ -82,26 +82,28 @@ class CategoryEditsTest extends TestAdapter {
 	 * Methods around counting edits in category.
 	 */
 	public function testCategoryCounts(): void {
-		$this->ceRepo->expects( $this->once() )
+		$counts = [
+			'Living_people' => [ 'editCount' => 150, 'pageCount' => 10 ],
+			'Musicians_from_New_York_City' => [ 'editCount' => 50, 'pageCount' => 1 ],
+		];
+		$this->ceRepo->expects( static::once() )
 			->method( 'countCategoryEdits' )
 			->willReturn( 200 );
-		$this->ceRepo->expects( $this->once() )
+		$this->ceRepo->expects( static::once() )
 			->method( 'getCategoryCounts' )
-			->willReturn( [
-				'Living_people' => 150,
-				'Musicians_from_New_York_City' => 50,
-			] );
+			->willReturn( $counts );
 		$this->ce->setRepository( $this->ceRepo );
 
 		static::assertEquals( 500, $this->ce->getEditCount() );
 		static::assertEquals( 200, $this->ce->getCategoryEditCount() );
+		static::assertEquals( 11, $this->ce->getCategoryPageCount() );
 		static::assertEquals( 40.0, $this->ce->getCategoryPercentage() );
 		static::assertEquals(
-			[ 'Living_people' => 150, 'Musicians_from_New_York_City' => 50 ],
+			$counts,
 			$this->ce->getCategoryCounts()
 		);
 
-		// Shouldn't call the repo method again (asserted by the $this->once() above).
+		// Shouldn't call the repo method again (asserted by the static::once() above).
 		$this->ce->getCategoryCounts();
 	}
 
@@ -148,10 +150,10 @@ class CategoryEditsTest extends TestAdapter {
 			new Edit( $this->editRepo, $this->userRepo, $pages[1], array_merge( $revs[1], [ 'user' => $this->user ] ) ),
 		];
 
-		$this->ceRepo->expects( $this->exactly( 2 ) )
+		$this->ceRepo->expects( static::exactly( 2 ) )
 			->method( 'getCategoryEdits' )
 			->willReturn( $revs );
-		$this->ceRepo->expects( $this->once() )
+		$this->ceRepo->expects( static::once() )
 			->method( 'getEditsFromRevs' )
 			->willReturn( $edits );
 

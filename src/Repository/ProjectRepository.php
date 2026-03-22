@@ -351,6 +351,10 @@ class ProjectRepository extends Repository {
 	 * @return string[]
 	 */
 	public function getInstalledExtensions( Project $project ): array {
+		$cacheKey = $this->getCacheKey( func_get_args(), "project_extensions" );
+		if ( $this->cache->hasItem( $cacheKey ) ) {
+			return $this->cache->getItem( $cacheKey )->get();
+		}
 		$res = json_decode( $this->guzzle->request( 'GET', $project->getApiUrl(), [ 'query' => [
 			'action' => 'query',
 			'meta' => 'siteinfo',
@@ -359,9 +363,10 @@ class ProjectRepository extends Repository {
 		] ] )->getBody()->getContents(), true );
 
 		$extensions = $res['query']['extensions'] ?? [];
-		return array_map( static function ( $extension ) {
+		// Cache for one hour and return.
+		return $this->setCache( $cacheKey, array_map( static function ( $extension ) {
 			return $extension['name'];
-		}, $extensions );
+		}, $extensions ), 'PT1H' );
 	}
 
 	/**

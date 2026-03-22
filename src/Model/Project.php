@@ -16,6 +16,9 @@ class Project extends Model {
 	/** @var string[]|null Project's 'dbName', 'url' and 'lang'. */
 	protected ?array $basicInfo;
 
+	/** @var string[] List of installed extensions, for caching */
+	protected array $installedExtensions;
+
 	/**
 	 * Whether the user being queried for in this session has opted in to restricted statistics.
 	 * @var bool
@@ -232,14 +235,11 @@ class Project extends Model {
 	 * @return string[]
 	 */
 	public function getInstalledExtensions(): array {
-		// Quick cache, valid only for the same request.
-		static $installedExtensions = null;
-		if ( is_array( $installedExtensions ) ) {
-			return $installedExtensions;
+		if ( !isset( $this->installedExtensions ) ) {
+			$this->installedExtensions = $this->getRepository()->getInstalledExtensions( $this );
 		}
 
-		$installedExtensions = $this->getRepository()->getInstalledExtensions( $this );
-		return $installedExtensions;
+		return $this->installedExtensions;
 	}
 
 	/**
@@ -263,6 +263,8 @@ class Project extends Model {
 	/**
 	 * Whether the project has temporary accounts enabled.
 	 * @return bool
+	 * Just returns a repository result.
+	 * @codeCoverageIgnore
 	 */
 	public function hasTempAccounts(): bool {
 		$metadata = $this->getMetadata();
@@ -272,6 +274,8 @@ class Project extends Model {
 	/**
 	 * Get the patterns that match temporary accounts.
 	 * @return string[]
+	 * Just returns a repository result.
+	 * @codeCoverageIgnore
 	 */
 	public function getTempAccountPatterns(): array {
 		$metadata = $this->getMetadata();

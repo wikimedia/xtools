@@ -9,6 +9,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * An XtoolsHttpException is used to show error messages based on user input and redirect back to a route.
+ * @codeCoverageIgnore
  */
 class XtoolsHttpException extends HttpException {
 	/**

@@ -139,15 +139,17 @@ class EditCounter extends Model {
 	 * @param bool $blocksOnly Whether to include only blocks, and not reblocks and unblocks.
 	 * @return array
 	 */
-	protected function getBlocks( string $type, bool $blocksOnly = true ): array {
+	public function getBlocks( string $type, bool $blocksOnly = true ): array {
 		if ( isset( $this->blocks[$type] ) && is_array( $this->blocks[$type] ) ) {
-			return $this->blocks[$type];
+			$blocks = $this->blocks[$type];
+		} else {
+			$method = "getBlocks" . ucfirst( $type );
+			$blocks = $this->repository->$method( $this->project, $this->user );
+			$this->blocks[$type] = $blocks;
 		}
-		$method = "getBlocks" . ucfirst( $type );
-		$blocks = $this->repository->$method( $this->project, $this->user );
-		$this->blocks[$type] = $blocks;
 
 		// Filter out unblocks unless requested.
+		// Expressely don't store this
 		if ( $blocksOnly ) {
 			$blocks = array_filter( $blocks, static function ( $block ) {
 				return $block['log_action'] === 'block' || $block['log_action'] === 'reblock';
@@ -352,7 +354,7 @@ class EditCounter extends Model {
 					// Reset the last block, as it has now been accounted for.
 					$lastBlock = [ null, null ];
 				}
-			} elseif ( $block['log_action'] === 'reblock' && -1 !== $lastBlock[1] ) {
+			} elseif ( $block['log_action'] === 'reblock' && $lastBlock[1] !== 1 ) {
 				// The last block was modified.
 				// $lastBlock is left unchanged if its duration was indefinite.
 
@@ -726,27 +728,28 @@ class EditCounter extends Model {
 		foreach ( $totals as $total ) {
 			$max = max( $max, $total['value'] );
 		}
-		foreach ( $totals as &$total ) {
-			$total['scale'] = round( ( $total['value'] / $max ) * 20 );
+		foreach ( $totals as $index => $total ) {
+			$totals[$index]['scale'] = round( ( $total['value'] / $max ) * 20 );
 		}
 
 		// Fill in zeros for timeslots that have no values.
 		$sortedTotals = [];
 		$index = 0;
-		$sortedIndex = 0;
 		foreach ( range( 1, 7 ) as $day ) {
 			foreach ( range( 0, 23 ) as $hour ) {
-				if ( isset( $totals[$index] ) && (int)$totals[$index]['hour'] === $hour ) {
-					$sortedTotals[$sortedIndex] = $totals[$index];
+				if ( isset( $totals[$index] )
+					&& (int)$totals[$index]['day_of_week'] === $day
+					&& (int)$totals[$index]['hour'] === $hour
+				) {
+					$sortedTotals[] = $totals[$index];
 					$index++;
 				} else {
-					$sortedTotals[$sortedIndex] = [
+					$sortedTotals[] = [
 						'day_of_week' => $day,
 						'hour' => $hour,
 						'value' => 0,
 					];
 				}
-				$sortedIndex++;
 			}
 		}
 
@@ -765,10 +768,12 @@ class EditCounter extends Model {
 			return $this->monthCounts;
 		}
 
+		// @codeCoverageIgnoreStart
 		// Set to current month if we're not unit-testing
 		if ( !( $currentTime instanceof DateTime ) ) {
 			$currentTime = new DateTime( 'last day of this month' );
 		}
+		// @codeCoverageIgnoreEnd
 
 		$totals = $this->repository->getMonthCounts( $this->project, $this->user );
 		$out = [
@@ -837,8 +842,6 @@ class EditCounter extends Model {
 	 *           string[] - Modified $out filled with month stats,
 	 *           DateTime - timestamp of first edit
 	 *         ]
-	 * Tests covered in self::monthCounts().
-	 * @codeCoverageIgnore
 	 */
 	private function fillInMonthCounts( array $out, array $totals, DateTime $firstEdit ): array {
 		foreach ( $totals as $total ) {
@@ -861,8 +864,6 @@ class EditCounter extends Model {
 	 * @param array $out
 	 * @param DatePeriod $dateRange From first edit to present.
 	 * @return array Modified $out filled with month stats.
-	 * Tests covered in self::monthCounts().
-	 * @codeCoverageIgnore
 	 */
 	private function fillInMonthTotalsAndLabels( array $out, DatePeriod $dateRange ): array {
 		foreach ( $dateRange as $monthObj ) {

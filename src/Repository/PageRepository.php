@@ -100,7 +100,6 @@ class PageRepository extends Repository {
 	 * @param false|int $start
 	 * @param false|int $end
 	 * @param int|null $limit
-	 * @param int|null $numRevisions
 	 * @return string[] Each member with keys: id, timestamp, length,
 	 *   minor, length_change, user_id, username, comment, sha, deleted, tags.
 	 */
@@ -109,15 +108,14 @@ class PageRepository extends Repository {
 		?User $user = null,
 		false|int $start = false,
 		false|int $end = false,
-		?int $limit = null,
-		?int $numRevisions = null
+		?int $limit = null
 	): array {
 		$cacheKey = $this->getCacheKey( func_get_args(), 'page_revisions' );
 		if ( $this->cache->hasItem( $cacheKey ) ) {
 			return $this->cache->getItem( $cacheKey )->get();
 		}
 
-		$stmt = $this->getRevisionsStmt( $page, $user, $limit, $numRevisions, $start, $end );
+		$stmt = $this->getRevisionsStmt( $page, $user, $limit, $start, $end );
 		$result = $stmt->fetchAllAssociative();
 
 		// Cache and return.
@@ -129,9 +127,6 @@ class PageRepository extends Repository {
 	 * @param Page $page The page.
 	 * @param User|null $user Specify to get only revisions by the given user.
 	 * @param ?int $limit Max number of revisions to process.
-	 * @param ?int $numRevisions Number of revisions, if known. This is used solely to determine the
-	 *   OFFSET if we are given a $limit (see below). If $limit is set and $numRevisions is not set,
-	 *   a separate query is ran to get the number of revisions.
 	 * @param false|int $start
 	 * @param false|int $end
 	 * @return Result
@@ -140,7 +135,6 @@ class PageRepository extends Repository {
 		Page $page,
 		?User $user = null,
 		?int $limit = null,
-		?int $numRevisions = null,
 		false|int $start = false,
 		false|int $end = false
 	): Result {
@@ -159,7 +153,7 @@ class PageRepository extends Repository {
 		$userClause = $user ? "revs.rev_actor = :actorId AND " : "";
 
 		$limitClause = '';
-		if ( intval( $limit ) > 0 && isset( $numRevisions ) ) {
+		if ( intval( $limit ) > 0 ) {
 			$limitClause = "LIMIT $limit";
 		}
 

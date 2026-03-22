@@ -139,7 +139,7 @@ class AdminStats extends Model {
 
 		if ( $wikiPath ) {
 			$out = array_map( static function ( $url ) {
-				return str_replace( '.svg.png', '.svg', preg_replace( '/.*\/18px-/', '', $url ) );
+				return str_replace( '.svg.png', '.svg', preg_replace( '/.*\/[\d]+px-/', '', $url ) );
 			}, $out );
 		}
 

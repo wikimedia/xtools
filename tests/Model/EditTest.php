@@ -58,6 +58,9 @@ class EditTest extends TestAdapter {
 				'general' => [
 					'articlePath' => '/wiki/$1',
 				],
+				'namespaces' => [
+					1 => 'Talk',
+				],
 			] );
 		$this->project->setRepository( $this->projectRepo );
 		$this->pageRepo = $this->createMock( PageRepository::class );
@@ -95,6 +98,9 @@ class EditTest extends TestAdapter {
 		static::assertEquals( 'abcdef', $edit->getSha() );
 		static::assertSame( '1', $edit->getCacheKey() );
 		static::assertFalse( $edit->isReverted() );
+		// Test fallback for invalid timestamp
+		$edit = $this->getEditFactory( [ 'timestamp' => [] ] );
+		static::assertEquals( new DateTime( '1970-01-01T00:00:00Z' ), $edit->getTimestamp() );
 	}
 
 	/**
@@ -134,6 +140,15 @@ class EditTest extends TestAdapter {
 		] );
 		static::assertEquals(
 			'<a target="_blank" href="https://example.org">https://example.org</a>',
+			$edit->getWikifiedSummary()
+		);
+
+		$edit = $this->getEditFactory( [
+			'comment' => '/* Section */',
+		] );
+		static::assertEquals(
+			"<a target='_blank' href='https://en.wikipedia.org/wiki/Test_page#Section'>&rarr;</a>" .
+				"<em class='text-muted'>Section:</em> ",
 			$edit->getWikifiedSummary()
 		);
 	}
@@ -235,6 +250,12 @@ class EditTest extends TestAdapter {
 	}
 
 	public function testGetForJson(): void {
+		$pageRepo = $this->createMock( PageRepository::class );
+		$pageRepo->method( 'getPageInfo' )
+			->willReturn( [
+				'ns' => 1,
+			] );
+		$this->page = new Page( $pageRepo, $this->project, 'Talk:Test_page' );
 		$edit = $this->getEditFactory();
 		static::assertEquals(
 			[

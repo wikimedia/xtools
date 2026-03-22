@@ -111,7 +111,7 @@ class AutomatedEditsTest extends TestAdapter {
 	 */
 	public function testRegexConcat(): void {
 		$projectRepo = $this->createMock( ProjectRepository::class );
-		$projectRepo->expects( $this->once() )
+		$projectRepo->expects( static::once() )
 			->method( 'getOne' )
 			->willReturn( [
 				'url' => 'https://ar.wikipedia.org',
@@ -153,7 +153,7 @@ class AutomatedEditsTest extends TestAdapter {
 	 */
 	private function setProject(): void {
 		$projectRepo = $this->createMock( ProjectRepository::class );
-		$projectRepo->expects( $this->once() )
+		$projectRepo->expects( static::once() )
 			->method( 'getOne' )
 			->willReturn( [
 				'url' => 'https://en.wikipedia.org',

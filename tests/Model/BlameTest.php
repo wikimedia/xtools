@@ -10,6 +10,7 @@ use App\Model\Project;
 use App\Repository\BlameRepository;
 use App\Repository\PageRepository;
 use App\Tests\TestAdapter;
+use GuzzleHttp\Exception\RequestException;
 
 /**
  * @covers \App\Model\Blame
@@ -44,7 +45,7 @@ class BlameTest extends TestAdapter {
 	 * @covers \App\Model\Blame::searchTokens
 	 */
 	public function testPrepareData(): void {
-		$this->blameRepo->expects( $this->once() )
+		$this->blameRepo->expects( static::once() )
 			->method( 'getData' )
 			->willReturn( [
 				'revisions' => [ [
@@ -67,20 +68,44 @@ class BlameTest extends TestAdapter {
 								'o_rev_id' => 3,
 								'editor' => 'Matthewrbowker',
 								'str' => 'foobar',
+							], [
+								'o_rev_id' => 4,
+								'editor' => 'Alien333',
+								'str' => 'ooba',
+							], [
+								'o_rev_id' => 4,
+								'editor' => 'Alien333',
+								'str' => 'bad',
 							],
 						],
 					],
 				] ],
 			] );
-		$this->blameRepo->expects( $this->exactly( 2 ) )
+		$mockEdit = $this->createMock( 'App\Model\Edit' );
+		$this->blameRepo->expects( static::exactly( 2 ) )
 			->method( 'getEditFromRevId' )
-			->willReturn( $this->createMock( 'App\Model\Edit' ) );
+			->willReturn( $mockEdit );
 
 		$blame = new Blame( $this->blameRepo, $this->page, 'Foo bar' );
 		$blame->prepareData();
 		$matches = $blame->getMatches();
+		// test it does cache
+		$blame->prepareData();
 
 		static::assertCount( 2, $matches );
+		static::assertEquals( [ $mockEdit, $mockEdit ], $blame->getEdits() );
 		static::assertEquals( [ 3, 1 ], array_keys( $matches ) );
+	}
+
+	/**
+	 * Test fallback for Wikiwho errors
+	 */
+	public function testPrepareFallback(): void {
+		$this->blameRepo->expects( static::once() )
+			->method( 'getData' )
+			->willThrowException( $this->createMock( RequestException::class ) );
+		$blame = new Blame( $this->blameRepo, $this->page, 'Foo bar' );
+		$blame->prepareData();
+		static::assertTrue( !isset( $blame->matches ) );
 	}
 }

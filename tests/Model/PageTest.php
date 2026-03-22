@@ -12,6 +12,7 @@ use App\Repository\PageRepository;
 use App\Repository\UserRepository;
 use App\Tests\TestAdapter;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
+use GuzzleHttp\Exception\ClientException;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -53,8 +54,32 @@ class PageTest extends TestAdapter {
 
 		// Getting the unnormalized title should not call getPageInfo.
 		$page = new Page( $this->pageRepo, $project, 'talk:Test Page_3' );
-		$this->pageRepo->expects( $this->never() )->method( 'getPageInfo' );
+		$this->pageRepo->expects( static::never() )->method( 'getPageInfo' );
 		static::assertEquals( 'talk:Test Page_3', $page->getTitle( true ) );
+	}
+
+	/**
+	 * A Page can be built through processing of a database row
+	 */
+	public function testNewFromRow(): void {
+		$pageRepo = $this->createMock( PageRepository::class );
+		$data = [
+			[ [ 'page_title' => 'A', 'namespace' => 0 ], 'A' ],
+			[ [ 'page_title' => 'B', 'namespace' => 1, 'length' => 4, ], 'Talk:B' ],
+		];
+		$project = $this->createMock( Project::class );
+		$project->expects( static::once() )
+			->method( 'getNamespaces' )
+			->willReturn( [
+				0 => '',
+				1 => 'Talk',
+			] );
+		foreach ( $data as [ $row, $fullPageTitle ] ) {
+			$page = Page::newFromRow( $pageRepo, $project, $row );
+			static::assertEquals( $row['namespace'], $page->getNamespace() );
+			static::assertInstanceOf( Page::class, $page );
+			static::assertEquals( $fullPageTitle, $page->getTitle( true ) );
+		}
 	}
 
 	/**
@@ -94,9 +119,12 @@ class PageTest extends TestAdapter {
 				'Talk',
 				'User',
 			] );
+		$project->expects( static::once() )
+			->method( 'getLang' )
+			->willReturn( 'en' );
 
 		$pageRepo = $this->createMock( PageRepository::class );
-		$pageRepo->expects( $this->once() )
+		$pageRepo->expects( static::once() )
 			->method( 'getPageInfo' )
 			->willReturn( [
 				'pageid' => '42',
@@ -111,14 +139,20 @@ class PageTest extends TestAdapter {
 		$page = new Page( $this->pageRepo, $project, 'User:Test:123' );
 		$page->setRepository( $pageRepo );
 
+		// Should set the pageInfo
+		static::assertEquals( 2, $page->getNamespace() );
 		static::assertEquals( 42, $page->getId() );
 		static::assertEquals( 'https://example.org/User:Test:123', $page->getUrl() );
 		static::assertEquals( 5000, $page->getWatchers() );
 		static::assertEquals( 300, $page->getLength() );
-		static::assertEquals( 2, $page->getNamespace() );
 		static::assertEquals( 'User', $page->getNamespaceName() );
 		static::assertEquals( 'Q95', $page->getWikidataId() );
 		static::assertEquals( 'Test:123', $page->getTitleWithoutNamespace() );
+		// Intentionally defaults to project lang
+		static::assertEquals( 'en', $page->getLang() );
+		// Ensure caching
+		static::assertEquals( 300, $page->getLength() );
+		static::assertEquals( 2, $page->getNamespace() );
 	}
 
 	/**
@@ -132,6 +166,24 @@ class PageTest extends TestAdapter {
 		// and {{Main Page banner}} in particular should be there indefinitely, hopefully :)
 		$content = $page->getWikitext();
 		static::assertStringContainsString( '{{Main Page banner}}', $content );
+	}
+
+	/**
+	 * Test fetching of HTML
+	 */
+	public function testHtml(): void {
+		$page = new Page( $this->pageRepo, $this->getMockEnwikiProject(), 'A' );
+		// 01:01:01 UTC, January 1, 2001
+		$date = new \DateTime( '20010101010101' );
+		$this->pageRepo->expects( static::once() )
+			->method( 'getRevisionIdAtDate' )
+			->with( $page, $date )
+			->willReturn( 1234 );
+		$this->pageRepo->expects( static::once() )
+			->method( 'getHTMLContent' )
+			->with( $page, 1234 )
+			->willReturn( '<em>Hello</em>' );
+		static::assertEquals( '<em>Hello</em>', $page->getHTMLContent( $date ) );
 	}
 
 	/**
@@ -156,17 +208,19 @@ class PageTest extends TestAdapter {
 					'wikibase_item' => 'Q95',
 				],
 			] );
-		$pageRepo->expects( $this->once() )
+		$pageRepo->expects( static::once() )
 			->method( 'getWikidataItems' )
 			->willReturn( $wikidataItems );
 		$page = new Page( $this->pageRepo, new Project( 'TestProject' ), 'Test_Page' );
 		$page->setRepository( $pageRepo );
 
 		static::assertArraySubset( $wikidataItems, $page->getWikidataItems() );
+		// Ensure that we count the above
+		static::assertEquals( 2, $page->countWikidataItems() );
 
 		// If no wikidata item...
 		$pageRepo2 = $this->createMock( PageRepository::class );
-		$pageRepo2->expects( $this->once() )
+		$pageRepo2->expects( static::once() )
 			->method( 'getPageInfo' )
 			->willReturn( [
 				'pageprops' => [],
@@ -213,10 +267,44 @@ class PageTest extends TestAdapter {
 		$user = new User( $this->createMock( UserRepository::class ), 'Testuser' );
 		static::assertCount( 2, $page->getRevisions( $user ) );
 		static::assertEquals( 2, $page->getNumRevisions() );
+		// Test caching
+		static::assertCount( 2, $page->getRevisions( $user ) );
 	}
 
 	/**
-	 * Test getErros and getCheckWikiErrors.
+	 * Cases for counting of number of edits
+	 */
+	public function testNumRevisions(): void {
+		$pageRepo = $this->createMock( PageRepository::class );
+		$pageRepo->expects( static::exactly( 2 ) )
+			->method( 'getNumRevisions' )
+			->willReturn( 42 );
+		$pageRepo->expects( static::once() )
+			->method( 'getRevisions' )
+			->willReturn( [] );
+		$page = new Page( $pageRepo, new Project( 'examplewiki' ), 'Page' );
+
+		// #1: user given, so we query repo and don't cache
+		static::assertEquals( 42, $page->getNumRevisions( $this->createMock( User::class ) ) );
+
+		// #2: revisions happens to be set, so count that. doesn't query repo, but caches
+		static::assertEquals( [], $page->getRevisions() );
+		static::assertSame( 0, $page->getNumRevisions() );
+		// Test caching
+		static::assertSame( 0, $page->getNumRevisions() );
+
+		// #3: normal case, go out of our way to check
+		// reset caching
+		$page = new Page( $pageRepo, new Project( 'examplewiki' ), 'Page' );
+		// queries repo for the second time
+		static::assertEquals( 42, $page->getNumRevisions() );
+
+		// #4: caching did work. If it doesn't we call the Repo method a third time
+		static::assertEquals( 42, $page->getNumRevisions() );
+	}
+
+	/**
+	 * Test getErrors and getCheckWikiErrors.
 	 */
 	public function testErrors(): void {
 		$this->markTestSkipped( 'Broken until T413013 is fixed' );
@@ -270,10 +358,17 @@ class PageTest extends TestAdapter {
 		static::assertEquals( 3500, $page->getLatestPageviews( 30 ) );
 
 		// When the API fails.
-		$this->pageRepo->expects( $this->once() )
+		$this->pageRepo->expects( static::once() )
 			->method( 'getPageviews' )
 			->willThrowException( $this->createMock( BadGatewayException::class ) );
 		static::assertNull( $page->getPageviews( '20230101', '20230131' ) );
+		// 404, must return 0
+		$pageRepo = $this->createMock( PageRepository::class );
+		$pageRepo->expects( static::once() )
+			->method( 'getPageviews' )
+			->willThrowException( $this->createMock( ClientException::class ) );
+		$page = new Page( $pageRepo, new Project( 'exampleWiki' ), 'Page' );
+		static::assertSame( 0, $page->getPageviews( '20230101', '20230131' ) );
 	}
 
 	/**

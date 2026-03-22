@@ -78,6 +78,8 @@ class Blame extends Authorship {
 	/**
 	 * Get the target revision that is being blamed.
 	 * @return Edit|null
+	 * Just returns a repository result.
+	 * @codeCoverageIgnore
 	 */
 	public function getAsOf(): ?Edit {
 		if ( isset( $this->asOf ) ) {

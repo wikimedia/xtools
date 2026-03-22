@@ -130,6 +130,8 @@ class TopEdits extends Model {
 	/**
 	 * Get the total number of top edits.
 	 * @return int
+	 * Just returns a repository result.
+	 * @codeCoverageIgnore
 	 */
 	public function getNumTopEdits(): int {
 		if ( isset( $this->page ) ) {
@@ -148,6 +150,8 @@ class TopEdits extends Model {
 	 * Get the WikiProject totals.
 	 * @param int $ns Namespace ID.
 	 * @return array
+	 * Just returns a repository result.
+	 * @codeCoverageIgnore
 	 */
 	public function getProjectTotals( int $ns ): array {
 		 return $this->repository->getProjectTotals(

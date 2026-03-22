@@ -7,7 +7,6 @@ namespace App\Tests\Model;
 use App\Model\AdminStats;
 use App\Model\Project;
 use App\Repository\AdminStatsRepository;
-use App\Repository\ProjectRepository;
 use App\Tests\TestAdapter;
 
 /**
@@ -33,9 +32,30 @@ class AdminStatsTest extends TestAdapter {
 		$this->asRepo = $this->createMock( AdminStatsRepository::class );
 
 		// This logic is tested with integration tests.
-		// Here we just stub empty arrays so AdminStats won't error outl.
+		// Here we just stub empty arrays so AdminStats won't error out.
 		$this->asRepo->method( 'getUserGroups' )
 			->willReturn( [ 'local' => [], 'global' => [] ] );
+	}
+
+	/**
+	 * Test icons for each group.
+	 * Note that this should be independant from everything,
+	 * and so is static.
+	 */
+	public function testGroupIcons(): void {
+		$this->asRepo->expects( static::once() )
+			->method( 'getUserGroupIcons' )
+			->willReturn( [
+				'sysop' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Mop.svg/20px-Mop.svg.png',
+			] );
+		$as = new AdminStats( $this->asRepo, $this->project, 0, 0, 'admin', [] );
+		static::assertEquals( [
+			'sysop' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Mop.svg/20px-Mop.svg.png',
+		], $as->getUserGroupIcons() );
+		// Test for wikitext; also implictly ensure we cache
+		static::assertEquals( [
+			'sysop' => 'Mop.svg',
+		], $as->getUserGroupIcons( true ) );
 	}
 
 	/**
@@ -59,8 +79,10 @@ class AdminStatsTest extends TestAdapter {
 		static::assertEquals( 1483228800, $as->getStart() );
 		static::assertEquals( 1488326400, $as->getEnd() );
 		static::assertEquals( 60, $as->numDays() );
+		static::assertEquals( 'admin', $as->getType() );
 		static::assertSame( 1, $as->getNumInRelevantUserGroup() );
-		static::assertSame( 1, $as->getNumWithActionsNotInGroup() );
+		static::assertSame( 1, $as->getNumWithActions() );
+		static::assertSame( 2, $as->getNumWithActionsNotInGroup() );
 	}
 
 	/**
@@ -68,7 +90,7 @@ class AdminStatsTest extends TestAdapter {
 	 */
 	public function testAdminsAndGroups(): void {
 		$as = new AdminStats( $this->asRepo, $this->project, 0, 0, 'admin', [] );
-		$this->asRepo->expects( $this->never() )
+		$this->asRepo->expects( static::never() )
 			->method( 'getStats' )
 			->willReturn( $this->adminStatsFactory() );
 		$as->setRepository( $this->asRepo );
@@ -80,6 +102,8 @@ class AdminStatsTest extends TestAdapter {
 			],
 			$as->getUsersAndGroups()
 		);
+		// Ensure we cache
+		$as->getUsersAndGroups();
 	}
 
 	/**
@@ -87,7 +111,7 @@ class AdminStatsTest extends TestAdapter {
 	 */
 	public function testStats(): void {
 		$as = new AdminStats( $this->asRepo, $this->project, 0, 0, 'admin', [] );
-		$this->asRepo->expects( $this->once() )
+		$this->asRepo->expects( static::once() )
 			->method( 'getStats' )
 			->willReturn( $this->adminStatsFactory() );
 		$as->setRepository( $this->asRepo );
@@ -95,22 +119,34 @@ class AdminStatsTest extends TestAdapter {
 
 		// Test results.
 		static::assertEquals(
-			[
-				'Bob' => array_merge(
-					$this->adminStatsFactory()[0],
-					[ 'user-groups' => [ 'sysop', 'checkuser' ] ]
-				),
-				'Sarah' => array_merge(
-					// empty results
-					$this->adminStatsFactory()[1],
-					[ 'username' => 'Sarah', 'user-groups' => [ 'epcoordinator' ] ]
-				),
-			],
-			$ret
+			array_merge(
+				$this->adminStatsFactory()[0],
+				[ 'user-groups' => [ 'sysop', 'checkuser' ] ]
+			),
+			$ret['Bob']
+		);
+		static::assertEquals(
+			array_merge(
+				// empty results
+				$this->adminStatsFactory()[1],
+				[ 'username' => 'Sarah', 'user-groups' => [ 'epcoordinator' ] ]
+			),
+			$ret['Sarah']
 		);
 
 		// At this point get stats should be the same.
 		static::assertEquals( $ret, $as->getStats() );
+
+		static::assertEquals( [
+			'delete',
+			'restore',
+			'block',
+			'unblock',
+			'protect',
+			'unprotect',
+			'rights',
+			'import',
+		], array_values( $as->getActions() ) );
 	}
 
 	/**
@@ -140,6 +176,18 @@ class AdminStatsTest extends TestAdapter {
 				'unprotect' => 0,
 				'rights' => 0,
 				'import' => 0,
+				'total' => 20,
+			],
+			[
+				'username' => 'Alice',
+				'delete' => 0,
+				'restore' => 0,
+				'block' => 0,
+				'unblock' => 0,
+				'protect' => 0,
+				'unprotect' => 0,
+				'rights' => 0,
+				'import' => 0,
 				'total' => 0,
 			],
 		];
@@ -150,22 +198,22 @@ class AdminStatsTest extends TestAdapter {
 	 */
 	public function testTotalsRow(): void {
 		$as = new AdminStats( $this->asRepo, $this->project, 0, 0, 'admin', [] );
-		$this->asRepo->expects( $this->once() )
+		$this->asRepo->expects( static::once() )
 			->method( 'getStats' )
 			->willReturn( $this->adminStatsFactory() );
 		$as->setRepository( $this->asRepo );
 		$as->prepareStats();
 		static::assertEquals(
 			[
-				'delete' => 5 + 1,
-				'restore' => 3 + 0,
-				'block' => 0 + 0,
-				'unblock' => 1 + 0,
-				'protect' => 3 + 0,
-				'unprotect' => 2 + 0,
-				'rights' => 4 + 0,
-				'import' => 2 + 0,
-				'total' => 20 + 0,
+				'delete' => 5 + 1 + 0,
+				'restore' => 3 + 0 + 0,
+				'block' => 0 + 0 + 0,
+				'unblock' => 1 + 0 + 0,
+				'protect' => 3 + 0 + 0,
+				'unprotect' => 2 + 0 + 0,
+				'rights' => 4 + 0 + 0,
+				'import' => 2 + 0 + 0,
+				'total' => 20 + 20 + 0,
 			],
 			$as->getTotalsRow()
 		);
