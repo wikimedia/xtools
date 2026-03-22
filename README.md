@@ -10,6 +10,7 @@ XTools is a suite of statistics tools for Wikimedia wikis, users, pages, and mor
 
 * Gerrit docs: https://www.mediawiki.org/wiki/Gerrit
 * XTools developer docs: https://www.mediawiki.org/wiki/XTools/Development
+* Code coverage: https://doc.wikimedia.org/cover/labs-xtools/
 
 ## Kudos and history
 
