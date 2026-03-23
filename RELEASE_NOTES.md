@@ -1,5 +1,11 @@
 # Release Notes #
 
+## 3.24.3 ##
+- AutoEdits (T420807): Fix query for tag excludes
+- AutoEdits (T420806): Fix dropdown for selecting a tool on the index page.
+- (T177900) Stop hiding TOC on mobile.
+- Localization updates.
+
 ## 3.24.2 ##
 - (T418067) AutoEditsRepository: fix query for ?tool=.
 - PagesCreated: encode page title in deletionsummary API calls.
