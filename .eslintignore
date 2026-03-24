@@ -1,0 +1,9 @@
+*.json
+*.yaml
+*.yml
+# eslint can't parse it due to the import statement, and the file barely has any code
+assets/app.js
+assets/vendor/
+node_modules/
+public/
+webpack.config.js

@@ -1,0 +1,68 @@
+{
+	"extends": [
+		"wikimedia/client",
+		"wikimedia/jquery"
+	],
+	"root": true,
+	"rules": {
+		// default rules we don't like
+		"jsdoc/require-param": "off",
+		"jsdoc/require-returns": "off",
+		"max-len": "off",
+		"no-jquery/no-class-state": "off",
+		"no-jquery/no-global-selector": "off",
+		"no-shadow": "off",
+
+		// non-default rules we do like
+		"no-nested-ternary": "error",
+
+		// rules we should probably fix someday
+		"arrow-parens": "off",
+		"brace-style": "off",
+		"camelcase": "off",
+		"comma-dangle": "off",
+		"comma-spacing": "off",
+		"dot-notation": "off",
+		"eqeqeq": "off",
+		"es-x/no-array-prototype-flat": "off",
+		"es-x/no-string-prototype-replaceall": "off",
+		"implicit-arrow-linebreak": "off",
+		"indent": "off",
+		"jsdoc/check-types": "off",
+		"jsdoc/no-undefined-types": "off",
+		"jsdoc/tag-lines": "off",
+		"jsdoc/valid-types": "off",
+		"keyword-spacing": "off",
+		"no-implicit-globals": "off",
+		"no-jquery/no-done-fail": "off",
+		"no-jquery/no-each-util": "off",
+		"no-jquery/no-event-shorthand": "off",
+		"no-jquery/no-noop": "off",
+		"no-jquery/no-ready-shorthand": "off",
+		"no-jquery/no-sizzle": "off",
+		"no-jquery/variable-pattern": "off",
+		"no-new": "off",
+		"no-prototype-builtins": "off",
+		"no-return-assign": "off",
+		"no-undef": "off",
+		"no-unused-vars": "off",
+		"no-use-before-define": "off",
+		"no-useless-escape": "off",
+		"no-var": "off",
+		"operator-linebreak": "off",
+		"prefer-arrow-callback": "off",
+		"prefer-const": "off",
+		"quotes": "off",
+		"semi": "off",
+		"unicorn/prefer-includes": "off",
+		"unicorn/prefer-string-slice": "off",
+		"yoda": "off",
+
+		// space inside parenthesis and brackets
+		"array-bracket-spacing": "off",
+		"computed-property-spacing": "off",
+		"object-curly-spacing": "off",
+		"space-in-parens": "off",
+		"template-curly-spacing": "off"
+	}
+}
