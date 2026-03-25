@@ -19,7 +19,7 @@ xtools.editcounter.chartLabels = {};
  */
 xtools.editcounter.maxDigits = {};
 
-$(function () {
+$(() => {
 	// Don't do anything if this isn't a Edit Counter page.
 	if ($('body.editcounter').length === 0) {
 		return;
@@ -59,10 +59,9 @@ $(function () {
  * @param {Object} newData New namespaces and totals, as returned by setupToggleTable.
  * @param {String} key Namespace ID of the toggled namespace.
  */
-function toggleNamespace(newData, key)
-{
+function toggleNamespace(newData, key) {
 	var total = 0, counts = [];
-	Object.keys(newData).forEach(function (namespace) {
+	Object.keys(newData).forEach((namespace) => {
 		var count = parseInt(newData[namespace], 10);
 		counts.push(count);
 		total += count;
@@ -77,7 +76,7 @@ function toggleNamespace(newData, key)
 	$('.namespaces--count').text(total.toLocaleString(i18nLang));
 
 	// Now that we have the total, loop through once more time to update percentages.
-	counts.forEach(function (count) {
+	counts.forEach((count) => {
 		// Calculate percentage, rounded to tenths.
 		var percentage = getPercentage(count, total);
 
@@ -88,7 +87,7 @@ function toggleNamespace(newData, key)
 	});
 
 	// Loop through month and year charts, toggling the dataset for the newly excluded namespace.
-	['year', 'month'].forEach(function (id) {
+	['year', 'month'].forEach((id) => {
 		var chartObj = window[id + 'countsChart'],
 			nsName = window.namespaces[key] || $.i18n('mainspace');
 
@@ -99,7 +98,7 @@ function toggleNamespace(newData, key)
 
 		// Figure out the index of the namespace we're toggling within this chart object.
 		var datasetIndex = 0;
-		chartObj.data.datasets.forEach(function (dataset, i) {
+		chartObj.data.datasets.forEach((dataset, i) => {
 			if (dataset.label === nsName) {
 				datasetIndex = i;
 			}
@@ -113,9 +112,7 @@ function toggleNamespace(newData, key)
 		if (meta.hidden) {
 			xtools.editcounter.excludedNamespaces.push(nsName);
 		} else {
-			xtools.editcounter.excludedNamespaces = xtools.editcounter.excludedNamespaces.filter(function (namespace) {
-				return namespace !== nsName;
-			});
+			xtools.editcounter.excludedNamespaces = xtools.editcounter.excludedNamespaces.filter((namespace) => namespace !== nsName);
 		}
 
 		// Update y-axis labels with the new totals.
@@ -133,14 +130,13 @@ function toggleNamespace(newData, key)
  * @param {Array} datasets Datasets making up the chart.
  * @return {Array} Labels for each year/month.
  */
-function getYAxisLabels(id, datasets)
-{
+function getYAxisLabels(id, datasets) {
 	var labelsAndTotals = getMonthYearTotals(id, datasets);
 
 	// Format labels with totals next to them. This is a bit hacky, but it works! We use tabs (\t) to make the
 	// labels/totals for each namespace line up perfectly. The caveat is that we can't localize the numbers because
 	// the commas are not monospaced :(
-	return Object.keys(labelsAndTotals).map(function (year) {
+	return Object.keys(labelsAndTotals).map((year) => {
 		var digitCount = labelsAndTotals[year].toString().length;
 		var numTabs = (xtools.editcounter.maxDigits[id] - digitCount) * 2;
 
@@ -157,15 +153,14 @@ function getYAxisLabels(id, datasets)
  * @param {Array} datasets Datasets making up the chart.
  * @return {Object} Labels for each year/month as keys, totals as the values.
  */
-function getMonthYearTotals(id, datasets)
-{
+function getMonthYearTotals(id, datasets) {
 	var labelsAndTotals = {};
-	datasets.forEach(function (namespace) {
+	datasets.forEach((namespace) => {
 		if (xtools.editcounter.excludedNamespaces.indexOf(namespace.label) !== -1) {
 			return;
 		}
 
-		namespace.data.forEach(function (count, index) {
+		namespace.data.forEach((count, index) => {
 			if (!labelsAndTotals[xtools.editcounter.chartLabels[id][index]]) {
 				labelsAndTotals[xtools.editcounter.chartLabels[id][index]] = 0;
 			}
@@ -182,8 +177,7 @@ function getMonthYearTotals(id, datasets)
  * @param {Number} denominator
  * @return {Number}
  */
-function getPercentage(numerator, denominator)
-{
+function getPercentage(numerator, denominator) {
 	/** global: i18nLang */
 	return (numerator / denominator).toLocaleString(i18nLang, {style: 'percent'});
 }
@@ -199,9 +193,7 @@ function getPercentage(numerator, denominator)
  */
 xtools.editcounter.setupMonthYearChart = function (id, datasets, labels, maxTotal) {
 	/** @type {Array} Labels for each namespace. */
-	var namespaces = datasets.map(function (dataset) {
-		return dataset.label;
-	});
+	var namespaces = datasets.map((dataset) => dataset.label);
 	xtools.editcounter.maxDigits[id] = maxTotal.toString().length;
 	xtools.editcounter.chartLabels[id] = labels;
 
@@ -209,12 +201,11 @@ xtools.editcounter.setupMonthYearChart = function (id, datasets, labels, maxTota
 	/** global: i18nLang */
 	// on 2.7 I believe we have no other way to update a chart's config
 	// than to tear it out and put it again.
-	let createchart = (type = "linear") =>
-	window[id + 'countsChart'] = new Chart($('#' + id + 'counts-canvas'), {
+	let createchart = (type = "linear") => window[id + 'countsChart'] = new Chart($('#' + id + 'counts-canvas'), {
 		type: 'horizontalBar',
 		data: {
 			labels: getYAxisLabels(id, datasets),
-			datasets: datasets,
+			datasets: datasets
 		},
 		options: {
 			tooltips: {
@@ -223,9 +214,7 @@ xtools.editcounter.setupMonthYearChart = function (id, datasets, labels, maxTota
 				callbacks: {
 					label: function (tooltip) {
 						var labelsAndTotals = getMonthYearTotals(id, datasets),
-							totals = Object.keys(labelsAndTotals).map(function (label) {
-								return labelsAndTotals[label];
-							}),
+							totals = Object.keys(labelsAndTotals).map((label) => labelsAndTotals[label]),
 							total = totals[tooltip.index],
 							percentage = getPercentage(tooltip.xLabel, total);
 
@@ -266,7 +255,7 @@ xtools.editcounter.setupMonthYearChart = function (id, datasets, labels, maxTota
 						// For logarithmic scale, default ticks are too close and overlap.
 						if (type == "logarithmic") {
 							let newticks = [];
-							axis.ticks.forEach((x,i) => {
+							axis.ticks.forEach((x, i) => {
 								// So we enforce 1.5* distance.
 								if (i == 0 || newticks[newticks.length - 1] * 1.5 < x || x * 1.5 < newticks[newticks.length - 1]) {
 									newticks.push(x)
@@ -274,7 +263,7 @@ xtools.editcounter.setupMonthYearChart = function (id, datasets, labels, maxTota
 							});
 							axis.ticks = newticks;
 						}
-					},
+					}
 				}],
 				yAxes: [{
 					stacked: true,
@@ -285,14 +274,14 @@ xtools.editcounter.setupMonthYearChart = function (id, datasets, labels, maxTota
 				}]
 			},
 			legend: {
-				display: false,
+				display: false
 			}
 		}
 	});
 	// Initialise it, linear by default
 	createchart();
 	// Add checkbox listeners
-	$(function () {
+	$(() => {
 		$('.use-log-scale')
 			.prop('checked', false)
 			.on('click', function () {
@@ -344,11 +333,7 @@ xtools.editcounter.setupSizeHistogram = function (data, colors, barLabels) {
 					bars - 1,
 					Math.max(
 						0,
-						Math.log(
-							Math.abs(x) / 10
-						)
-						/
-						Math.log(2)
+						Math.log( Math.abs(x) / 10 ) / Math.log(2)
 					)
 				)
 			);
@@ -357,11 +342,11 @@ xtools.editcounter.setupSizeHistogram = function (data, colors, barLabels) {
 	});
 	// The labels for intervals
 	// phpcs:ignore Squiz.WhiteSpace.OperatorSpacing.NoSpaceAfter, Squiz.WhiteSpace.OperatorSpacing.NoSpaceBefore
-	let bounds = [0].concat(Array.from(new Array(bars - 1), (_,i) => 10 * 2 ** i));
-	let labels = Array.from(new Array(bars - 1), (_,i) => (new Intl.NumberFormat(i18nLang)).formatRange(bounds[i], bounds[i + 1]));
+	let bounds = [0].concat(Array.from(new Array(bars - 1), (_, i) => 10 * 2 ** i));
+	let labels = Array.from(new Array(bars - 1), (_, i) => (new Intl.NumberFormat(i18nLang)).formatRange(bounds[i], bounds[i + 1]));
 	labels.push(">" + bounds[bars - 1].toLocaleString(i18nLang));
 
-	window['sizeHistogramChart'] = new Chart($("#sizechart-canvas"), {
+	window.sizeHistogramChart = new Chart($("#sizechart-canvas"), {
 		type: 'bar',
 		data: {
 			labels: labels,
@@ -369,8 +354,8 @@ xtools.editcounter.setupSizeHistogram = function (data, colors, barLabels) {
 				// The order matters; zero must appear first to be below pos
 				datasetNeg,
 				datasetZero,
-				datasetPos,
-			],
+				datasetPos
+			]
 		},
 		options: {
 			tooltips: {
@@ -383,13 +368,13 @@ xtools.editcounter.setupSizeHistogram = function (data, colors, barLabels) {
 
 						return Math.abs(tooltip.yLabel).toLocaleString(i18nLang) + ' ' +
 							'(' + percentage + ')';
-					},
+					}
 				}
 			},
 			responsive: true,
 			maintainAspectRatio: false,
 			legend: {
-				position: "top",
+				position: "top"
 			},
 			scales: {
 				yAxes: [{
@@ -398,16 +383,16 @@ xtools.editcounter.setupSizeHistogram = function (data, colors, barLabels) {
 						color: xtools.application.chartGridColor
 					},
 					ticks: {
-						callback: (n) => Math.abs(n).toLocaleString(i18nLang),
-					},
+						callback: (n) => Math.abs(n).toLocaleString(i18nLang)
+					}
 				}],
 				xAxes: [{
 					stacked: true,
 					gridLines: {
 						color: xtools.application.chartGridColor
 					}
-				}],
-			},
+				}]
+			}
 		}
 	});
 };
@@ -420,7 +405,7 @@ xtools.editcounter.setupSizeHistogram = function (data, colors, barLabels) {
 xtools.editcounter.setupTimecard = function (timeCardDatasets, days) {
 	var useLocalTimezone = false,
 		timezoneOffset = new Date().getTimezoneOffset() / 60;
-	timeCardDatasets = timeCardDatasets.map(function (day) {
+	timeCardDatasets = timeCardDatasets.map((day) => {
 		day.backgroundColor = new Array(day.data.length).fill(day.backgroundColor);
 		return day;
 	});
@@ -481,9 +466,7 @@ xtools.editcounter.setupTimecard = function (timeCardDatasets, days) {
 							let hours = dataset.map((day) => day.data)
 								.flat()
 								.filter((datum) => datum.y == 8 - index);
-							return (hours.reduce(function (a, b) {
-								return a + parseInt(b.value, 10);
-							}, 0)).toLocaleString(i18nLang);
+							return (hours.reduce((a, b) => a + parseInt(b.value, 10), 0)).toLocaleString(i18nLang);
 						}
 					},
 					position: i18nRTL ? 'left' : 'right'
@@ -508,9 +491,7 @@ xtools.editcounter.setupTimecard = function (timeCardDatasets, days) {
 								let hours = dataset.map((day) => day.data)
 									.flat()
 									.filter((datum) => datum.x == value);
-								res.push((hours.reduce(function (a, b) {
-									return a + parseInt(b.value, 10);
-								}, 0)).toLocaleString(i18nLang));
+								res.push((hours.reduce((a, b) => a + parseInt(b.value, 10), 0)).toLocaleString(i18nLang));
 							}
 							if (value % 2 === 0) {
 								res.push(value + ":00");
@@ -521,7 +502,7 @@ xtools.editcounter.setupTimecard = function (timeCardDatasets, days) {
 					gridLines: {
 						color: xtools.application.chartGridColor
 					},
-					position: "bottom",
+					position: "bottom"
 				}]
 			},
 			tooltips: {
@@ -532,23 +513,23 @@ xtools.editcounter.setupTimecard = function (timeCardDatasets, days) {
 					},
 					label: function (item) {
 						var numEdits = [timeCardDatasets[item.datasetIndex].data[item.index].value];
-						return`${numEdits.toLocaleString(i18nLang)} ${$.i18n('num-edits', [numEdits])}`;
+						return `${numEdits.toLocaleString(i18nLang)} ${$.i18n('num-edits', [numEdits])}`;
 					}
 				}
 			}
 		}
 	});
 
-	$(function () {
+	$(() => {
 		$('.use-local-time')
 			.prop('checked', false)
 			.on('click', function () {
 				var offset = $(this).is(':checked') ? timezoneOffset : -timezoneOffset;
 				var color_list = new Array(7);
 				chart.data.datasets.forEach((day) => color_list[day.data[0].day_of_week - 1] = day.backgroundColor[0]);
-				chart.data.datasets = chart.data.datasets.map(function (day) {
+				chart.data.datasets = chart.data.datasets.map((day) => {
 					var background_colors = [];
-					day.data = day.data.map(function (datum) {
+					day.data = day.data.map((datum) => {
 						var newHour = (parseFloat(datum.hour) - offset);
 						var newDay = parseInt(datum.day_of_week, 10);
 						if (newHour < 0) {

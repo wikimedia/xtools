@@ -2,15 +2,14 @@ Object.assign(xtools.application.vars, {
 	initialOffset: '',
 	offset: '',
 	prevOffsets: [],
-	initialLoad: false,
+	initialLoad: false
 });
 
 /**
  * Set the initial offset for contributions lists, based on what was
  * supplied in the contributions container.
  */
-function setInitialOffset()
-{
+function setInitialOffset() {
 	if (!xtools.application.vars.offset) {
 		// The initialOffset should be what was given via the .contributions-container.
 		// This is used to determine if we're back on the first page or not.
@@ -55,10 +54,10 @@ xtools.application.loadContributions = function (endpointFunc, apiTitle) {
 		// Make sure to include any URL parameters, such as tool=Huggle (for AutoEdits).
 		url: newUrl + '?' + urlParams.toString(),
 		timeout: 60000
-	}).always(function () {
+	}).always(() => {
 		$contributionsContainer.removeClass('contributions-container--loading');
 		$contributionsLoading.hide();
-	}).done(function (data) {
+	}).done((data) => {
 		$contributionsContainer.html(data).show();
 		xtools.application.setupContributionsNavListeners(endpointFunc, apiTitle);
 
@@ -107,7 +106,7 @@ xtools.application.loadContributions = function (endpointFunc, apiTitle) {
 		if ($('.contributions-table tbody tr').length < limit) {
 			$('.next-edits').hide();
 		}
-	}).fail(function (_xhr, _status, message) {
+	}).fail((_xhr, _status, message) => {
 		$contributionsLoading.hide();
 		$contributionsContainer.html(
 			$.i18n('api-error', $.i18n(apiTitle) + ' API: <code>' + message + '</code>')
@@ -122,15 +121,15 @@ xtools.application.setupContributionsNavListeners = function (endpointFunc, apiT
 	setInitialOffset();
 
 	// Previous arrow.
-	$('.contributions--prev').off('click').one('click', function (e) {
+	$('.contributions--prev').off('click').one('click', (e) => {
 		e.preventDefault();
-		xtools.application.vars.offset = xtools.application.vars.prevOffsets.pop()
-			|| xtools.application.vars.initialOffset;
+		xtools.application.vars.offset = xtools.application.vars.prevOffsets.pop() ||
+			xtools.application.vars.initialOffset;
 		xtools.application.loadContributions(endpointFunc, apiTitle)
 	});
 
 	// Next arrow.
-	$('.contributions--next').off('click').one('click', function (e) {
+	$('.contributions--next').off('click').one('click', (e) => {
 		e.preventDefault();
 		if (xtools.application.vars.offset) {
 			xtools.application.vars.prevOffsets.push(xtools.application.vars.offset);
@@ -140,7 +139,7 @@ xtools.application.setupContributionsNavListeners = function (endpointFunc, apiT
 	});
 
 	// The 'Limit:' dropdown.
-	$('#contributions_limit').on('change', function (e) {
+	$('#contributions_limit').on('change', (e) => {
 		var limit = parseInt(e.target.value, 10);
 		$('.contributions-container').data('limit', limit);
 		let capitalize = (str) => str[0].toUpperCase() + str.slice(1);

@@ -1,32 +1,32 @@
 xtools.categoryedits = {};
 
-$(function () {
+$(() => {
 	if (!$('body.categoryedits').length) {
 		return;
 	}
 
-	$(document).ready(function () {
+	$(document).ready(() => {
 		xtools.categoryedits.$select2Input = $('#category_selector');
 
 		setupCategoryInput();
 
-		$('#project_input').on('xtools.projectLoaded', function (_e, data) {
+		$('#project_input').on('xtools.projectLoaded', (_e, data) => {
 			/** global: xtBaseUrl */
-			$.get(xtBaseUrl + 'api/project/namespaces/' + data.project).done(function (data) {
+			$.get(xtBaseUrl + 'api/project/namespaces/' + data.project).done((data) => {
 				setupCategoryInput(data.api, data.namespaces[14]);
 			});
 		});
 
-		$('form').on('submit', function () {
+		$('form').on('submit', () => {
 			$('#category_input').val( // Hidden input field
 				xtools.categoryedits.$select2Input.val().join('|')
 			);
 		});
 
-		xtools.application.setupToggleTable(window.countsByCategory, window.categoryChart, 'editCount', function (newData) {
+		xtools.application.setupToggleTable(window.countsByCategory, window.categoryChart, 'editCount', (newData) => {
 			var totalEdits = 0,
 				totalPages = 0;
-			Object.keys(newData).forEach(function (category) {
+			Object.keys(newData).forEach((category) => {
 				totalEdits += parseInt(newData[category].editCount, 10);
 				totalPages += parseInt(newData[category].pageCount, 10);
 			});
@@ -53,15 +53,12 @@ $(function () {
  * Load category edits HTML via AJAX, to not slow down the initial page load. Only load if container is present,
  * which is missing on index pages and in subroutes, e.g. categoryedits-contributions, etc.
  */
-function loadCategoryEdits()
-{
+function loadCategoryEdits() {
 	// Load the contributions browser, or set up the listeners if it is already present.
 	var initFunc = $('.contributions-table').length ? 'setupContributionsNavListeners' : 'loadContributions';
 	xtools.application[initFunc](
-		function (params) {
-			return 'categoryedits-contributions/' + params.project + '/' + params.username + '/' +
-				params.categories + '/' + params.start + '/' + params.end;
-		},
+		(params) => 'categoryedits-contributions/' + params.project + '/' + params.username + '/' +
+				params.categories + '/' + params.start + '/' + params.end,
 		'Category'
 	);
 }
@@ -71,8 +68,7 @@ function loadCategoryEdits()
  * @param {String} [api] Fully qualified API endpoint.
  * @param {String} [ns] Name of the Category namespace.
  */
-function setupCategoryInput(api, ns)
-{
+function setupCategoryInput(api, ns) {
 	// First destroy any existing Select2 inputs.
 	if (xtools.categoryedits.$select2Input.data('select2')) {
 		xtools.categoryedits.$select2Input.off('change');
@@ -104,7 +100,7 @@ function setupCategoryInput(api, ns)
 					results = [];
 
 				if (query && query.prefixsearch.length) {
-					results = query.prefixsearch.map(function (elem) {
+					results = query.prefixsearch.map((elem) => {
 						var title = elem.title.replace(new RegExp('^' + nsName + ':'), '');
 						return {
 							id: title.replace(/ /g, '_'),

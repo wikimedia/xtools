@@ -1,6 +1,6 @@
 xtools.adminstats = {};
 
-$(function () {
+$(() => {
 	var $projectInput = $('#project_input'),
 		lastProject = $projectInput.val();
 

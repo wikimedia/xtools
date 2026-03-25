@@ -1,6 +1,6 @@
 xtools.blame = {};
 
-$(function () {
+$(() => {
 	if (!$('body.blame').length) {
 		return;
 	}
@@ -16,7 +16,7 @@ $(function () {
 		// Escape query to make regex-safe.
 		const escapedQuery = xtools.blame.query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 
-		const highlightMatch = selector => {
+		const highlightMatch = (selector) => {
 			const regex = new RegExp(`(${escapedQuery})`, 'gi');
 			$(selector).html(
 				$(selector).html().replace(regex, `<strong>$1</strong>`)
@@ -34,7 +34,7 @@ $(function () {
 
 	// Handles the "Show" dropdown, show/hiding the associated input field accordingly.
 	const $showSelector = $('#show_selector');
-	$showSelector.on('change', e => {
+	$showSelector.on('change', (e) => {
 		$('.show-option').addClass('hidden')
 			.find('input').prop('disabled', true);
 		$(`.show-option--${e.target.value}`).removeClass('hidden')

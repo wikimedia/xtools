@@ -1,6 +1,6 @@
 xtools.autoedits = {};
 
-$(function () {
+$(() => {
 	if (!$('body.autoedits').length) {
 		return;
 	}
@@ -12,7 +12,7 @@ $(function () {
 	if ($toolSelector.length) {
 		xtools.autoedits.fetchTools = function (project) {
 			$toolSelector.prop('disabled', true);
-			$.get('/api/project/automated_tools/' + project).done(function ( { error, tools } ) {
+			$.get('/api/project/automated_tools/' + project).done(( { error, tools } ) => {
 				if (error) {
 					$toolSelector.prop('disabled', false);
 					return; // Abort, project was invalid.
@@ -26,7 +26,7 @@ $(function () {
 					'<option value="none">' + $.i18n('none') + '</option>' +
 					'<option value="all">' + $.i18n('all') + '</option>'
 				);
-				Object.keys(tools).forEach(function (tool) {
+				Object.keys(tools).forEach((tool) => {
 					$toolSelector.append(
 						'<option value="' + tool + '">' + (tools[tool].label || tool) + '</option>'
 					);
@@ -36,8 +36,8 @@ $(function () {
 			});
 		};
 
-		$(document).ready(function () {
-			$('#project_input').on('change.autoedits', function () {
+		$(document).ready(() => {
+			$('#project_input').on('change.autoedits', () => {
 				xtools.autoedits.fetchTools($('#project_input').val());
 			});
 		});
@@ -50,9 +50,9 @@ $(function () {
 
 	// For result pages only...
 
-	xtools.application.setupToggleTable(window.countsByTool, window.toolsChart, 'count', function (newData) {
+	xtools.application.setupToggleTable(window.countsByTool, window.toolsChart, 'count', (newData) => {
 		var total = 0;
-		Object.keys(newData).forEach(function (tool) {
+		Object.keys(newData).forEach((tool) => {
 			total += parseInt(newData[tool].count, 10);
 		});
 		var toolsCount = Object.keys(newData).length;
@@ -68,10 +68,8 @@ $(function () {
 		// Load the contributions browser, or set up the listeners if it is already present.
 		var initFunc = $('.contributions-table').length ? 'setupContributionsNavListeners' : 'loadContributions';
 		xtools.application[initFunc](
-			function (params) {
-				return `${params.target}-contributions/${params.project}/${params.username}` +
-					`/${params.namespace}/${params.start}/${params.end}`;
-			},
+			(params) => `${params.target}-contributions/${params.project}/${params.username}` +
+					`/${params.namespace}/${params.start}/${params.end}`,
 			$contributionsContainer.data('target')
 		);
 	}

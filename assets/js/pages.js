@@ -1,6 +1,6 @@
 xtools.pages = {};
 
-$(function () {
+$(() => {
 	// Don't execute this code if we're not on the Pages tool
 	// FIXME: find a way to automate this somehow...
 	if (!$('body.pages').length) {
@@ -9,13 +9,13 @@ $(function () {
 
 	var deletionSummaries = {};
 
-	xtools.application.setupToggleTable(window.countsByNamespace, window.pieChart, 'count', function (newData) {
+	xtools.application.setupToggleTable(window.countsByNamespace, window.pieChart, 'count', (newData) => {
 		var totals = {
 			count: 0,
 			deleted: 0,
-			redirects: 0,
+			redirects: 0
 		};
-		Object.keys(newData).forEach(function (ns) {
+		Object.keys(newData).forEach((ns) => {
 			totals.count += newData[ns].count;
 			totals.deleted += newData[ns].deleted;
 			totals.redirects += newData[ns].redirects;
@@ -24,7 +24,7 @@ $(function () {
 			Object.keys(newData).length.toLocaleString() + " " +
 			$.i18n(
 				'num-namespaces',
-				Object.keys(newData).length,
+				Object.keys(newData).length
 			)
 		);
 		$('.namespaces--pages').text(totals.count.toLocaleString());
@@ -59,9 +59,9 @@ $(function () {
 		};
 
 		$.ajax({
-			url: xtBaseUrl + 'api/pages/deletion_summary/' + wikiDomain + '/' + username + '/' + nsId
-				+ '/' + encodeURIComponent(pageTitle) + '/' + startTime
-		}).done(function (resp) {
+			url: xtBaseUrl + 'api/pages/deletion_summary/' + wikiDomain + '/' + username + '/' + nsId +
+				'/' + encodeURIComponent(pageTitle) + '/' + startTime
+		}).done((resp) => {
 			if (null === resp.summary) {
 				return showError();
 			}

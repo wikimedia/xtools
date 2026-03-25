@@ -1,7 +1,7 @@
 xtools = {};
 xtools.application = {};
 xtools.application.vars = {
-	sectionOffset: {},
+	sectionOffset: {}
 };
 xtools.application.chartGridColor = 'rgba(0, 0, 0, 0.1)';
 
@@ -18,9 +18,9 @@ $.i18n({
 	locale: i18nLang
 }).load(i18nPaths);
 
-$(function () {
+$(() => {
 	// The $() around this code apparently isn't enough for Webpack, need another document-ready check.
-	$(document).ready(function () {
+	$(document).ready(() => {
 		// TODO: move these listeners to a setup function and document how to use it.
 		$('.xt-hide').on('click', function () {
 			$(this).hide();
@@ -173,8 +173,7 @@ xtools.application.setupToggleTable = function (dataSource, chartObj, valueKey, 
  * If there are more tool links in the nav than will fit in the viewport, move the last entry to the More menu,
  * one at a time, until it all fits. This does not listen for window resize events.
  */
-function setupNavCollapsing()
-{
+function setupNavCollapsing() {
 	var windowWidth = $(window).width(),
 		toolNavWidth = $('.tool-links').outerWidth(),
 		navRightWidth = $('.nav-buttons').outerWidth();
@@ -239,7 +238,7 @@ xtools.application.setupColumnSorting = function () {
 			return;
 		}
 
-		$entries.sort(function (a, b) {
+		$entries.sort((a, b) => {
 			var before = $(a).find('.sort-entry--' + sortColumn).data('value') || 0,
 				after = $(b).find('.sort-entry--' + sortColumn).data('value') || 0;
 
@@ -262,7 +261,7 @@ xtools.application.setupColumnSorting = function () {
 
 		// Re-fill the rank column, if applicable.
 		if ($('.sort-entry--rank').length > 0) {
-			$.each($entries, function (index, entry) {
+			$.each($entries, (index, entry) => {
 				$(entry).find('.sort-entry--rank').text(index + 1);
 			});
 		}
@@ -293,8 +292,7 @@ xtools.application.setupColumnSorting = function () {
  *     {{ layout.content_block('generalstats', content) }}
  *     ...
  */
-function setupTOC()
-{
+function setupTOC() {
 	var $toc = $('.xt-toc');
 
 	if (!$toc || !$toc[0]) {
@@ -331,7 +329,7 @@ function setupTOC()
 
 	// build object containing offsets of each section
 	xtools.application.buildSectionOffsets = function () {
-		$.each($toc.find('a'), function (index, tocMember) {
+		$.each($toc.find('a'), (index, tocMember) => {
 			var id = $(tocMember).data('section');
 			xtools.application.vars.sectionOffset[id] = $('#' + id).offset().top;
 		});
@@ -344,7 +342,7 @@ function setupTOC()
 	setupTocListeners();
 
 	var tocOffsetTop = $toc.offset().top;
-	$(window).on('scroll.toc', function (e) {
+	$(window).on('scroll.toc', (e) => {
 		var windowOffset = $(e.target).scrollTop();
 		var inRange = windowOffset > tocOffsetTop;
 
@@ -355,7 +353,7 @@ function setupTOC()
 
 			// bolden the link for whichever section we're in
 			var $activeMember;
-			Object.keys(xtools.application.vars.sectionOffset).forEach(function (section) {
+			Object.keys(xtools.application.vars.sectionOffset).forEach((section) => {
 				if (windowOffset > xtools.application.vars.sectionOffset[section] - xtools.application.vars.tocHeight - 1) {
 					$activeMember = xtools.application.vars.$tocClone.find('a[data-section="' + section + '"]');
 				}
@@ -376,8 +374,7 @@ function setupTOC()
  * Make any tables with the class 'table-sticky-header' have sticky headers.
  * E.g. as you scroll the heading row will be fixed at the top for reference.
  */
-function setupStickyHeader()
-{
+function setupStickyHeader() {
 	var $header = $('.table-sticky-header');
 
 	if (!$header || !$header[0]) {
@@ -407,7 +404,7 @@ function setupStickyHeader()
 	};
 
 	var headerOffsetTop = $header.offset().top;
-	$(window).on('scroll.stickyHeader', function (e) {
+	$(window).on('scroll.stickyHeader', (e) => {
 		var windowOffset = $(e.target).scrollTop();
 		var inRange = windowOffset > headerOffsetTop;
 
@@ -433,8 +430,7 @@ function setupStickyHeader()
 /**
  * Add listener to the project input field to update any namespace selectors and autocompletion fields.
  */
-function setupProjectListener()
-{
+function setupProjectListener() {
 	var $projectInput = $('#project_input');
 
 	// Stop here if there is no project field
@@ -456,7 +452,7 @@ function setupProjectListener()
 			var newProject = this.value;
 
 			/** global: xtBaseUrl */
-			$.get(xtBaseUrl + 'api/project/normalize/' + newProject).done(function (data) {
+			$.get(xtBaseUrl + 'api/project/normalize/' + newProject).done((data) => {
 				// Keep track of project API path for use in page title autocompletion
 				xtools.application.vars.apiPath = data.api;
 				xtools.application.vars.lastProject = newProject;
@@ -475,8 +471,7 @@ function setupProjectListener()
  * Use the wiki input field to populate the namespace selector.
  * This also updates `apiPath` and calls setupAutocompletion().
  */
-function setupNamespaceSelector()
-{
+function setupNamespaceSelector() {
 	// keep track of last valid project
 	xtools.application.vars.lastProject = $('#project_input').val();
 
@@ -487,7 +482,7 @@ function setupNamespaceSelector()
 		var newProject = this.value;
 
 		/** global: xtBaseUrl */
-		$.get(xtBaseUrl + 'api/project/namespaces/' + newProject).done(function (data) {
+		$.get(xtBaseUrl + 'api/project/namespaces/' + newProject).done((data) => {
 			// Clone the 'all' option (even if there isn't one),
 			// and replace the current option list with this.
 			var $allOption = $('#namespace_select option[value="all"]').eq(0).clone();
@@ -513,7 +508,7 @@ function setupNamespaceSelector()
 
 			// Re-init autocompletion
 			setupAutocompletion();
-		}).fail(revertToValidProject.bind(this, newProject)).always(function () {
+		}).fail(revertToValidProject.bind(this, newProject)).always(() => {
 			$('#namespace_select').prop('disabled', false);
 		});
 	});
@@ -529,8 +524,7 @@ function setupNamespaceSelector()
  * This throws a warning message and reverts back to the last valid project.
  * @param {string} newProject - project they attempted to add
  */
-function revertToValidProject(newProject)
-{
+function revertToValidProject(newProject) {
 	$('#project_input').val(xtools.application.vars.lastProject);
 	$('.site-notice').append(
 		"<div class='alert alert-warning alert-dismissible' role='alert'>" +
@@ -545,8 +539,7 @@ function revertToValidProject(newProject)
 /**
  * Setup autocompletion of pages if a page input field is present.
  */
-function setupAutocompletion()
-{
+function setupAutocompletion() {
 	var $pageInput = $('#page_input'),
 		$userInput = $('#user_input'),
 		$namespaceInput = $("#namespace_select");
@@ -603,9 +596,7 @@ function setupAutocompletion()
 					if ($namespaceInput[0] && $namespaceInput.val() !== '0') {
 						nsName = $namespaceInput.find('option:selected').text().trim();
 					}
-					return data.query.prefixsearch.map(function (elem) {
-						return elem.title.replace(new RegExp('^' + nsName + ':'), '');
-					});
+					return data.query.prefixsearch.map((elem) => elem.title.replace(new RegExp('^' + nsName + ':'), ''));
 				}
 			})
 		});
@@ -623,13 +614,9 @@ function setupAutocompletion()
 					};
 				},
 				preProcess: function (data) {
-					var results = data.query.prefixsearch.map(function (elem) {
-						return elem.title.split('/')[0].substr(elem.title.indexOf(':') + 1);
-					});
+					var results = data.query.prefixsearch.map((elem) => elem.title.split('/')[0].substr(elem.title.indexOf(':') + 1));
 
-					return results.filter(function (value, index, array) {
-						return array.indexOf(value) === index;
-					});
+					return results.filter((value, index, array) => array.indexOf(value) === index);
 				}
 			})
 		});
@@ -654,10 +641,9 @@ let loadingTimerId;
  * Create a new loading timer interval.
  * Uses #submit_timer.
  */
-function createTimerInterval()
-{
+function createTimerInterval() {
 	var startTime = Date.now();
-	return setInterval(function () {
+	return setInterval(() => {
 		var elapsedSeconds = Math.round((Date.now() - startTime) / 1000);
 		var minutes = Math.floor(elapsedSeconds / 60);
 		var seconds = ('00' + (elapsedSeconds - (minutes * 60))).slice(-2);
@@ -672,8 +658,7 @@ function createTimerInterval()
  *                         This is used on page load to solve an issue with Safari and Firefox
  *                         where after browsing back to the form, the "loading" state persists.
  */
-function displayWaitingNoticeOnSubmission(undo)
-{
+function displayWaitingNoticeOnSubmission(undo) {
 	if (undo) {
 		// Re-enable form
 		$('.form-control').prop('readonly', false);
@@ -684,7 +669,7 @@ function displayWaitingNoticeOnSubmission(undo)
 			loadingTimerId = null;
 		}
 	} else {
-		$('#content form').on('submit', function () {
+		$('#content form').on('submit', () => {
 			// Remove focus from any active element
 			document.activeElement.blur();
 
@@ -704,8 +689,7 @@ function displayWaitingNoticeOnSubmission(undo)
 /*
  * Resets a link out of loading.
  */
-function clearLinkTimer()
-{
+function clearLinkTimer() {
 	// clear the timer proper
 	clearInterval(loadingTimerId);
 	loaingTimerId = null;
@@ -722,15 +706,13 @@ function clearLinkTimer()
  *                         This is used on page load to solve an isssue with Safari and Firefox
  *                         where after browsing back, the "loading" state persists.
  */
-function setupLinkLoadingNotices(undo)
-{
+function setupLinkLoadingNotices(undo) {
 	if (undo) {
 		clearLinkTimer();
 	} else {
 		// Get the list of links:
 		$("a").filter(
-			(index, el) =>
-			el.className == "" && // only plain links, not buttons
+			(index, el) => el.className == "" && // only plain links, not buttons
 			el.href.startsWith(document.location.origin) && // to XTools
 			new URL(el.href).pathname.replaceAll(/[^\/]/g, "").length > 1 && // that include parameters (just going to a search form is not costy)
 			el.target != "_blank" && // that doesn't open in a new tab
@@ -754,7 +736,7 @@ function setupLinkLoadingNotices(undo)
  */
 xtools.application.setupMultiSelectListeners = function () {
 	var $inputs = $('.multi-select--body:not(.hidden) .multi-select--option');
-	$inputs.on('change', function () {
+	$inputs.on('change', () => {
 		// If all sections are selected, select the 'All' checkbox, and vice versa.
 		$('.multi-select--all').prop(
 			'checked',
