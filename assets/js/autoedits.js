@@ -5,7 +5,7 @@ $( () => {
 		return;
 	}
 
-	var $contributionsContainer = $( '.contributions-container' ),
+	const $contributionsContainer = $( '.contributions-container' ),
 		$toolSelector = $( '#tool_selector' );
 
 	// For the form page.
@@ -51,14 +51,14 @@ $( () => {
 	// For result pages only...
 
 	xtools.application.setupToggleTable( window.countsByTool, window.toolsChart, 'count', ( newData ) => {
-		var total = 0;
+		let total = 0;
 		Object.keys( newData ).forEach( ( tool ) => {
 			total += parseInt( newData[ tool ].count, 10 );
 		} );
-		var toolsCount = Object.keys( newData ).length;
+		const toolsCount = Object.keys( newData ).length;
 		/** global: i18nLang */
 		$( '.tools--tools' ).text(
-			toolsCount.toLocaleString( i18nLang ) + " " +
+			toolsCount.toLocaleString( i18nLang ) + ' ' +
 			$.i18n( 'num-tools', toolsCount )
 		);
 		$( '.tools--count' ).text( total.toLocaleString( i18nLang ) );
@@ -66,7 +66,7 @@ $( () => {
 
 	if ( $contributionsContainer.length ) {
 		// Load the contributions browser, or set up the listeners if it is already present.
-		var initFunc = $( '.contributions-table' ).length ? 'setupContributionsNavListeners' : 'loadContributions';
+		const initFunc = $( '.contributions-table' ).length ? 'setupContributionsNavListeners' : 'loadContributions';
 		xtools.application[ initFunc ](
 			( params ) => `${ params.target }-contributions/${ params.project }/${ params.username }` +
 					`/${ params.namespace }/${ params.start }/${ params.end }`,

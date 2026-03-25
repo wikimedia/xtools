@@ -5,7 +5,7 @@ $( () => {
 		return;
 	}
 
-	var setupToggleTable = function () {
+	const setupToggleTable = function () {
 		xtools.application.setupToggleTable(
 			window.textshares,
 			window.textsharesChart,
@@ -14,11 +14,11 @@ $( () => {
 		);
 	};
 
-	var $textsharesContainer = $( '.textshares-container' );
+	const $textsharesContainer = $( '.textshares-container' );
 
 	if ( $textsharesContainer[ 0 ] ) {
 		/** global: xtBaseUrl */
-		var url = xtBaseUrl + 'authorship/' +
+		let url = xtBaseUrl + 'authorship/' +
 			$textsharesContainer.data( 'project' ) + '/' +
 			$textsharesContainer.data( 'page' ) + '/' +
 			( xtools.pageinfo.endDate ? xtools.pageinfo.endDate + '/' : '' );

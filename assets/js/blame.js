@@ -19,7 +19,7 @@ $( () => {
 		const highlightMatch = ( selector ) => {
 			const regex = new RegExp( `(${ escapedQuery })`, 'gi' );
 			$( selector ).html(
-				$( selector ).html().replace( regex, `<strong>$1</strong>` )
+				$( selector ).html().replace( regex, '<strong>$1</strong>' )
 			);
 		};
 

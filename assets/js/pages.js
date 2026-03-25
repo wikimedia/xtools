@@ -7,10 +7,10 @@ $( () => {
 		return;
 	}
 
-	var deletionSummaries = {};
+	const deletionSummaries = {};
 
 	xtools.application.setupToggleTable( window.countsByNamespace, window.pieChart, 'count', ( newData ) => {
-		var totals = {
+		const totals = {
 			count: 0,
 			deleted: 0,
 			redirects: 0
@@ -21,7 +21,7 @@ $( () => {
 			totals.redirects += newData[ ns ].redirects;
 		} );
 		$( '.namespaces--namespaces' ).text(
-			Object.keys( newData ).length.toLocaleString() + " " +
+			Object.keys( newData ).length.toLocaleString() + ' ' +
 			$.i18n(
 				'num-namespaces',
 				Object.keys( newData ).length
@@ -29,22 +29,22 @@ $( () => {
 		);
 		$( '.namespaces--pages' ).text( totals.count.toLocaleString() );
 		$( '.namespaces--deleted' ).text(
-			totals.deleted.toLocaleString() + " (" +
-			( ( totals.deleted / totals.count ) * 100 ).toFixed( 1 ) + "%)"
+			totals.deleted.toLocaleString() + ' (' +
+			( ( totals.deleted / totals.count ) * 100 ).toFixed( 1 ) + '%)'
 		);
 		$( '.namespaces--redirects' ).text(
-			totals.redirects.toLocaleString() + " (" +
-			( ( totals.redirects / totals.count ) * 100 ).toFixed( 1 ) + "%)"
+			totals.redirects.toLocaleString() + ' (' +
+			( ( totals.redirects / totals.count ) * 100 ).toFixed( 1 ) + '%)'
 		);
 	} );
 
 	$( '.deleted-page' ).on( 'mouseenter', function ( e ) {
-		var pageTitle = $( this ).data( 'page-title' ),
+		const pageTitle = $( this ).data( 'page-title' ),
 			nsId = $( this ).data( 'namespace' ),
 			startTime = $( this ).data( 'datetime' ).toString(),
 			username = $( this ).data( 'username' );
 
-		var showSummary = function ( summary ) {
+		const showSummary = function ( summary ) {
 			$( e.target ).find( '.tooltip-body' ).html( summary );
 		};
 
@@ -52,9 +52,9 @@ $( () => {
 			return showSummary( deletionSummaries[ nsId + '/' + pageTitle ] );
 		}
 
-		var showError = function () {
+		const showError = function () {
 			showSummary(
-				"<span class='text-danger'>" + $.i18n( 'api-error', 'Deletion Summary API' ) + "</span>"
+				"<span class='text-danger'>" + $.i18n( 'api-error', 'Deletion Summary API' ) + '</span>'
 			);
 		};
 

@@ -1,7 +1,7 @@
 xtools.adminstats = {};
 
 $( () => {
-	var $projectInput = $( '#project_input' ),
+	let $projectInput = $( '#project_input' ),
 		lastProject = $projectInput.val();
 
 	// Don't do anything if this isn't an Admin Stats page.
@@ -18,7 +18,7 @@ $( () => {
 		// Update title of form.
 		$( '.xt-page-title--title' ).text( $.i18n( 'tool-' + $( this ).val() + 'stats' ) );
 		$( '.xt-page-title--desc' ).text( $.i18n( 'tool-' + $( this ).val() + 'stats-desc' ) );
-		var title = $.i18n( 'tool-' + $( this ).val() + 'stats' ) + ' - ' + $.i18n( 'xtools-title' );
+		const title = $.i18n( 'tool-' + $( this ).val() + 'stats' ) + ' - ' + $.i18n( 'xtools-title' );
 		document.title = title;
 		history.replaceState( {}, title, '/' + $( this ).val() + 'stats' );
 

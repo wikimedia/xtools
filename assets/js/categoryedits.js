@@ -24,16 +24,16 @@ $( () => {
 		} );
 
 		xtools.application.setupToggleTable( window.countsByCategory, window.categoryChart, 'editCount', ( newData ) => {
-			var totalEdits = 0,
+			let totalEdits = 0,
 				totalPages = 0;
 			Object.keys( newData ).forEach( ( category ) => {
 				totalEdits += parseInt( newData[ category ].editCount, 10 );
 				totalPages += parseInt( newData[ category ].pageCount, 10 );
 			} );
-			var categoriesCount = Object.keys( newData ).length;
+			const categoriesCount = Object.keys( newData ).length;
 			/** global: i18nLang */
 			$( '.category--category' ).text(
-				categoriesCount.toLocaleString( i18nLang ) + " " +
+				categoriesCount.toLocaleString( i18nLang ) + ' ' +
 				$.i18n( 'num-categories', categoriesCount )
 			);
 			$( '.category--count' ).text( totalEdits.toLocaleString( i18nLang ) );
@@ -55,7 +55,7 @@ $( () => {
  */
 function loadCategoryEdits() {
 	// Load the contributions browser, or set up the listeners if it is already present.
-	var initFunc = $( '.contributions-table' ).length ? 'setupContributionsNavListeners' : 'loadContributions';
+	const initFunc = $( '.contributions-table' ).length ? 'setupContributionsNavListeners' : 'loadContributions';
 	xtools.application[ initFunc ](
 		( params ) => 'categoryedits-contributions/' + params.project + '/' + params.username + '/' +
 				params.categories + '/' + params.start + '/' + params.end,
@@ -77,9 +77,9 @@ function setupCategoryInput( api, ns ) {
 		xtools.categoryedits.$select2Input.select2( 'destroy' );
 	}
 
-	var nsName = ns || xtools.categoryedits.$select2Input.data( 'ns' );
+	const nsName = ns || xtools.categoryedits.$select2Input.data( 'ns' );
 
-	var params = {
+	const params = {
 		ajax: {
 			url: api || xtools.categoryedits.$select2Input.data( 'api' ),
 			dataType: 'jsonp',
@@ -96,12 +96,12 @@ function setupCategoryInput( api, ns ) {
 				};
 			},
 			processResults: function ( data ) {
-				var query = data ? data.query : {},
+				let query = data ? data.query : {},
 					results = [];
 
 				if ( query && query.prefixsearch.length ) {
 					results = query.prefixsearch.map( ( elem ) => {
-						var title = elem.title.replace( new RegExp( '^' + nsName + ':' ), '' );
+						const title = elem.title.replace( new RegExp( '^' + nsName + ':' ), '' );
 						return {
 							id: title.replace( / /g, '_' ),
 							text: title
@@ -109,7 +109,7 @@ function setupCategoryInput( api, ns ) {
 					} );
 				}
 
-				return { results: results }
+				return { results: results };
 			}
 		},
 		placeholder: $.i18n( 'category-search' ),

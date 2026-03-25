@@ -5,7 +5,7 @@ xtools.application.vars = {
 };
 xtools.application.chartGridColor = 'rgba(0, 0, 0, 0.1)';
 
-if ( window.matchMedia( "(prefers-color-scheme: dark)" ).matches ) {
+if ( window.matchMedia( '(prefers-color-scheme: dark)' ).matches ) {
 	Chart.defaults.global.defaultFontColor = '#AAA';
 	// Can't set a global default with our version of Chart.js, apparently,
 	// so each chart initialization must explicitly set the grid line color.
@@ -126,7 +126,7 @@ $( () => {
  *                                   item, and the third is the index of the item.
  */
 xtools.application.setupToggleTable = function ( dataSource, chartObj, valueKey, updateCallback ) {
-	var toggleTableData;
+	let toggleTableData;
 
 	$( '.toggle-table' ).on( 'click', '.toggle-table--toggle', function () {
 		if ( !toggleTableData ) {
@@ -134,7 +134,7 @@ xtools.application.setupToggleTable = function ( dataSource, chartObj, valueKey,
 			toggleTableData = Object.assign( {}, dataSource );
 		}
 
-		var index = $( this ).data( 'index' ),
+		const index = $( this ).data( 'index' ),
 			key = $( this ).data( 'key' );
 
 		// must use .attr instead of .prop as sorting script will clone DOM elements
@@ -174,7 +174,7 @@ xtools.application.setupToggleTable = function ( dataSource, chartObj, valueKey,
  * one at a time, until it all fits. This does not listen for window resize events.
  */
 function setupNavCollapsing() {
-	var windowWidth = $( window ).width(),
+	let windowWidth = $( window ).width(),
 		toolNavWidth = $( '.tool-links' ).outerWidth(),
 		navRightWidth = $( '.nav-buttons' ).outerWidth();
 
@@ -190,10 +190,10 @@ function setupNavCollapsing() {
 
 	// Don't loop more than there are links in the nav.
 	// This more just a safeguard against an infinite loop should something go wrong.
-	var numLinks = $( '.tool-links--entry' ).length;
+	let numLinks = $( '.tool-links--entry' ).length;
 	while ( numLinks > 0 && toolNavWidth + navRightWidth > windowWidth ) {
 		// Remove the last tool link that is not the current tool being used
-		var $link = $( '.tool-links--nav > .tool-links--entry:not(.active)' ).last().remove();
+		const $link = $( '.tool-links--nav > .tool-links--entry:not(.active)' ).last().remove();
 		$( '.tool-links--more .dropdown-menu' ).append( $link );
 		toolNavWidth = $( '.tool-links' ).outerWidth();
 		numLinks--;
@@ -221,25 +221,25 @@ function setupNavCollapsing() {
  *   floats, and strings, including date strings (e.g. "2016-01-01 12:59")
  */
 xtools.application.setupColumnSorting = function () {
-	var sortDirection, sortColumn;
+	let sortDirection, sortColumn;
 
 	$( '.sort-link' ).on( 'click', function () {
 		sortDirection = sortColumn === $( this ).data( 'column' ) ? -sortDirection : 1;
 
 		$( '.sort-link .glyphicon' ).removeClass( 'glyphicon-sort-by-alphabet-alt glyphicon-sort-by-alphabet' ).addClass( 'glyphicon-sort' );
-		var newSortClassName = sortDirection === 1 ? 'glyphicon-sort-by-alphabet-alt' : 'glyphicon-sort-by-alphabet';
+		const newSortClassName = sortDirection === 1 ? 'glyphicon-sort-by-alphabet-alt' : 'glyphicon-sort-by-alphabet';
 		$( this ).find( '.glyphicon' ).addClass( newSortClassName ).removeClass( 'glyphicon-sort' );
 
 		sortColumn = $( this ).data( 'column' );
-		var $table = $( this ).parents( 'table' );
-		var $entries = $table.find( '.sort-entry--' + sortColumn ).parent();
+		const $table = $( this ).parents( 'table' );
+		const $entries = $table.find( '.sort-entry--' + sortColumn ).parent();
 
 		if ( !$entries.length ) {
 			return;
 		}
 
 		$entries.sort( ( a, b ) => {
-			var before = $( a ).find( '.sort-entry--' + sortColumn ).data( 'value' ) || 0,
+			let before = $( a ).find( '.sort-entry--' + sortColumn ).data( 'value' ) || 0,
 				after = $( b ).find( '.sort-entry--' + sortColumn ).data( 'value' ) || 0;
 
 			// Cast numerical strings into floats for faster sorting.
@@ -293,7 +293,7 @@ xtools.application.setupColumnSorting = function () {
  *     ...
  */
 function setupTOC() {
-	var $toc = $( '.xt-toc' );
+	const $toc = $( '.xt-toc' );
 
 	if ( !$toc || !$toc[ 0 ] ) {
 		return;
@@ -302,10 +302,10 @@ function setupTOC() {
 	xtools.application.vars.tocHeight = $toc.height();
 
 	// listeners on the section links
-	var setupTocListeners = function () {
+	const setupTocListeners = function () {
 		$( '.xt-toc' ).find( 'a' ).off( 'click' ).on( 'click', function ( e ) {
 			document.activeElement.blur();
-			var $newSection = $( '#' + $( e.target ).data( 'section' ) );
+			const $newSection = $( '#' + $( e.target ).data( 'section' ) );
 			$( window ).scrollTop( $newSection.offset().top - xtools.application.vars.tocHeight );
 
 			$( this ).parents( '.xt-toc' ).find( 'a' ).removeClass( 'bold' );
@@ -330,7 +330,7 @@ function setupTOC() {
 	// build object containing offsets of each section
 	xtools.application.buildSectionOffsets = function () {
 		$.each( $toc.find( 'a' ), ( index, tocMember ) => {
-			var id = $( tocMember ).data( 'section' );
+			const id = $( tocMember ).data( 'section' );
 			xtools.application.vars.sectionOffset[ id ] = $( '#' + id ).offset().top;
 		} );
 	};
@@ -341,10 +341,10 @@ function setupTOC() {
 	xtools.application.buildSectionOffsets();
 	setupTocListeners();
 
-	var tocOffsetTop = $toc.offset().top;
+	const tocOffsetTop = $toc.offset().top;
 	$( window ).on( 'scroll.toc', ( e ) => {
-		var windowOffset = $( e.target ).scrollTop();
-		var inRange = windowOffset > tocOffsetTop;
+		const windowOffset = $( e.target ).scrollTop();
+		const inRange = windowOffset > tocOffsetTop;
 
 		if ( inRange ) {
 			if ( !xtools.application.vars.$tocClone ) {
@@ -352,7 +352,7 @@ function setupTOC() {
 			}
 
 			// bolden the link for whichever section we're in
-			var $activeMember;
+			let $activeMember;
 			Object.keys( xtools.application.vars.sectionOffset ).forEach( ( section ) => {
 				if ( windowOffset > xtools.application.vars.sectionOffset[ section ] - xtools.application.vars.tocHeight - 1 ) {
 					$activeMember = xtools.application.vars.$tocClone.find( 'a[data-section="' + section + '"]' );
@@ -375,19 +375,19 @@ function setupTOC() {
  * E.g. as you scroll the heading row will be fixed at the top for reference.
  */
 function setupStickyHeader() {
-	var $header = $( '.table-sticky-header' );
+	const $header = $( '.table-sticky-header' );
 
 	if ( !$header || !$header[ 0 ] ) {
 		return;
 	}
 
-	var $headerRow = $header.find( 'thead tr' ).eq( 0 ),
+	let $headerRow = $header.find( 'thead tr' ).eq( 0 ),
 		$headerClone;
 
 	// Make a clone of the header to maintain placement of the original header,
 	// making the original header the sticky one. This way event listeners on it
 	// (such as column sorting) will still work.
-	var cloneHeader = function () {
+	const cloneHeader = function () {
 		if ( $headerClone ) {
 			return;
 		}
@@ -403,10 +403,10 @@ function setupStickyHeader() {
 		$headerRow.css( 'width', $headerClone.outerWidth() + 1 );
 	};
 
-	var headerOffsetTop = $header.offset().top;
+	const headerOffsetTop = $header.offset().top;
 	$( window ).on( 'scroll.stickyHeader', ( e ) => {
-		var windowOffset = $( e.target ).scrollTop();
-		var inRange = windowOffset > headerOffsetTop;
+		const windowOffset = $( e.target ).scrollTop();
+		const inRange = windowOffset > headerOffsetTop;
 
 		if ( inRange && !$headerClone ) {
 			cloneHeader();
@@ -431,7 +431,7 @@ function setupStickyHeader() {
  * Add listener to the project input field to update any namespace selectors and autocompletion fields.
  */
 function setupProjectListener() {
-	var $projectInput = $( '#project_input' );
+	const $projectInput = $( '#project_input' );
 
 	// Stop here if there is no project field
 	if ( !$projectInput ) {
@@ -449,7 +449,7 @@ function setupProjectListener() {
 		xtools.application.vars.lastProject = $projectInput.val();
 
 		$projectInput.on( 'change', function () {
-			var newProject = this.value;
+			const newProject = this.value;
 
 			/** global: xtBaseUrl */
 			$.get( xtBaseUrl + 'api/project/normalize/' + newProject ).done( ( data ) => {
@@ -479,31 +479,31 @@ function setupNamespaceSelector() {
 		// Disable the namespace selector and show a spinner while the data loads.
 		$( '#namespace_select' ).prop( 'disabled', true );
 
-		var newProject = this.value;
+		const newProject = this.value;
 
 		/** global: xtBaseUrl */
 		$.get( xtBaseUrl + 'api/project/namespaces/' + newProject ).done( ( data ) => {
 			// Clone the 'all' option (even if there isn't one),
 			// and replace the current option list with this.
-			var $allOption = $( '#namespace_select option[value="all"]' ).eq( 0 ).clone();
-			$( "#namespace_select" ).html( $allOption );
+			const $allOption = $( '#namespace_select option[value="all"]' ).eq( 0 ).clone();
+			$( '#namespace_select' ).html( $allOption );
 
 			// Keep track of project API path for use in page title autocompletion.
 			xtools.application.vars.apiPath = data.api;
 
 			// Add all of the new namespace options.
-			for ( var ns in data.namespaces ) {
+			for ( const ns in data.namespaces ) {
 				if ( !data.namespaces.hasOwnProperty( ns ) ) {
 					continue; // Skip keys from the prototype.
 				}
 
-				var nsName = parseInt( ns, 10 ) === 0 ? $.i18n( 'mainspace' ) : data.namespaces[ ns ];
+				const nsName = parseInt( ns, 10 ) === 0 ? $.i18n( 'mainspace' ) : data.namespaces[ ns ];
 				$( '#namespace_select' ).append(
-					"<option value=" + ns + ">" + nsName + "</option>"
+					'<option value=' + ns + '>' + nsName + '</option>'
 				);
 			}
 			// Default to mainspace being selected.
-			$( "#namespace_select" ).val( 0 );
+			$( '#namespace_select' ).val( 0 );
 			xtools.application.vars.lastProject = newProject;
 
 			// Re-init autocompletion
@@ -528,11 +528,11 @@ function revertToValidProject( newProject ) {
 	$( '#project_input' ).val( xtools.application.vars.lastProject );
 	$( '.site-notice' ).append(
 		"<div class='alert alert-warning alert-dismissible' role='alert'>" +
-		$.i18n( 'invalid-project', "<strong>" + newProject + "</strong>" ) +
+		$.i18n( 'invalid-project', '<strong>' + newProject + '</strong>' ) +
 		"<button class='close' data-dismiss='alert' aria-label='Close'>" +
 		"<span aria-hidden='true'>&times;</span>" +
-		"</button>" +
-		"</div>"
+		'</button>' +
+		'</div>'
 	);
 }
 
@@ -540,9 +540,9 @@ function revertToValidProject( newProject ) {
  * Setup autocompletion of pages if a page input field is present.
  */
 function setupAutocompletion() {
-	var $pageInput = $( '#page_input' ),
+	const $pageInput = $( '#page_input' ),
 		$userInput = $( '#user_input' ),
-		$namespaceInput = $( "#namespace_select" );
+		$namespaceInput = $( '#namespace_select' );
 
 	// Make sure typeahead-compatible fields are present
 	if ( !$pageInput[ 0 ] && !$userInput[ 0 ] && !$( '#project_input' )[ 0 ] ) {
@@ -564,7 +564,7 @@ function setupAutocompletion() {
 
 	// Defaults for typeahead options. preDispatch and preProcess will be
 	// set accordingly for each typeahead instance
-	var typeaheadOpts = {
+	const typeaheadOpts = {
 		url: xtools.application.vars.apiPath,
 		timeout: 200,
 		triggerLength: 1,
@@ -580,7 +580,7 @@ function setupAutocompletion() {
 					// If there is a namespace selector, make sure we search
 					// only within that namespace
 					if ( $namespaceInput[ 0 ] && $namespaceInput.val() !== '0' ) {
-						var nsName = $namespaceInput.find( 'option:selected' ).text().trim();
+						const nsName = $namespaceInput.find( 'option:selected' ).text().trim();
 						query = nsName + ':' + query;
 					}
 					return {
@@ -591,7 +591,7 @@ function setupAutocompletion() {
 					};
 				},
 				preProcess: function ( data ) {
-					var nsName = '';
+					let nsName = '';
 					// Strip out namespace name if applicable
 					if ( $namespaceInput[ 0 ] && $namespaceInput.val() !== '0' ) {
 						nsName = $namespaceInput.find( 'option:selected' ).text().trim();
@@ -614,20 +614,20 @@ function setupAutocompletion() {
 					};
 				},
 				preProcess: function ( data ) {
-					var results = data.query.prefixsearch.map( ( elem ) => elem.title.split( '/' )[ 0 ].substr( elem.title.indexOf( ':' ) + 1 ) );
+					const results = data.query.prefixsearch.map( ( elem ) => elem.title.split( '/' )[ 0 ].substr( elem.title.indexOf( ':' ) + 1 ) );
 
 					return results.filter( ( value, index, array ) => array.indexOf( value ) === index );
 				}
 			} )
 		} );
 	}
-	let allowAmpersand = ( e ) => {
-		if ( e.key == "&" ) {
+	const allowAmpersand = ( e ) => {
+		if ( e.key == '&' ) {
 			$( e.target ).blur().focus();
 		}
 	};
-	$pageInput.on( "keydown", allowAmpersand );
-	$userInput.on( "keydown", allowAmpersand );
+	$pageInput.on( 'keydown', allowAmpersand );
+	$userInput.on( 'keydown', allowAmpersand );
 
 }
 
@@ -642,12 +642,12 @@ let loadingTimerId;
  * Uses #submit_timer.
  */
 function createTimerInterval() {
-	var startTime = Date.now();
+	const startTime = Date.now();
 	return setInterval( () => {
-		var elapsedSeconds = Math.round( ( Date.now() - startTime ) / 1000 );
-		var minutes = Math.floor( elapsedSeconds / 60 );
-		var seconds = ( '00' + ( elapsedSeconds - ( minutes * 60 ) ) ).slice( -2 );
-		$( '#submit_timer' ).text( minutes + ":" + seconds );
+		const elapsedSeconds = Math.round( ( Date.now() - startTime ) / 1000 );
+		const minutes = Math.floor( elapsedSeconds / 60 );
+		const seconds = ( '00' + ( elapsedSeconds - ( minutes * 60 ) ) ).slice( -2 );
+		$( '#submit_timer' ).text( minutes + ':' + seconds );
 	}, 1000 );
 }
 
@@ -694,9 +694,9 @@ function clearLinkTimer() {
 	clearInterval( loadingTimerId );
 	loaingTimerId = null;
 	// change the link's label back
-	let old = $( "#submit_timer" ).parent()[ 0 ];
+	const old = $( '#submit_timer' ).parent()[ 0 ];
 	$( old ).html( old.initialtext );
-	$( old ).removeClass( "link-loading" );
+	$( old ).removeClass( 'link-loading' );
 }
 
 /**
@@ -711,18 +711,18 @@ function setupLinkLoadingNotices( undo ) {
 		clearLinkTimer();
 	} else {
 		// Get the list of links:
-		$( "a" ).filter(
-			( index, el ) => el.className == "" && // only plain links, not buttons
+		$( 'a' ).filter(
+			( index, el ) => el.className == '' && // only plain links, not buttons
 			el.href.startsWith( document.location.origin ) && // to XTools
-			new URL( el.href ).pathname.replaceAll( /[^\/]/g, "" ).length > 1 && // that include parameters (just going to a search form is not costy)
-			el.target != "_blank" && // that doesn't open in a new tab
-			el.href.split( "#" )[ 0 ] != document.location.href // and that isn't a section link to here.
-		).on( "click", ( ev ) => {
+			new URL( el.href ).pathname.replaceAll( /[^\/]/g, '' ).length > 1 && // that include parameters (just going to a search form is not costy)
+			el.target != '_blank' && // that doesn't open in a new tab
+			el.href.split( '#' )[ 0 ] != document.location.href // and that isn't a section link to here.
+		).on( 'click', ( ev ) => {
 			// And then add a listener
-			let el = $( ev.target );
-			el.prop( "initialtext", el.html() );
+			const el = $( ev.target );
+			el.prop( 'initialtext', el.html() );
 			el.html( $.i18n( 'loading' ) + ' <span id=\'submit_timer\'></span>' );
-			el.addClass( "link-loading" );
+			el.addClass( 'link-loading' );
 			if ( loadingTimerId ) {
 				clearLinkTimer();
 			}
@@ -735,7 +735,7 @@ function setupLinkLoadingNotices( undo ) {
  * Handles the multi-select inputs on some index pages.
  */
 xtools.application.setupMultiSelectListeners = function () {
-	var $inputs = $( '.multi-select--body:not(.hidden) .multi-select--option' );
+	const $inputs = $( '.multi-select--body:not(.hidden) .multi-select--option' );
 	$inputs.on( 'change', () => {
 		// If all sections are selected, select the 'All' checkbox, and vice versa.
 		$( '.multi-select--all' ).prop(

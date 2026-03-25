@@ -30,7 +30,7 @@ function setInitialOffset() {
 xtools.application.loadContributions = function ( endpointFunc, apiTitle ) {
 	setInitialOffset();
 
-	var $contributionsContainer = $( '.contributions-container' ),
+	let $contributionsContainer = $( '.contributions-container' ),
 		$contributionsLoading = $( '.contributions-loading' ),
 		params = $contributionsContainer.data(),
 		endpoint = endpointFunc( params ),
@@ -41,7 +41,7 @@ xtools.application.loadContributions = function ( endpointFunc, apiTitle ) {
 		newToolPath = newUrl.split( '/' )[ 1 ];
 
 	// Gray out contributions list.
-	$contributionsContainer.addClass( 'contributions-container--loading' )
+	$contributionsContainer.addClass( 'contributions-container--loading' );
 
 	// Show the 'Loading...' text. CSS will hide the "Previous" / "Next" links to prevent jumping.
 	$contributionsLoading.show();
@@ -125,7 +125,7 @@ xtools.application.setupContributionsNavListeners = function ( endpointFunc, api
 		e.preventDefault();
 		xtools.application.vars.offset = xtools.application.vars.prevOffsets.pop() ||
 			xtools.application.vars.initialOffset;
-		xtools.application.loadContributions( endpointFunc, apiTitle )
+		xtools.application.loadContributions( endpointFunc, apiTitle );
 	} );
 
 	// Next arrow.
@@ -140,9 +140,9 @@ xtools.application.setupContributionsNavListeners = function ( endpointFunc, api
 
 	// The 'Limit:' dropdown.
 	$( '#contributions_limit' ).on( 'change', ( e ) => {
-		var limit = parseInt( e.target.value, 10 );
+		const limit = parseInt( e.target.value, 10 );
 		$( '.contributions-container' ).data( 'limit', limit );
-		let capitalize = ( str ) => str[ 0 ].toUpperCase() + str.slice( 1 );
+		const capitalize = ( str ) => str[ 0 ].toUpperCase() + str.slice( 1 );
 		$( '.contributions--prev-text' ).text(
 			capitalize( $.i18n( 'pager-newer-n', limit ) )
 		);
