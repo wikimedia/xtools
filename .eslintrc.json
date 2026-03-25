@@ -47,13 +47,6 @@
 		"semi": "off",
 		"unicorn/prefer-includes": "off",
 		"unicorn/prefer-string-slice": "off",
-		"yoda": "off",
-
-		// space inside parenthesis and brackets
-		"array-bracket-spacing": "off",
-		"computed-property-spacing": "off",
-		"object-curly-spacing": "off",
-		"space-in-parens": "off",
-		"template-curly-spacing": "off"
+		"yoda": "off"
 	}
 }
