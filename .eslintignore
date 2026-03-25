@@ -6,4 +6,5 @@ assets/app.js
 assets/vendor/
 node_modules/
 public/
+vendor/
 webpack.config.js
