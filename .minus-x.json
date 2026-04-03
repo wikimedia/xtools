@@ -1,5 +1,5 @@
 {
-    "ignoreDirectories": [
-        "./var"
-    ]
+	"ignoreDirectories": [
+		"./var"
+	]
 }

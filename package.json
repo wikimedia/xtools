@@ -1,20 +1,21 @@
 {
-  "name": "xtools",
-  "private": true,
-  "scripts": {
-    "build": "encore production --progress",
-    "lint": "eslint . --max-warnings=0",
-    "test": "banana-checker i18n/",
-    "watch": "encore dev --watch"
-  },
-  "devDependencies": {
-    "@symfony/webpack-encore": "^4.0.0",
-    "core-js": "^3.30.0",
-    "eslint-config-wikimedia": "^0.32.3",
-    "file-loader": "^6.2.0",
-    "grunt-banana-checker": "^0.10.0",
-    "sass": "^1.62.0",
-    "sass-loader": "^13.0.0",
-    "webpack-notifier": "^1.15.0"
-  }
+	"name": "xtools",
+	"private": true,
+	"scripts": {
+		"build": "encore production --progress",
+		"lint": "eslint --cache --max-warnings=0 .",
+		"lint-fix": "eslint --cache --fix .",
+		"test": "npm run -s lint && banana-checker i18n/",
+		"watch": "encore dev --watch"
+	},
+	"devDependencies": {
+		"@symfony/webpack-encore": "^4.0.0",
+		"core-js": "^3.30.0",
+		"eslint-config-wikimedia": "^0.32.3",
+		"file-loader": "^6.2.0",
+		"grunt-banana-checker": "^0.10.0",
+		"sass": "^1.62.0",
+		"sass-loader": "^13.0.0",
+		"webpack-notifier": "^1.15.0"
+	}
 }
