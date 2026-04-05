@@ -23,9 +23,10 @@ function setInitialOffset() {
 /**
  * Loads configured type of contributions from the server and lists them in the DOM.
  * The navigation aids and showing/hiding of loading text is also handled here.
- * @param {function} endpointFunc The callback that takes the params set on .contributions-container
+ *
+ * @param {Function} endpointFunc The callback that takes the params set on .contributions-container
  *     and returns a string that is the endpoint to fetch from (without the offset appended).
- * @param {String} apiTitle The name of the API (could be i18n key), used in error reporting.
+ * @param {string} apiTitle The name of the API (could be i18n key), used in error reporting.
  */
 xtools.application.loadContributions = function ( endpointFunc, apiTitle ) {
 	setInitialOffset();

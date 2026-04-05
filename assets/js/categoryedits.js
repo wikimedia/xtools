@@ -65,8 +65,9 @@ function loadCategoryEdits() {
 
 /**
  * Setups the Select2 control to search for pages in the Category namespace.
- * @param {String} [api] Fully qualified API endpoint.
- * @param {String} [ns] Name of the Category namespace.
+ *
+ * @param {string} [api] Fully qualified API endpoint.
+ * @param {string} [ns] Name of the Category namespace.
  */
 function setupCategoryInput( api, ns ) {
 	// First destroy any existing Select2 inputs.

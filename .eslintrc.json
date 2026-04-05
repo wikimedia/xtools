@@ -3,6 +3,10 @@
 		"wikimedia/client",
 		"wikimedia/jquery"
 	],
+	"globals": {
+		"Chart": "readonly",
+		"xtools": "writable"
+	},
 	"root": true,
 	"rules": {
 		// default rules we don't like
@@ -13,18 +17,11 @@
 		"no-jquery/no-global-selector": "off",
 		"no-shadow": "off",
 
-		// non-default rules we do like
-		"no-nested-ternary": "error",
-
 		// rules we should probably fix someday
 		"camelcase": "off",
 		"eqeqeq": "off",
 		"es-x/no-array-prototype-flat": "off",
 		"es-x/no-string-prototype-replaceall": "off",
-		"jsdoc/check-types": "off",
-		"jsdoc/no-undefined-types": "off",
-		"jsdoc/tag-lines": "off",
-		"jsdoc/valid-types": "off",
 		"no-implicit-globals": "off",
 		"no-jquery/no-done-fail": "off",
 		"no-jquery/no-each-util": "off",
@@ -39,11 +36,8 @@
 		"no-undef": "off",
 		"no-unused-vars": "off",
 		"no-use-before-define": "off",
-		"no-useless-escape": "off",
 		"no-var": "off",
 		"prefer-const": "off",
-		"unicorn/prefer-includes": "off",
-		"unicorn/prefer-string-slice": "off",
 		"yoda": "off"
 	}
 }

@@ -2,12 +2,14 @@ xtools.editcounter = {};
 
 /**
  * Namespaces that have been excluded from view via namespace toggle table.
+ *
  * @type {Array}
  */
 xtools.editcounter.excludedNamespaces = [];
 
 /**
  * Chart labels for the month/yearcount charts.
+ *
  * @type {Object} Keys are the chart IDs, values are arrays of strings.
  */
 xtools.editcounter.chartLabels = {};
@@ -15,6 +17,7 @@ xtools.editcounter.chartLabels = {};
 /**
  * Number of digits of the max month/year total. We want to keep this consistent
  * for aesthetic reasons, even if the updated totals are fewer digits in size.
+ *
  * @type {Object} Keys are the chart IDs, values are integers.
  */
 xtools.editcounter.maxDigits = {};
@@ -56,8 +59,9 @@ $( () => {
 /**
  * Callback for setupToggleTable(). This will show/hide a given namespace from
  * all charts, and update totals and percentages.
+ *
  * @param {Object} newData New namespaces and totals, as returned by setupToggleTable.
- * @param {String} key Namespace ID of the toggled namespace.
+ * @param {string} key Namespace ID of the toggled namespace.
  */
 function toggleNamespace( newData, key ) {
 	let total = 0, counts = [];
@@ -126,7 +130,8 @@ function toggleNamespace( newData, key ) {
 /**
  * Build the labels for the y-axis of the year/monthcount charts, which include the year/month and the total number of
  * edits across all namespaces in that year/month.
- * @param {String} id ID prefix of the chart, either 'month' or 'year'.
+ *
+ * @param {string} id ID prefix of the chart, either 'month' or 'year'.
  * @param {Array} datasets Datasets making up the chart.
  * @return {Array} Labels for each year/month.
  */
@@ -149,14 +154,15 @@ function getYAxisLabels( id, datasets ) {
 
 /**
  * Get the total number of edits for the given dataset (year or month).
- * @param {String} id ID prefix of the chart, either 'month' or 'year'.
+ *
+ * @param {string} id ID prefix of the chart, either 'month' or 'year'.
  * @param {Array} datasets Datasets making up the chart.
  * @return {Object} Labels for each year/month as keys, totals as the values.
  */
 function getMonthYearTotals( id, datasets ) {
 	const labelsAndTotals = {};
 	datasets.forEach( ( namespace ) => {
-		if ( xtools.editcounter.excludedNamespaces.indexOf( namespace.label ) !== -1 ) {
+		if ( xtools.editcounter.excludedNamespaces.includes( namespace.label ) ) {
 			return;
 		}
 
@@ -173,9 +179,10 @@ function getMonthYearTotals( id, datasets ) {
 
 /**
  * Calculate and format a percentage, rounded to the tenths place.
- * @param {Number} numerator
- * @param {Number} denominator
- * @return {Number}
+ *
+ * @param {number} numerator
+ * @param {number} denominator
+ * @return {string}
  */
 function getPercentage( numerator, denominator ) {
 	/** global: i18nLang */
@@ -185,11 +192,12 @@ function getPercentage( numerator, denominator ) {
 /**
  * Set up the monthcounts or yearcounts chart. This is set on the window
  * because it is called in the yearcounts/monthcounts view.
- * @param {String} id 'year' or 'month'.
+ *
+ * @param {string} id 'year' or 'month'.
  * @param {Array} datasets Datasets grouped by mainspace.
  * @param {Array} labels The bare labels for the y-axis (years or months).
- * @param {Number} maxTotal Maximum value of year/month totals.
- * @param {Boolean} showLegend Whether to show the legend above the chart.
+ * @param {number} maxTotal Maximum value of year/month totals.
+ * @param {boolean} showLegend Whether to show the legend above the chart.
  */
 xtools.editcounter.setupMonthYearChart = function ( id, datasets, labels, maxTotal ) {
 	/** @type {Array} Labels for each namespace. */
@@ -297,8 +305,8 @@ xtools.editcounter.setupMonthYearChart = function ( id, datasets, labels, maxTot
 };
 
 /**
- * Setup edit size histogram as a vertical bar chart
- * from the PHP EditSizeData.
+ * Setup edit size histogram as a vertical bar chart from the PHP EditSizeData.
+ *
  * @param {Object} data JSON object returned by getAllEditSizes.
  * @param {Array} colors CSS colors for additions, removals, and same-size, in that order.
  * @param {Array} barLabels i18n'd bar labels for additions, removals and same-size, in that order.
@@ -399,6 +407,7 @@ xtools.editcounter.setupSizeHistogram = function ( data, colors, barLabels ) {
 
 /**
  * Builds the timecard chart and adds a listener for the 'local time' option.
+ *
  * @param {Array} timeCardDatasets
  * @param {Object} days
  */

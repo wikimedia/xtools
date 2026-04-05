@@ -116,7 +116,7 @@ $( () => {
  *
  * @param  {Object}      dataSource  Object of data that makes up the chart
  * @param  {Chart}       chartObj    Reference to the pie chart associated with the .toggle-table
- * @param  {String|null} [valueKey]  The name of the key within entries of dataSource, where the value is
+ * @param  {string|null} [valueKey]  The name of the key within entries of dataSource, where the value is
  *                                   what's shown in the chart. If omitted or null, `dataSource` is assumed
  *                                   to be of the structure: { 'a' => 123, 'b' => 456 }
  * @param  {Function} updateCallback Callback to update the .toggle-table totals. `toggleTableData`
@@ -522,6 +522,7 @@ function setupNamespaceSelector() {
 /**
  * Called by setupNamespaceSelector or setupProjectListener when the user changes to a project that doesn't exist.
  * This throws a warning message and reverts back to the last valid project.
+ *
  * @param {string} newProject - project they attempted to add
  */
 function revertToValidProject( newProject ) {
@@ -614,7 +615,7 @@ function setupAutocompletion() {
 					};
 				},
 				preProcess: function ( data ) {
-					const results = data.query.prefixsearch.map( ( elem ) => elem.title.split( '/' )[ 0 ].substr( elem.title.indexOf( ':' ) + 1 ) );
+					const results = data.query.prefixsearch.map( ( elem ) => elem.title.split( '/' )[ 0 ].slice( elem.title.indexOf( ':' ) + 1 ) );
 
 					return results.filter( ( value, index, array ) => array.indexOf( value ) === index );
 				}
@@ -654,6 +655,7 @@ function createTimerInterval() {
 /**
  * For any form submission, this disables the submit button and replaces its text with
  * a loading message and a counting timer.
+ *
  * @param {boolean} [undo] Revert the form back to the initial state.
  *                         This is used on page load to solve an issue with Safari and Firefox
  *                         where after browsing back to the form, the "loading" state persists.
@@ -702,6 +704,7 @@ function clearLinkTimer() {
 /**
  * For any links to an XTools query, this replaces the link text with
  * a loading message and a counting timer.
+ *
  * @param {boolean} [undo] Revert the links back to their initial state
  *                         This is used on page load to solve an isssue with Safari and Firefox
  *                         where after browsing back, the "loading" state persists.
@@ -714,7 +717,7 @@ function setupLinkLoadingNotices( undo ) {
 		$( 'a' ).filter(
 			( index, el ) => el.className == '' && // only plain links, not buttons
 			el.href.startsWith( document.location.origin ) && // to XTools
-			new URL( el.href ).pathname.replaceAll( /[^\/]/g, '' ).length > 1 && // that include parameters (just going to a search form is not costy)
+			new URL( el.href ).pathname.replaceAll( /[^/]/g, '' ).length > 1 && // that include parameters (just going to a search form is not costy)
 			el.target != '_blank' && // that doesn't open in a new tab
 			el.href.split( '#' )[ 0 ] != document.location.href // and that isn't a section link to here.
 		).on( 'click', ( ev ) => {

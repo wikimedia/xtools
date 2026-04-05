@@ -14,7 +14,7 @@ $( () => {
 
 	$( '.diff-addedline' ).each( function () {
 		// Escape query to make regex-safe.
-		const escapedQuery = xtools.blame.query.replace( /[-\/\\^$*+?.()|[\]{}]/g, '\\$&' );
+		const escapedQuery = xtools.blame.query.replace( /[-/\\^$*+?.()|[\]{}]/g, '\\$&' );
 
 		const highlightMatch = ( selector ) => {
 			const regex = new RegExp( `(${ escapedQuery })`, 'gi' );
