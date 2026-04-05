@@ -97,8 +97,8 @@ function setupCategoryInput( api, ns ) {
 				};
 			},
 			processResults: function ( data ) {
-				let query = data ? data.query : {},
-					results = [];
+				const query = data ? data.query : {};
+				let results = [];
 
 				if ( query && query.prefixsearch.length ) {
 					results = query.prefixsearch.map( ( elem ) => {

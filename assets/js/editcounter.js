@@ -64,7 +64,8 @@ $( () => {
  * @param {string} key Namespace ID of the toggled namespace.
  */
 function toggleNamespace( newData, key ) {
-	let total = 0, counts = [];
+	let total = 0;
+	const counts = [];
 	Object.keys( newData ).forEach( ( namespace ) => {
 		const count = parseInt( newData[ namespace ], 10 );
 		counts.push( count );
@@ -412,8 +413,7 @@ xtools.editcounter.setupSizeHistogram = function ( data, colors, barLabels ) {
  * @param {Object} days
  */
 xtools.editcounter.setupTimecard = function ( timeCardDatasets, days ) {
-	let useLocalTimezone = false,
-		timezoneOffset = new Date().getTimezoneOffset() / 60;
+	const timezoneOffset = new Date().getTimezoneOffset() / 60;
 	timeCardDatasets = timeCardDatasets.map( ( day ) => {
 		day.backgroundColor = new Array( day.data.length ).fill( day.backgroundColor );
 		return day;
@@ -488,7 +488,7 @@ xtools.editcounter.setupTimecard = function ( timeCardDatasets, days ) {
 						stepSize: 1,
 						reverse: i18nRTL,
 						padding: 0,
-						callback: function ( value, a, b, c ) {
+						callback: function ( value ) {
 							// Skip the 24:00, it's only there to give room for the fractional timezones
 							if ( value === 24 ) {
 								return '';
@@ -534,13 +534,13 @@ xtools.editcounter.setupTimecard = function ( timeCardDatasets, days ) {
 			.prop( 'checked', false )
 			.on( 'click', function () {
 				const offset = $( this ).is( ':checked' ) ? timezoneOffset : -timezoneOffset;
-				const color_list = new Array( 7 );
-				chart.data.datasets.forEach( ( day ) => color_list[ day.data[ 0 ].day_of_week - 1 ] = day.backgroundColor[ 0 ] );
+				const colorList = new Array( 7 );
+				chart.data.datasets.forEach( ( day ) => colorList[ day.data[ 0 ].day_of_week - 1 ] = day.backgroundColor[ 0 ] );
 				chart.data.datasets = chart.data.datasets.map( ( day ) => {
-					const background_colors = [];
+					const backgroundColors = [];
 					day.data = day.data.map( ( datum ) => {
 						let newHour = ( parseFloat( datum.hour ) - offset );
-						let newDay = parseInt( datum.day_of_week, 10 );
+						let newDay = parseInt( datum.dayOfWeek, 10 );
 						if ( newHour < 0 ) {
 							newHour = 24 + newHour;
 							newDay = newDay - 1;
@@ -556,15 +556,14 @@ xtools.editcounter.setupTimecard = function ( timeCardDatasets, days ) {
 						}
 						datum.hour = newHour.toString();
 						datum.x = newHour.toString();
-						datum.day_of_week = newDay.toString();
+						datum.dayOfWeek = newDay.toString();
 						datum.y = ( 8 - newDay ).toString();
-						background_colors.push( color_list[ newDay - 1 ] );
+						backgroundColors.push( colorList[ newDay - 1 ] );
 						return datum;
 					} );
-					day.backgroundColor = background_colors;
+					day.backgroundColor = backgroundColors;
 					return day;
 				} );
-				useLocalTimezone = $( this ).is( ':checked' );
 				chart.update();
 			} );
 	} );

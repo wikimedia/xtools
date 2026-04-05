@@ -54,7 +54,7 @@ $( () => {
 		setupLinkLoadingNotices();
 
 		// Allow to add focus to input elements with i.e. ?focus=username
-		if ( 'function' === typeof URL ) {
+		if ( typeof URL === 'function' ) {
 			const focusElement = new URL( window.location.href )
 				.searchParams
 				.get( 'focus' );
@@ -174,9 +174,9 @@ xtools.application.setupToggleTable = function ( dataSource, chartObj, valueKey,
  * one at a time, until it all fits. This does not listen for window resize events.
  */
 function setupNavCollapsing() {
-	let windowWidth = $( window ).width(),
-		toolNavWidth = $( '.tool-links' ).outerWidth(),
-		navRightWidth = $( '.nav-buttons' ).outerWidth();
+	const windowWidth = $( window ).width();
+	let toolNavWidth = $( '.tool-links' ).outerWidth();
+	const navRightWidth = $( '.nav-buttons' ).outerWidth();
 
 	// Ignore if in mobile responsive view
 	if ( windowWidth < 768 ) {
@@ -381,8 +381,8 @@ function setupStickyHeader() {
 		return;
 	}
 
-	let $headerRow = $header.find( 'thead tr' ).eq( 0 ),
-		$headerClone;
+	const $headerRow = $header.find( 'thead tr' ).eq( 0 );
+	let $headerClone;
 
 	// Make a clone of the header to maintain placement of the original header,
 	// making the original header the sticky one. This way event listeners on it
@@ -722,10 +722,10 @@ function setupLinkLoadingNotices( undo ) {
 			el.href.split( '#' )[ 0 ] != document.location.href // and that isn't a section link to here.
 		).on( 'click', ( ev ) => {
 			// And then add a listener
-			const el = $( ev.target );
-			el.prop( 'initialtext', el.html() );
-			el.html( $.i18n( 'loading' ) + ' <span id=\'submit_timer\'></span>' );
-			el.addClass( 'link-loading' );
+			const $el = $( ev.target );
+			$el.prop( 'initialtext', $el.html() );
+			$el.html( $.i18n( 'loading' ) + ' <span id=\'submit_timer\'></span>' );
+			$el.addClass( 'link-loading' );
 			if ( loadingTimerId ) {
 				clearLinkTimer();
 			}

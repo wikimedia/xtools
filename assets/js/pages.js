@@ -62,7 +62,7 @@ $( () => {
 			url: xtBaseUrl + 'api/pages/deletion_summary/' + wikiDomain + '/' + username + '/' + nsId +
 				'/' + encodeURIComponent( pageTitle ) + '/' + startTime
 		} ).done( ( resp ) => {
-			if ( null === resp.summary ) {
+			if ( resp.summary === null ) {
 				return showError();
 			}
 			showSummary( resp.summary );

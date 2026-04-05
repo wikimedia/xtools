@@ -1,8 +1,8 @@
 xtools.adminstats = {};
 
 $( () => {
-	let $projectInput = $( '#project_input' ),
-		lastProject = $projectInput.val();
+	const $projectInput = $( '#project_input' );
+	let lastProject = $projectInput.val();
 
 	// Don't do anything if this isn't an Admin Stats page.
 	if ( $( 'body.adminstats, body.patrollerstats, body.stewardstats' ).length === 0 ) {
@@ -23,7 +23,7 @@ $( () => {
 		history.replaceState( {}, title, '/' + $( this ).val() + 'stats' );
 
 		// Change project to Meta if it's Steward Stats.
-		if ( 'steward' === $( this ).val() ) {
+		if ( $( this ).val() === 'steward' ) {
 			lastProject = $projectInput.val();
 			$projectInput.val( 'meta.wikimedia.org' );
 		} else {

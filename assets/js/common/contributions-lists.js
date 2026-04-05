@@ -31,14 +31,14 @@ function setInitialOffset() {
 xtools.application.loadContributions = function ( endpointFunc, apiTitle ) {
 	setInitialOffset();
 
-	let $contributionsContainer = $( '.contributions-container' ),
+	const $contributionsContainer = $( '.contributions-container' ),
 		$contributionsLoading = $( '.contributions-loading' ),
 		params = $contributionsContainer.data(),
 		endpoint = endpointFunc( params ),
 		limit = parseInt( params.limit, 10 ) || 50,
-		urlParams = new URLSearchParams( window.location.search ),
-		newUrl = xtBaseUrl + endpoint + '/' + xtools.application.vars.offset,
-		oldToolPath = location.pathname.split( '/' )[ 1 ],
+		urlParams = new URLSearchParams( window.location.search );
+	let newUrl = xtBaseUrl + endpoint + '/' + xtools.application.vars.offset;
+	const oldToolPath = location.pathname.split( '/' )[ 1 ],
 		newToolPath = newUrl.split( '/' )[ 1 ];
 
 	// Gray out contributions list.
