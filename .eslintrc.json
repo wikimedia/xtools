@@ -9,7 +9,6 @@
 	},
 	"root": true,
 	"rules": {
-		// default rules we don't like
 		"jsdoc/require-param": "off",
 		"jsdoc/require-returns": "off",
 		"max-len": "off",
@@ -17,7 +16,6 @@
 		"no-jquery/no-global-selector": "off",
 		"no-shadow": "off",
 
-		// rules we should probably fix someday
 		"eqeqeq": "off",
 		"es-x/no-array-prototype-flat": "off",
 		"es-x/no-string-prototype-replaceall": "off",
