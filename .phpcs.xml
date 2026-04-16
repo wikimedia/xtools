@@ -4,9 +4,7 @@
 	</rule>
 
 	<file>.</file>
-	<exclude-pattern>vendor/</exclude-pattern>
 	<exclude-pattern>var/</exclude-pattern>
-	<exclude-pattern>node_modules/</exclude-pattern>
 	<exclude-pattern>assets/vendor/</exclude-pattern>
 	<exclude-pattern>*.js</exclude-pattern>
 	<exclude-pattern>*.css</exclude-pattern>

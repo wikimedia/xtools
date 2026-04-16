@@ -65,27 +65,28 @@
 	},
 	"require-dev": {
 		"dms/phpunit-arraysubset-asserts": "^0.5.0",
-		"mediawiki/mediawiki-codesniffer": "^48.0.0",
-		"mediawiki/minus-x": "^1.0.0",
-		"phpunit/phpunit": "^10.0",
+		"mediawiki/mediawiki-codesniffer": "50.0.0",
+		"mediawiki/minus-x": "2.0.1",
+		"phpunit/phpunit": "10.5.63",
 		"symfony/browser-kit": "~6.4",
 		"symfony/phpunit-bridge": "~6.4"
 	},
 	"scripts": {
 		"test": [
 			"phpunit",
-			"phpcs -p -s",
+			"@phpcs",
 			"minus-x check ."
 		],
 		"fix": [
-			"phpcbf",
-			"minus-x fix ."
+			"minus-x fix .",
+			"phpcbf"
 		],
 		"cover": "phpunit --coverage-html coverage",
 		"auto-scripts": {
 			"cache:clear": "symfony-cmd",
 			"assets:install %PUBLIC_DIR%": "symfony-cmd"
-		}
+		},
+		"phpcs": "phpcs -sp --cache"
 	},
 	"conflict": {
 		"symfony/symfony": "*"
