@@ -10,7 +10,8 @@
 ! {{ msg(key) }}
 {% endfor %}
 {% for key in as.actions %}
-! {{ msg(key)|ucfirst }}
+! {{ msg(key)|ucfirst }}{% if key in ['re-block', 're-protect'] %}<sup>1</sup>{% endif %}
+
 {% endfor %}
 |-
 {% set totals = as.totalsRow %}
@@ -33,4 +34,4 @@
 {% endfor %}
 |-
 {% endfor %}
-|}
+|}{% if 're-block' in as.actions or 're-protect' in as.actions %}<sup>1</sup>{{ msg('re-action-footnote') }}{% endif %}

@@ -361,6 +361,7 @@
 	"quote-random": "Label for button to view a random quote in the Bash Quotes tool.",
 	"quote-show-all": "Label for button to view all quotes in the Bash Quotes tool.",
 	"rank": "Heading for the column showing the page rank of a row in a sorted table.\n{{Identical|Rank}}",
+	"re-action-footnote": "Footnote in AdminStats clarifying the meaning of the meaning of the (re)block and (re)protect column headers.",
 	"re-block": "Name of the MediaWiki log action 'block', but describes a value that includes both blocks and re-blocks.\n{{Identical|Block}}\n{{Identical|Reblock}}",
 	"re-blocks": "Label for number of times a user has been blocked or re-blocked. Try to keep this message brief.\n{{Identical|Block}}\n{{Identical|Reblock}}",
 	"re-protect": "Name of the MediaWiki log action 'protect', but describes a value that includes protections or re-protections.\n{{Identical|Protect}}\n{{Identical|Reprotect}}",
