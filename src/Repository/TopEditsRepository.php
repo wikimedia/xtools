@@ -375,12 +375,13 @@ class TopEditsRepository extends UserRepository {
 		$commentTable = $project->getTableName( 'comment' );
 		$tagTable = $project->getTableName( 'change_tag' );
 		$tagDefTable = $project->getTableName( 'change_tag_def' );
-		// sha1 temporarily disabled, see T407814/T389026
+		$slotsTable = $page->getProject()->getTableName( 'slots' );
+		$contentTable = $page->getProject()->getTableName( 'content' );
 		if ( $childRevs ) {
 			$childSelect = ", (
                     CASE WHEN
-                        /* childrevs.rev_sha1 = parentrevs.rev_sha1
-                        OR */ (
+                        childcontent.content_sha1 = parentcontent.content_sha1
+                        OR (
                             SELECT 1
                             FROM $tagTable
                             WHERE ct_rev_id = revs.rev_id
@@ -396,6 +397,8 @@ class TopEditsRepository extends UserRepository {
                 ) AS `reverted`,
                 childcomments.comment_text AS `parent_comment`";
 			$childJoin = "LEFT JOIN $revTable AS childrevs ON (revs.rev_id = childrevs.rev_parent_id)
+                LEFT JOIN $slotsTable AS childslots ON childslots.slot_revision_id = childrevs.rev_id
+                LEFT JOIN $contentTable AS childcontent ON childslots.slot_content_id = childcontent.content_id
                 LEFT OUTER JOIN $commentTable AS childcomments
                 ON (childrevs.rev_comment_id = childcomments.comment_id)";
 			$childWhere = 'AND childrevs.rev_page = :pageid';
@@ -439,6 +442,8 @@ class TopEditsRepository extends UserRepository {
                         $childSelect
                     FROM $revTable AS revs
                     LEFT JOIN $revTable AS parentrevs ON (revs.rev_parent_id = parentrevs.rev_id)
+                    LEFT JOIN $slotsTable AS parentslots ON parentslots.slot_revision_id = parentrevs.rev_id
+                    LEFT JOIN $contentTable AS parentcontent ON parentslots.slot_content_id = parentcontent.content_id
                     $ipcJoin
                     LEFT OUTER JOIN $commentTable AS comments ON (revs.rev_comment_id = comments.comment_id)
                     $childJoin
