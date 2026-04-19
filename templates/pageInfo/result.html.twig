@@ -137,10 +137,16 @@
                             <td>{{ ai.numBugs|num_format }}</td>
                         </tr>
                     {% endif %}
-                    {% if not (ai.hasDateRange) and page.watchers is not empty %}
+                    {% if not (ai.hasDateRange) %}
                         <tr>
                             <td>{{ msg('page-watchers') }}</td>
-                            <td>{{ page.watchers|num_format }}</td>
+                            <td>
+                            {% if page.watchers is not empty %}
+                                {{ page.watchers|num_format }}
+                            {% else %}
+                                {{ msg('less-than', [ai.UNWATCHED_PAGE_THRESHOLD]) }}
+                            {% endif %}
+                            </td>
                         </tr>
                     {% endif %}
                     {% if isWMF() %}

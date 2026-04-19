@@ -99,6 +99,8 @@ class PageInfo extends PageInfoApi {
 	/** @var int Number of revisions with deleted information that could effect accuracy of the stats. */
 	protected int $numDeletedRevisions = 0;
 
+	public const UNWATCHED_PAGE_THRESHOLD = 30;
+
 	/**
 	 * Get the day of last date we should show in the month/year sections,
 	 * based on $this->end or the current date.

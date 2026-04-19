@@ -226,6 +226,7 @@
 	"latest-action": "The latest action a user made as shown in the public logs at Special:Log.",
 	"latest-edit": "Latest edit of a user",
 	"latest-revision": "Label for option to use the latest revision of an article in the Authorship tool.",
+	"less-than": "Label for PageInfo when there are too few watchers for the MediaWiki API to give the exact number.",
 	"limit": "Option to specify a limit of results\n{{Identical|Limit}}",
 	"links": "General term for one or more links.\n{{Identical|Links}}",
 	"links-external": "Label for the number of external links that are on a wiki page. This message should be short.\n{{Identical|External link}}",
