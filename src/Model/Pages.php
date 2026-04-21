@@ -484,6 +484,10 @@ class Pages extends Model {
 				$pageData['prp_quality'] = (int)$row['prp_quality'];
 			}
 
+			if ( $row['namespace'] == 6 ) {
+				$pageData['mimetype'] = $row['mimetype'];
+			}
+
 			$results[$row['namespace']][] = $pageData;
 		}
 

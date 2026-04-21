@@ -233,6 +233,7 @@
 	"max-text-deleted": "Max. text deleted",
 	"memory-usage": "Taken $1 {{PLURAL:$2|megabyte|megabytes}} of memory to execute.",
 	"merge": "Merge",
+	"mimetype": "MIME type",
 	"minor-edits": "Minor edits",
 	"minor-edits-percentage": "Minor edits %",
 	"minor-edits-tooltip": "Edits where the user marked the edit as minor. These are not necessarily small edits.",

@@ -247,13 +247,19 @@ class PagesRepository extends UserRepository {
 		$revisionTable = $project->getTableName( 'revision' );
 		$archiveTable = $project->getTableName( 'archive' );
 		$logTable = $project->getTableName( 'logging', 'logindex' );
+		$imageTable = $project->getTableName( 'image' );
 
 		// Only SELECT things that are needed, based on whether or not we're doing a COUNT.
 		$revSelects = "page_namespace AS `namespace`, 'rev' AS `type`, page_title, "
 			. "page_is_redirect AS `redirect`, rev_len AS `rev_length`";
+		$imageJoin = "";
 		if ( !$count ) {
 			$revSelects .= ", page_len AS `length`, rev_timestamp AS `timestamp`, "
-				. "rev_id, NULL AS `recreated` ";
+				. "rev_id, NULL AS `recreated`, CONCAT(img_major_mime, '/', img_minor_mime) as `mimetype` ";
+			$imageJoin = "LEFT OUTER JOIN $imageTable
+				ON page_namespace = 6
+				AND page_is_redirect = 0
+				AND img_name = page_title";
 		}
 
 		$revDateConditions = $this->getDateConditions( $start, $end, $offset );
@@ -268,6 +274,7 @@ class PagesRepository extends UserRepository {
 			FROM $pageTable
 			JOIN $revisionTable ON page_id = rev_page
 			" . $conditions['prpJoin'] . "
+			$imageJoin
 			WHERE " . $conditions['whereRev'] . "
 				AND rev_parent_id = '0'" .
 				$conditions['namespaceRev'] .
@@ -284,7 +291,8 @@ class PagesRepository extends UserRepository {
 					SELECT 1 FROM $pageTable
 					WHERE page_namespace = ar_namespace
 					AND page_title = ar_title
-				) AS `recreated`";
+				) AS `recreated`,
+				NULL AS `mimetype`";
 		}
 
 		$archiveSelect = "

@@ -38,6 +38,9 @@
 						{% if project.hasPageAssessments(ns) and pages.deleted != 'deleted' %}
 							{% set columns = columns|merge(['assessment']) %}
 						{% endif %}
+						{% if ns == 6 %}
+							{% set columns = columns|merge(['mimetype']) %}
+						{% endif %}
 						{% if project.isPrpPage(ns) %}
 							{% set columns = columns|merge(['proofreadpage-quality']) %}
 							{% set qualityNames = project.prpQualityNames %}
@@ -120,6 +123,15 @@
 										{% endif %}
 									</td>
 								{% endif %}
+							{% endif %}
+							{% if ns == 6 %}
+								<td class="sort-entry--mimetype" data-value="{{ page.mimetype }}">
+									{% if page.mimetype is null %}
+										{{ msg('na') }}
+									{% else %}
+										{{ page.mimetype }}
+									{% endif %}
+								</td>
 							{% endif %}
 							<td>
 								{{ wiki.pageLogLinkRaw(pagename, project) }}

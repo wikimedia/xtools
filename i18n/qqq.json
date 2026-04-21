@@ -253,6 +253,7 @@
 	"max-text-deleted": "Maximum text deleted by a user, short word or abbreviation for Max. (if possible)",
 	"memory-usage": "Text showing how much memory the tool took to execute. $1 is the formatted number of megabytes to display, $2 is the raw number to be used with <code><nowiki>{{PLURAL:$2|</nowiki>''one''<nowiki>|</nowiki>''others''<nowiki>}}</nowiki></code>.",
 	"merge": "Name of MediaWiki log action to merge the histories of two pages.\n{{Identical|Merge}}",
+	"mimetype": "Label for the MIME media type of the file associated to a page.",
 	"minor-edits": "Value for number of edits marked as minor.\n{{Identical|Minor edit}}",
 	"minor-edits-percentage": "Value for the percentage of edits marked as minor.\n{{Identical|Minor edit}}",
 	"minor-edits-tooltip": "Tooltip message explaining what a minor edit is.",
