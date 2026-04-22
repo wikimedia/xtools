@@ -2,157 +2,157 @@
 {% import 'macros/wiki.html.twig' as wiki %}
 
 {% set content %}
-    {% if pages.getNumPages == 0 %}
-        <div class="alert alert-info">
-            {{ msg('no-result', [user.username]) }}
-        </div>
-    {% else %}
-        {% if (pages.deleted == 'all' or pages.deleted == 'deleted') and pages.numDeleted > 0 %}
-            <script>
-                var wikiDomain = "{{ project.domain }}";
-            </script>
-            <p>
-                {{ msg('pages-recreated-desc', ["<span class='text-muted'>" ~ msg('recreated') ~ "</span>"]) }}
-                {{ msg('pages-deleted-hover-desc', ["<span class='text-danger'>" ~ msg('deleted') ~ "</span>"]) }}
-                {{ msg('pages-deleted-redirects') }}
-            </p>
-        {% endif %}
+	{% if pages.getNumPages == 0 %}
+		<div class="alert alert-info">
+			{{ msg('no-result', [user.username]) }}
+		</div>
+	{% else %}
+		{% if (pages.deleted == 'all' or pages.deleted == 'deleted') and pages.numDeleted > 0 %}
+			<script>
+				var wikiDomain = "{{ project.domain }}";
+			</script>
+			<p>
+				{{ msg('pages-recreated-desc', ["<span class='text-muted'>" ~ msg('recreated') ~ "</span>"]) }}
+				{{ msg('pages-deleted-hover-desc', ["<span class='text-danger'>" ~ msg('deleted') ~ "</span>"]) }}
+				{{ msg('pages-deleted-redirects') }}
+			</p>
+		{% endif %}
 
-        {% for ns in pages.results|keys %}
-            <h4 class="xt-show-hide--parent" id="{{ ns }}">
-                {{ nsName(ns, project.namespaces) }}
-                <small class='xt-show'>[{{ msg('show')|lower }}]</small>
-                <small class='xt-hide'>[{{ msg('hide')|lower }}]</small>
-            </h4>
+		{% for ns in pages.results|keys %}
+			<h4 class="xt-show-hide--parent" id="{{ ns }}">
+				{{ nsName(ns, project.namespaces) }}
+				<small class='xt-show'>[{{ msg('show')|lower }}]</small>
+				<small class='xt-hide'>[{{ msg('hide')|lower }}]</small>
+			</h4>
 
-            <table class="table table-bordered table-hover table-striped pages-table xt-show-hide--target">
-                <thead><tr>
-                    <th>#</th>
-                    {% set columns = ['page-title', 'date', 'original-size'] %}
-                    {% if pages.deleted != 'deleted' %}
-                        {% set columns = columns|merge(['current-size']) %}
-                    {% endif %}
-                    {% if project.hasPageAssessments(ns) and pages.deleted != 'deleted' %}
-                        {% set columns = columns|merge(['assessment']) %}
-                    {% endif %}
-                    {% for thKey in columns %}
-                        <th>
-                            <span class="sort-link sort-link--{{ thKey }}" data-column="{{ thKey }}">
-                                {{ msg(thKey)|ucfirst }}
-                                <span class="glyphicon glyphicon-sort"></span>
-                            </span>
-                        </th>
-                    {% endfor %}
-                    <th>{{ msg('links') }}</th>
-                </tr></thead>
-                <tbody>
-                {% set index = 0 %}
-                {% for page in pages.results[ns] %}
-                    {% set index = index + 1 %}
-                    {% set pagename = titleWithNs(page.page_title, ns, project.namespaces) %}
-                    <tr>
-                        <td>{{ index|num_format }}</td>
-                        <td class="sort-entry--page-title" data-value="{{ pagename }}">
-                            {% if page.redirect %}
-                                {{ wiki.pageLinkRaw(pagename, project, pagename, 'redirect=no') }}
-                                <small class="text-muted">&middot; ({{ msg('redirect') }})</small>
-                            {% else %}
-                                {{ wiki.pageLinkRaw(pagename, project) }}
-                            {% endif %}
-                            {% if page.deleted %}
-                                &middot;
-                                <small class="text-danger deleted-page tooltipcss" data-page-title="{{ page.page_title }}" data-namespace="{{ page.namespace }}" data-datetime="{{ page.timestamp }}" data-username="{{ user.usernameIdent }}">
-                                    ({{ msg('deleted') }})
-                                    <div class="tooltip-body">
-                                        <em class="text-muted">{{ msg('loading') }}...</em>
-                                    </div>
-                                </small>
-                                {% if page.recreated is defined and page.recreated %}
-                                    &middot; <small class="text-muted">({{ msg('recreated') }})</small>
-                                {% endif %}
-                            {% endif %}
-                        </td>
-                        <td class="sort-entry--date" data-value="{{ page.timestamp }}">
-                            {% if page.deleted %}
-                                {{ wiki.pageLinkRaw('Special:Undelete/' ~ pagename, project, page.timestamp|date_format, 'timestamp=' ~ page.timestamp) }}
-                            {% else %}
-                                {{ wiki.permaLinkRaw(page.rev_id, project, page.timestamp|date_format) }}
-                            {% endif %}
-                        </td>
-                        <td class="sort-entry--original-size" data-value="{{ page.rev_length }}">
-                            {{ page.rev_length|num_format }}
-                        </td>
-                        {% if pages.deleted != 'deleted' %}
-                            <td class="sort-entry--current-size" data-value="{{ page.length }}">
-                                {% if page.length is null %}
-                                    {{ msg('na') }}
-                                {% else %}
-                                    {{ page.length|num_format }}
-                                {% endif %}
-                            </td>
-                            {% if project.hasPageAssessments(ns) and page.assessment is defined %}
-                                <td class="sort-entry--assessment" data-value="{{ page.assessment.class ? page.assessment.class : 'Unknown' }}">
-                                    {% if page.deleted %}
-                                        {{ msg('na') }}
-                                    {% else %}
-                                        {% if page.assessment.badge is defined %}
-                                            <img alt="{{ page.assessment.class }}" src="{{ page.assessment.badge }}" class="assessment-badge" />
-                                        {% endif %}
-                                        {{ page.assessment.class ? page.assessment.class|ucfirst : msg('unknown') }}
-                                    {% endif %}
-                                </td>
-                            {% endif %}
-                        {% endif %}
-                        <td>
-                            {{ wiki.pageLogLinkRaw(pagename, project) }}
-                            {% if not(page.deleted) or (page.recreated is defined and page.recreated == true) %}
-                                &middot;
-                                {{ wiki.pageHistLinkRaw(pagename, project) }}
-                                {% if enabled('PageInfo') %}
-                                    &middot;
-                                    <a href="{{ path('PageInfoResult', { 'project': project.domain, 'page': pagename }) }}">{{ msg('tool-pageinfo') }}</a>
-                                {% endif %}
-                                {% if enabled('TopEdits') %}
-                                    &middot;
-                                    <a href="{{ path('TopEditsResultPage', { 'project': project.domain, 'username': user.usernameIdent, 'namespace': ns, 'page': page.page_title }) }}">{{ msg('tool-topedits') }}</a>
-                                {% endif %}
-                                {% if isWMF() %}
-                                    &middot;
-                                    <a target="_blank" href="https://pageviews.wmcloud.org/?project={{ project.domain }}&amp;pages={{ pagename|e('url') }}">
-                                        {{ msg('pageviews') }}
-                                    </a>
-                                {% endif %}
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-                {% if pages.multiNamespace and pages.counts[ns].count > pages.resultsPerPage %}
-                    <tr class="show-more-row">
-                        <td></td>
-                        <td colspan={{ columns|length + 1 }}>
-                            <a href="{{ path('PagesResult', { 'project': project.domain, 'username': user.usernameIdent, 'namespace': ns, 'redirects': pages.redirects }) }}">
-                                {{ (pages.counts[ns].count - pages.resultsPerPage)|number_format }} {{ msg('num-others', [pages.counts[ns].count - pages.resultsPerPage]) }}
-                            </a>
-                        </td>
-                    </tr>
-                {% endif %}
-                </tbody>
-            </table>
-        {% endfor %}
+			<table class="table table-bordered table-hover table-striped pages-table xt-show-hide--target">
+				<thead><tr>
+					<th>#</th>
+					{% set columns = ['page-title', 'date', 'original-size'] %}
+					{% if pages.deleted != 'deleted' %}
+						{% set columns = columns|merge(['current-size']) %}
+					{% endif %}
+					{% if project.hasPageAssessments(ns) and pages.deleted != 'deleted' %}
+						{% set columns = columns|merge(['assessment']) %}
+					{% endif %}
+					{% for thKey in columns %}
+						<th>
+							<span class="sort-link sort-link--{{ thKey }}" data-column="{{ thKey }}">
+								{{ msg(thKey)|ucfirst }}
+								<span class="glyphicon glyphicon-sort"></span>
+							</span>
+						</th>
+					{% endfor %}
+					<th>{{ msg('links') }}</th>
+				</tr></thead>
+				<tbody>
+				{% set index = 0 %}
+				{% for page in pages.results[ns] %}
+					{% set index = index + 1 %}
+					{% set pagename = titleWithNs(page.page_title, ns, project.namespaces) %}
+					<tr>
+						<td>{{ index|num_format }}</td>
+						<td class="sort-entry--page-title" data-value="{{ pagename }}">
+							{% if page.redirect %}
+								{{ wiki.pageLinkRaw(pagename, project, pagename, 'redirect=no') }}
+								<small class="text-muted">&middot; ({{ msg('redirect') }})</small>
+							{% else %}
+								{{ wiki.pageLinkRaw(pagename, project) }}
+							{% endif %}
+							{% if page.deleted %}
+								&middot;
+								<small class="text-danger deleted-page tooltipcss" data-page-title="{{ page.page_title }}" data-namespace="{{ page.namespace }}" data-datetime="{{ page.timestamp }}" data-username="{{ user.usernameIdent }}">
+									({{ msg('deleted') }})
+									<div class="tooltip-body">
+										<em class="text-muted">{{ msg('loading') }}...</em>
+									</div>
+								</small>
+								{% if page.recreated is defined and page.recreated %}
+									&middot; <small class="text-muted">({{ msg('recreated') }})</small>
+								{% endif %}
+							{% endif %}
+						</td>
+						<td class="sort-entry--date" data-value="{{ page.timestamp }}">
+							{% if page.deleted %}
+								{{ wiki.pageLinkRaw('Special:Undelete/' ~ pagename, project, page.timestamp|date_format, 'timestamp=' ~ page.timestamp) }}
+							{% else %}
+								{{ wiki.permaLinkRaw(page.rev_id, project, page.timestamp|date_format) }}
+							{% endif %}
+						</td>
+						<td class="sort-entry--original-size" data-value="{{ page.rev_length }}">
+							{{ page.rev_length|num_format }}
+						</td>
+						{% if pages.deleted != 'deleted' %}
+							<td class="sort-entry--current-size" data-value="{{ page.length }}">
+								{% if page.length is null %}
+									{{ msg('na') }}
+								{% else %}
+									{{ page.length|num_format }}
+								{% endif %}
+							</td>
+							{% if project.hasPageAssessments(ns) and page.assessment is defined %}
+								<td class="sort-entry--assessment" data-value="{{ page.assessment.class ? page.assessment.class : 'Unknown' }}">
+									{% if page.deleted %}
+										{{ msg('na') }}
+									{% else %}
+										{% if page.assessment.badge is defined %}
+											<img alt="{{ page.assessment.class }}" src="{{ page.assessment.badge }}" class="assessment-badge" />
+										{% endif %}
+										{{ page.assessment.class ? page.assessment.class|ucfirst : msg('unknown') }}
+									{% endif %}
+								</td>
+							{% endif %}
+						{% endif %}
+						<td>
+							{{ wiki.pageLogLinkRaw(pagename, project) }}
+							{% if not(page.deleted) or (page.recreated is defined and page.recreated == true) %}
+								&middot;
+								{{ wiki.pageHistLinkRaw(pagename, project) }}
+								{% if enabled('PageInfo') %}
+									&middot;
+									<a href="{{ path('PageInfoResult', { 'project': project.domain, 'page': pagename }) }}">{{ msg('tool-pageinfo') }}</a>
+								{% endif %}
+								{% if enabled('TopEdits') %}
+									&middot;
+									<a href="{{ path('TopEditsResultPage', { 'project': project.domain, 'username': user.usernameIdent, 'namespace': ns, 'page': page.page_title }) }}">{{ msg('tool-topedits') }}</a>
+								{% endif %}
+								{% if isWMF() %}
+									&middot;
+									<a target="_blank" href="https://pageviews.wmcloud.org/?project={{ project.domain }}&amp;pages={{ pagename|e('url') }}">
+										{{ msg('pageviews') }}
+									</a>
+								{% endif %}
+							{% endif %}
+						</td>
+					</tr>
+				{% endfor %}
+				{% if pages.multiNamespace and pages.counts[ns].count > pages.resultsPerPage %}
+					<tr class="show-more-row">
+						<td></td>
+						<td colspan={{ columns|length + 1 }}>
+							<a href="{{ path('PagesResult', { 'project': project.domain, 'username': user.usernameIdent, 'namespace': ns, 'redirects': pages.redirects }) }}">
+								{{ (pages.counts[ns].count - pages.resultsPerPage)|number_format }} {{ msg('num-others', [pages.counts[ns].count - pages.resultsPerPage]) }}
+							</a>
+						</td>
+					</tr>
+				{% endif %}
+				</tbody>
+			</table>
+		{% endfor %}
 
-        {##### PAGINATION #####}
-        {% if not(pages.multiNamespace) and pages.results[pages.namespaces[0]]|length == pages.resultsPerPage %}
-            <div class="contributions-nav clearfix">
-                <a href="{{ path('PagesResult', {project: project.domain, username: user.usernameIdent, namespace: pages.namespace, redirects: pages.redirects, deleted: pages.deleted, start: pages.startDate, end: pages.endDate, offset: pages.lastTimestamp}) }}" class="pull-right contributions--next">
-                    {{ msg('pager-older-n', [pages.resultsPerPage])|ucfirst }}
-                    <span class="glyphicon glyphicon-arrow-{% if isRTL() %}left{% else %}right{% endif %}"></span>
-                </a>
-            </div>
-        {% endif %}
-    {% endif %}
+		{##### PAGINATION #####}
+		{% if not(pages.multiNamespace) and pages.results[pages.namespaces[0]]|length == pages.resultsPerPage %}
+			<div class="contributions-nav clearfix">
+				<a href="{{ path('PagesResult', {project: project.domain, username: user.usernameIdent, namespace: pages.namespace, redirects: pages.redirects, deleted: pages.deleted, start: pages.startDate, end: pages.endDate, offset: pages.lastTimestamp}) }}" class="pull-right contributions--next">
+					{{ msg('pager-older-n', [pages.resultsPerPage])|ucfirst }}
+					<span class="glyphicon glyphicon-arrow-{% if isRTL() %}left{% else %}right{% endif %}"></span>
+				</a>
+			</div>
+		{% endif %}
+	{% endif %}
 {% endset %}
 
 {% set downloadLink %}
-    {{ layout.downloadLink('PagesResult', {'project': project.domain, 'username': user.usernameIdent, 'namespace': pages.namespace, 'redirects': pages.redirects, 'deleted': pages.deleted, 'start': pages.startDate, 'end': pages.endDate, 'offset': pages.offsetISO}, ['wikitext', 'PagePile', 'csv', 'tsv'], 'UserApiPagesCreated') }}
+	{{ layout.downloadLink('PagesResult', {'project': project.domain, 'username': user.usernameIdent, 'namespace': pages.namespace, 'redirects': pages.redirects, 'deleted': pages.deleted, 'start': pages.startDate, 'end': pages.endDate, 'offset': pages.offsetISO}, ['wikitext', 'PagePile', 'csv', 'tsv'], 'UserApiPagesCreated') }}
 {% endset %}
 {{ layout.content_block('pages-created', content, downloadLink) }}

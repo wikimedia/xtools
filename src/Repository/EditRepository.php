@@ -68,19 +68,19 @@ class EditRepository extends Repository {
 		}
 
 		$sql = "SELECT $pageSelect
-                    revs.rev_id AS id,
-                    actor_name AS username,
-                    revs.rev_timestamp AS timestamp,
-                    revs.rev_minor_edit AS minor,
-                    revs.rev_len AS length,
-                    (CAST(revs.rev_len AS SIGNED) - IFNULL(parentrevs.rev_len, 0)) AS length_change,
-                    comment_text AS comment
-                FROM $revisionTable AS revs
-                $pageJoin
-                JOIN $actorTable ON actor_id = rev_actor
-                LEFT JOIN $revisionTable AS parentrevs ON (revs.rev_parent_id = parentrevs.rev_id)
-                LEFT OUTER JOIN $commentTable ON (revs.rev_comment_id = comment_id)
-                WHERE revs.rev_id = :revId";
+					revs.rev_id AS id,
+					actor_name AS username,
+					revs.rev_timestamp AS timestamp,
+					revs.rev_minor_edit AS minor,
+					revs.rev_len AS length,
+					(CAST(revs.rev_len AS SIGNED) - IFNULL(parentrevs.rev_len, 0)) AS length_change,
+					comment_text AS comment
+				FROM $revisionTable AS revs
+				$pageJoin
+				JOIN $actorTable ON actor_id = rev_actor
+				LEFT JOIN $revisionTable AS parentrevs ON (revs.rev_parent_id = parentrevs.rev_id)
+				LEFT OUTER JOIN $commentTable ON (revs.rev_comment_id = comment_id)
+				WHERE revs.rev_id = :revId";
 
 		$result = $this->executeProjectsQuery( $project, $sql, [ 'revId' => $revId ] )
 			->fetchAssociative();

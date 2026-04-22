@@ -3,56 +3,56 @@
 {% set values = [] %}
 {% set colors = [] %}
 <div class="chart-wrapper {{ classes }}">
-    <canvas id="{{ id }}"{% if size != null %} height="{{ size }}"{% endif %}></canvas>
-    <div class="chart-legend" id="{{ id }}_legend">
-        <div class="legend-body">
-            {% for entry in data %}
-                {% set labels = labels | merge([entry.label]) %}
-                {% set values = values | merge([entry.value]) %}
-                {% set colors = colors | merge([chartColor(loop.index0)]) %}
-                {% if legend %}
-                <div>
-                    <span class="color-icon" style="background:{{ chartColor(loop.index0) }}"></span>
-                    <span class="legend-label{% if entry.tooltip is defined %} help-text{% endif %}"{% if entry.tooltip is defined %} title="{{ entry.tooltip }}"{% endif %}>{{ entry.label }}</span>
-                    <span class="legend-value" {% if isRTL() %}dir="rtl"{% endif %}>
-                        &middot;
-                        {{ entry.value|num_format }} ({{ entry.percentage|percent_format }})
-                    </span>
-                </div>
-                {% endif %}
-            {% endfor %}
-        </div>
-    </div>
+	<canvas id="{{ id }}"{% if size != null %} height="{{ size }}"{% endif %}></canvas>
+	<div class="chart-legend" id="{{ id }}_legend">
+		<div class="legend-body">
+			{% for entry in data %}
+				{% set labels = labels | merge([entry.label]) %}
+				{% set values = values | merge([entry.value]) %}
+				{% set colors = colors | merge([chartColor(loop.index0)]) %}
+				{% if legend %}
+				<div>
+					<span class="color-icon" style="background:{{ chartColor(loop.index0) }}"></span>
+					<span class="legend-label{% if entry.tooltip is defined %} help-text{% endif %}"{% if entry.tooltip is defined %} title="{{ entry.tooltip }}"{% endif %}>{{ entry.label }}</span>
+					<span class="legend-value" {% if isRTL() %}dir="rtl"{% endif %}>
+						&middot;
+						{{ entry.value|num_format }} ({{ entry.percentage|percent_format }})
+					</span>
+				</div>
+				{% endif %}
+			{% endfor %}
+		</div>
+	</div>
 </div>
 <script type="text/javascript">
-    $(function() {
-        window["{{ id }}"] = new Chart($("#{{ id }}"), {
-            type: 'pie',
-            data: {
-                labels: {{ labels | json_encode() | raw }},
-                datasets: [{
-                    data: {{ values | json_encode() | raw }},
-                    backgroundColor: {{ colors | json_encode() | raw }},
-                    hoverBackgroundColor: {{ colors | json_encode() | raw }}
-                }]
-            },
-            options: {
-                responsive: false,
-                aspectRatio: 1,
-                legend: {
-                    display: false
-                },
-                tooltips: {
-                    callbacks: {
-                        label: function(tooltipItem, chartInstance) {
-                            var value = chartInstance.datasets[tooltipItem.datasetIndex].data[tooltipItem.index],
-                                label = chartInstance.labels[tooltipItem.index];
-                            return label + ': ' + value.toLocaleString(i18nLang);
-                        }
-                    }
-                }
-            }
-        });
-    });
+	$(function() {
+		window["{{ id }}"] = new Chart($("#{{ id }}"), {
+			type: 'pie',
+			data: {
+				labels: {{ labels | json_encode() | raw }},
+				datasets: [{
+					data: {{ values | json_encode() | raw }},
+					backgroundColor: {{ colors | json_encode() | raw }},
+					hoverBackgroundColor: {{ colors | json_encode() | raw }}
+				}]
+			},
+			options: {
+				responsive: false,
+				aspectRatio: 1,
+				legend: {
+					display: false
+				},
+				tooltips: {
+					callbacks: {
+						label: function(tooltipItem, chartInstance) {
+							var value = chartInstance.datasets[tooltipItem.datasetIndex].data[tooltipItem.index],
+								label = chartInstance.labels[tooltipItem.index];
+							return label + ': ' + value.toLocaleString(i18nLang);
+						}
+					}
+				}
+			}
+		});
+	});
 </script>
 {% endmacro %}

@@ -128,7 +128,7 @@ abstract class Repository {
 		$exists = true;
 		$i = 0;
 		$sql = "SELECT DISTINCT table_schema
-                FROM information_schema.tables";
+				ROM information_schema.tables";
 
 		while ( true ) {
 			$i += 1;

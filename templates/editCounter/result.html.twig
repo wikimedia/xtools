@@ -5,47 +5,47 @@
 {% block body %}
 
 <div class="panel panel-primary">
-    {% set params = isAllSections ? {} : {'project': project.domain, 'username': user.usernameIdent} %}
-    {{ layout.userHeading(user, project, 'EditCounter', params) }}
+	{% set params = isAllSections ? {} : {'project': project.domain, 'username': user.usernameIdent} %}
+	{{ layout.userHeading(user, project, 'EditCounter', params) }}
 
-    <div class="panel-body xt-panel-body">
-        {{ wiki.userLinks(user, project, 'EditCounter') }}
+	<div class="panel-body xt-panel-body">
+		{{ wiki.userLinks(user, project, 'EditCounter') }}
 
-        <div class="text-center xt-toc">
-            {% set sectionExclude = [] %}
-            {% if user.isAnon(project) %}
-                {% set sectionExclude = sectionExclude|merge(['rights-changes', 'latest-global-edits']) %}
-            {% elseif ec.userRights.rightsChanges|length == 0 %}
-                {% set sectionExclude = sectionExclude|merge(['rights-changes']) %}
-            {% endif %}
+		<div class="text-center xt-toc">
+			{% set sectionExclude = [] %}
+			{% if user.isAnon(project) %}
+				{% set sectionExclude = sectionExclude|merge(['rights-changes', 'latest-global-edits']) %}
+			{% elseif ec.userRights.rightsChanges|length == 0 %}
+				{% set sectionExclude = sectionExclude|merge(['rights-changes']) %}
+			{% endif %}
 
-            {% for section in sections|filter(section => not(section in sectionExclude)) %}
-                <span>
-                    <a href="#{{ section }}" data-section="{{ section }}">{{ msg(section) }}</a>
-                </span>
-            {% endfor %}
-        </div>
+			{% for section in sections|filter(section => not(section in sectionExclude)) %}
+				<span>
+					<a href="#{{ section }}" data-section="{{ section }}">{{ msg(section) }}</a>
+				</span>
+			{% endfor %}
+		</div>
 
-        {% include 'editCounter/subtoolSection.html.twig' with {'route': 'EditCounterGeneralStats', 'i18nKey': 'general-stats', 'downloadFormats': ['wikitext']} %}
+		{% include 'editCounter/subtoolSection.html.twig' with {'route': 'EditCounterGeneralStats', 'i18nKey': 'general-stats', 'downloadFormats': ['wikitext']} %}
 
-        {% include 'editCounter/subtoolSection.html.twig' with {'route': 'EditCounterNamespaceTotals', 'i18nKey': 'namespace-totals', 'jsonPath': 'UserApiNamespaceTotals'} %}
+		{% include 'editCounter/subtoolSection.html.twig' with {'route': 'EditCounterNamespaceTotals', 'i18nKey': 'namespace-totals', 'jsonPath': 'UserApiNamespaceTotals'} %}
 
-        {% include 'editCounter/subtoolSection.html.twig' with {'route': 'EditCounterYearCounts', 'i18nKey': 'year-counts'} %}
+		{% include 'editCounter/subtoolSection.html.twig' with {'route': 'EditCounterYearCounts', 'i18nKey': 'year-counts'} %}
 
-        {% include 'editCounter/subtoolSection.html.twig' with {'route': 'EditCounterMonthCounts', 'i18nKey': 'month-counts', 'jsonPath': 'UserApiMonthCounts'} %}
+		{% include 'editCounter/subtoolSection.html.twig' with {'route': 'EditCounterMonthCounts', 'i18nKey': 'month-counts', 'jsonPath': 'UserApiMonthCounts'} %}
 
-        {% include 'editCounter/subtoolSection.html.twig' with {'route': 'EditCounterTimecard', 'i18nKey': 'timecard', 'jsonPath': 'UserApiTimeCard'} %}
+		{% include 'editCounter/subtoolSection.html.twig' with {'route': 'EditCounterTimecard', 'i18nKey': 'timecard', 'jsonPath': 'UserApiTimeCard'} %}
 
-        {% include 'editCounter/subtoolSection.html.twig' with {'route': 'TopEditsResultNamespace', 'i18nKey': 'top-edited-pages', 'downloadFormats': ['wikitext'], 'extraParams': {'namespace': 'all'}, 'jsonPath': 'UserApiTopEditsNamespace'} %}
+		{% include 'editCounter/subtoolSection.html.twig' with {'route': 'TopEditsResultNamespace', 'i18nKey': 'top-edited-pages', 'downloadFormats': ['wikitext'], 'extraParams': {'namespace': 'all'}, 'jsonPath': 'UserApiTopEditsNamespace'} %}
 
-        {% if not(user.isAnon(project)) and 'rights-changes' in sections and (ec.userRights.rightsChanges|length > 0 or ec.userRights.globalRightsChanges|length > 0) %}
-            {% include 'editCounter/subtoolSection.html.twig' with {'route': 'EditCounterRightsChanges', 'i18nKey': 'rights-changes', 'downloadFormats': ['wikitext']} %}
-        {% endif %}
+		{% if not(user.isAnon(project)) and 'rights-changes' in sections and (ec.userRights.rightsChanges|length > 0 or ec.userRights.globalRightsChanges|length > 0) %}
+			{% include 'editCounter/subtoolSection.html.twig' with {'route': 'EditCounterRightsChanges', 'i18nKey': 'rights-changes', 'downloadFormats': ['wikitext']} %}
+		{% endif %}
 
-        <div class="text-muted times-in-utc">
-            {{ msg('times-in-utc') }}
-        </div>
-    </div>
+		<div class="text-muted times-in-utc">
+			{{ msg('times-in-utc') }}
+		</div>
+	</div>
 </div>
 
 {% endblock %}

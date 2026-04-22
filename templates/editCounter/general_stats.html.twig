@@ -5,542 +5,542 @@
 {% import 'macros/pieChart.html.twig' as chart %}
 
 {% block downloadLink %}
-    {{ layout.downloadLink('EditCounterGeneralStats', {project:project.domain, username:user.usernameIdent}, ['wikitext']) }}
+	{{ layout.downloadLink('EditCounterGeneralStats', {project:project.domain, username:user.usernameIdent}, ['wikitext']) }}
 {% endblock %}
 
 {% block ecBody %}
 
 <div class="col-lg-6 stat-list clearfix">
-    <table class="table"><tbody class="stat-list--group">
-        <tr>
-            <td colspan="2" class="text-muted">{{ msg('basic-information') }}</td>
-        </tr>
-        {% if not(user.isIP) %}
-            <tr>
-                <td>{{ msg('user-id') }}</td>
-                <td>{{ user.id(project)|num_format }}</td>
-            </tr>
-            {% set regDate = user.registrationDate(project) %}
-            {% if regDate is not empty %}
-                <tr>
-                    <td>{{ msg('registration-date') }}</td>
-                    <td>{{ regDate|date_format }}</td>
-                </tr>
-            {% endif %}
-            <tr>
-                <td>
-                    {% if user.isTemp(project) %}
-                        {{ msg('user-groups') }}
-                    {%- else -%}
-                        <a href="#rights-changes">{{ msg('user-groups') }}</a>
-                    {%- endif -%}
-                </td>
-                <td>
-                    {% for group in ec.userRights.rightsStates.local.current %}
-                        {{ ec.userRights.rightsName(group) }}{% if not loop.last %}, {% endif %}
-                    {% endfor %}
-                </td>
-            </tr>
-            {% if ec.userRights.rightsStates.global.current %}
-                <tr>
-                    <td>{{ msg('global-user-groups') }}</td>
-                    <td>
-                        {% for group in ec.userRights.rightsStates.global.current %}
-                            {{ ec.userRights.rightsNames[group] }}{% if not loop.last %}, {% endif %}
-                        {% endfor %}
-                    </td>
-                </tr>
-            {% endif %}
-            {% if not(user.isTemp(project)) %}
-                <tr>
-                    <td>{{ msg('is-admin') }}</td>
-                    <td>
-                        {% set adminStatus = ec.userRights.adminStatus %}
-                        {% if adminStatus == 'current' %}
-                            <img alt="{{ msg('yes') }}" title="{{ msg('yes') }}" src="https://upload.wikimedia.org/wikipedia/commons/f/f6/OOjs_UI_icon_check-constructive.svg" />
-                        {% elseif adminStatus == 'former' %}
-                            <img alt="{{ msg('no') }}" title="{{ msg('no') }}" src="https://upload.wikimedia.org/wikipedia/commons/7/77/OOjs_UI_icon_close-ltr-destructive.svg" />
-                            <em class="text-muted">({{ msg('former-admin')|lower }})</em>
-                        {% else %}
-                            <img alt="{{ msg('no') }}" title="{{ msg('no') }}" src="https://upload.wikimedia.org/wikipedia/commons/7/77/OOjs_UI_icon_close-ltr-destructive.svg" />
-                        {% endif %}
-                    </td>
-                </tr>
-            {% endif %}
-        {% endif %}
-        {% if ec.firstAndLatestActions.rev_first is defined %}
-            <tr>
-                <td>{{ msg('first-edit') }}</td>
-                <td>
-                    {% set firstEdit = ec.firstAndLatestActions.rev_first %}
-                    {{ wiki.diffLinkRaw(firstEdit.id, project, firstEdit.timestamp|date_format) }}
-                </td>
-            </tr>
-            <tr>
-                <td>{{ msg('latest-edit') }}</td>
-                <td>
-                    {% set lastEdit = ec.firstAndLatestActions.rev_latest %}
-                    {{ wiki.diffLinkRaw(lastEdit.id, project, lastEdit.timestamp|date_format) }}
-                </td>
-            </tr>
-        {% endif %}
-        {% if ec.firstAndLatestActions.log_latest is defined %}
-            <tr>
-                <td>{{ msg('latest-action') }}</td>
-                <td>
-                    {% set latestAction = ec.firstAndLatestActions.log_latest %}
-                    {{ wiki.pageLinkRaw('Special:Log', project, latestAction.timestamp|date_format, 'logid=' ~ latestAction.id ~ '&type=' ~ latestAction.type) }}
-                </td>
-            </tr>
-        {% endif %}
-        {% if ec.thanksReceived > 0 %}
-            <tr>
-                <td>{{ msg('thanks-received') }}</td>
-                <td>
-                    {{ wiki.pageLogLinkRaw('User:' ~ user.username, project, ec.thanksReceived|num_format, 'thanks') }}
-                </td>
-            </tr>
-        {% endif %}
-        <tr>
-            <td class="stat-list--new-group">{{ msg('live-edits') }}</td>
-            <td class="stat-list--new-group">
-                {{ wiki.pageLinkRaw('Special:Contributions/' ~ user.username, project, ec.countLiveRevisions|num_format) }}
-                {% if not(user.isIpRange) and ec.countAllRevisions %}
-                    &middot;
-                    ({{ ((ec.countLiveRevisions / ec.countAllRevisions) * 100)|percent_format }})
-                {% endif %}
-            </td>
-        </tr>
-        <tr>
-            <td>{{ msg('deleted-edits') }}</td>
-            <td>
-                {% if user.isIpRange %}
-                    <span class="text-muted">{{ msg('ip-range-unavailable') }}</span>
-                {% else %}
-                    {{ wiki.pageLinkRaw('Special:DeletedContributions/' ~ user.username, project, ec.countDeletedRevisions|num_format) }}
-                    {% if ec.countAllRevisions %}
-                        &middot;
-                        ({{ ((ec.countDeletedRevisions / ec.countAllRevisions) * 100)|percent_format }})
-                    {% endif %}
-                {% endif %}
-            </td>
-        </tr>
-        {% if not(user.isIpRange) %}
-            <tr>
-                <td><strong>{{ msg('total-edits') }}</strong></td>
-                <td><strong>{{ ec.countAllRevisions|num_format }}</strong></td>
-            </tr>
-        {% endif %}
-    </tbody></table>
+	<table class="table"><tbody class="stat-list--group">
+		<tr>
+			<td colspan="2" class="text-muted">{{ msg('basic-information') }}</td>
+		</tr>
+		{% if not(user.isIP) %}
+			<tr>
+				<td>{{ msg('user-id') }}</td>
+				<td>{{ user.id(project)|num_format }}</td>
+			</tr>
+			{% set regDate = user.registrationDate(project) %}
+			{% if regDate is not empty %}
+				<tr>
+					<td>{{ msg('registration-date') }}</td>
+					<td>{{ regDate|date_format }}</td>
+				</tr>
+			{% endif %}
+			<tr>
+				<td>
+					{% if user.isTemp(project) %}
+						{{ msg('user-groups') }}
+					{%- else -%}
+						<a href="#rights-changes">{{ msg('user-groups') }}</a>
+					{%- endif -%}
+				</td>
+				<td>
+					{% for group in ec.userRights.rightsStates.local.current %}
+						{{ ec.userRights.rightsName(group) }}{% if not loop.last %}, {% endif %}
+					{% endfor %}
+				</td>
+			</tr>
+			{% if ec.userRights.rightsStates.global.current %}
+				<tr>
+					<td>{{ msg('global-user-groups') }}</td>
+					<td>
+						{% for group in ec.userRights.rightsStates.global.current %}
+							{{ ec.userRights.rightsNames[group] }}{% if not loop.last %}, {% endif %}
+						{% endfor %}
+					</td>
+				</tr>
+			{% endif %}
+			{% if not(user.isTemp(project)) %}
+				<tr>
+					<td>{{ msg('is-admin') }}</td>
+					<td>
+						{% set adminStatus = ec.userRights.adminStatus %}
+						{% if adminStatus == 'current' %}
+							<img alt="{{ msg('yes') }}" title="{{ msg('yes') }}" src="https://upload.wikimedia.org/wikipedia/commons/f/f6/OOjs_UI_icon_check-constructive.svg" />
+						{% elseif adminStatus == 'former' %}
+							<img alt="{{ msg('no') }}" title="{{ msg('no') }}" src="https://upload.wikimedia.org/wikipedia/commons/7/77/OOjs_UI_icon_close-ltr-destructive.svg" />
+							<em class="text-muted">({{ msg('former-admin')|lower }})</em>
+						{% else %}
+							<img alt="{{ msg('no') }}" title="{{ msg('no') }}" src="https://upload.wikimedia.org/wikipedia/commons/7/77/OOjs_UI_icon_close-ltr-destructive.svg" />
+						{% endif %}
+					</td>
+				</tr>
+			{% endif %}
+		{% endif %}
+		{% if ec.firstAndLatestActions.rev_first is defined %}
+			<tr>
+				<td>{{ msg('first-edit') }}</td>
+				<td>
+					{% set firstEdit = ec.firstAndLatestActions.rev_first %}
+					{{ wiki.diffLinkRaw(firstEdit.id, project, firstEdit.timestamp|date_format) }}
+				</td>
+			</tr>
+			<tr>
+				<td>{{ msg('latest-edit') }}</td>
+				<td>
+					{% set lastEdit = ec.firstAndLatestActions.rev_latest %}
+					{{ wiki.diffLinkRaw(lastEdit.id, project, lastEdit.timestamp|date_format) }}
+				</td>
+			</tr>
+		{% endif %}
+		{% if ec.firstAndLatestActions.log_latest is defined %}
+			<tr>
+				<td>{{ msg('latest-action') }}</td>
+				<td>
+					{% set latestAction = ec.firstAndLatestActions.log_latest %}
+					{{ wiki.pageLinkRaw('Special:Log', project, latestAction.timestamp|date_format, 'logid=' ~ latestAction.id ~ '&type=' ~ latestAction.type) }}
+				</td>
+			</tr>
+		{% endif %}
+		{% if ec.thanksReceived > 0 %}
+			<tr>
+				<td>{{ msg('thanks-received') }}</td>
+				<td>
+					{{ wiki.pageLogLinkRaw('User:' ~ user.username, project, ec.thanksReceived|num_format, 'thanks') }}
+				</td>
+			</tr>
+		{% endif %}
+		<tr>
+			<td class="stat-list--new-group">{{ msg('live-edits') }}</td>
+			<td class="stat-list--new-group">
+				{{ wiki.pageLinkRaw('Special:Contributions/' ~ user.username, project, ec.countLiveRevisions|num_format) }}
+				{% if not(user.isIpRange) and ec.countAllRevisions %}
+					&middot;
+					({{ ((ec.countLiveRevisions / ec.countAllRevisions) * 100)|percent_format }})
+				{% endif %}
+			</td>
+		</tr>
+		<tr>
+			<td>{{ msg('deleted-edits') }}</td>
+			<td>
+				{% if user.isIpRange %}
+					<span class="text-muted">{{ msg('ip-range-unavailable') }}</span>
+				{% else %}
+					{{ wiki.pageLinkRaw('Special:DeletedContributions/' ~ user.username, project, ec.countDeletedRevisions|num_format) }}
+					{% if ec.countAllRevisions %}
+						&middot;
+						({{ ((ec.countDeletedRevisions / ec.countAllRevisions) * 100)|percent_format }})
+					{% endif %}
+				{% endif %}
+			</td>
+		</tr>
+		{% if not(user.isIpRange) %}
+			<tr>
+				<td><strong>{{ msg('total-edits') }}</strong></td>
+				<td><strong>{{ ec.countAllRevisions|num_format }}</strong></td>
+			</tr>
+		{% endif %}
+	</tbody></table>
 </div>
 
 {# ======================== EDITS ======================== #}
 <div class="col-lg-6 stat-list clearfix">
-    <table class="table"><tbody class="stat-list--group">
-        <tr>
-            <td colspan="2" class="text-muted">{% apply spaceless %}
-                    {{ msg('edits') }}
-                    ({{ msg('live')|lower }})
-                {% endapply %}</td>
-        </tr>
-        <tr><td>{{ msg('last-day') }}</td><td>{{ ec.countRevisionsInLast('day')|num_format }}</td></tr>
-        <tr><td>{{ msg('last-week') }}</td><td>{{ ec.countRevisionsInLast('week')|num_format }}</td></tr>
-        <tr><td>{{ msg('last-month') }}</td><td>{{ ec.countRevisionsInLast('month')|num_format }}</td></tr>
-        <tr><td>{{ msg('last-year') }}</td><td>{{ ec.countRevisionsInLast('year')|num_format }}</td></tr>
-        <tr>
-            <td>{{ msg('average-edits-per-day', [msg('days', [1])]) }}</td>
-            <td>
-                {{ ec.averageRevisionsPerDay|num_format(3) }}
-                <span class="text-muted">
-                    ({{ ec.days|num_format }} {{ msg('num-days', [ec.days]) }})
-                </span>
-            </td>
-        </tr>
-        <tr>
-            <td>{{ msg('average-edit-size') }}*</td>
-            <td>{{ ec.averageEditSize|num_format(1) }} {{ msg('num-bytes', [ec.averageEditSize]) }}</td>
-        </tr>
-        <tr>
-            <td>{{ msg('minor-edits') }}</td>
-            <td>
-                {{ ec.countMinorRevisions|num_format }}
-                {% if ec.countLiveRevisions %}
-                    &middot;
-                    ({{ ((ec.countMinorRevisions / ec.countLiveRevisions) * 100)|percent_format }})
-                {% endif %}
-            </td>
-        </tr>
-        <tr>
-            <td>{{ msg('auto-edits-tagged') }}*</td>
-            <td>
-                {{ ec.countAutoEdits|num_format }}
-                {% if ec.countLast5000 %}
-                    &middot;
-                    ({{ ((ec.countAutoEdits / ec.countLast5000) * 100)|percent_format }} )
-                {% endif %}
-            </td>
-        <tr>
-            <td>{{ msg('small-edits') }}*</td>
-            <td>
-                {{ ec.countSmallEdits|num_format }}
-                {% if ec.countLast5000 %}
-                    &middot;
-                    ({{ ((ec.countSmallEdits / ec.countLast5000) * 100)|percent_format }})
-                {% endif %}
-            </td>
-        </tr>
-        <tr>
-            <td>{{ msg('large-edits') }}*</td>
-            <td>
-                {{ ec.countLargeEdits|num_format }}
-                {% if ec.countLast5000 %}
-                    &middot;
-                    ({{ ((ec.countLargeEdits / ec.countLast5000) * 100)|percent_format }})
-                {% endif %}
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2" class="text-muted text-center stat-list--new-group stat-list--footer">
-                <strong>{{ msg('other') }}:</strong>
-                <a target="_blank" href="{{ path('EditSummaryResult', {project:project.domain, username:user.usernameIdent}) }}">{{ msg('tool-editsummary') }}</a>
-                &middot;
-                <a target="_blank" href="{{ path('AutoEditsResult', {project:project.domain, username:user.usernameIdent}) }}">{{ msg('tool-autoedits') }}</a>
-            </td>
-        </tr>
-    </tbody></table>
+	<table class="table"><tbody class="stat-list--group">
+		<tr>
+			<td colspan="2" class="text-muted">{% apply spaceless %}
+					{{ msg('edits') }}
+					({{ msg('live')|lower }})
+				{% endapply %}</td>
+		</tr>
+		<tr><td>{{ msg('last-day') }}</td><td>{{ ec.countRevisionsInLast('day')|num_format }}</td></tr>
+		<tr><td>{{ msg('last-week') }}</td><td>{{ ec.countRevisionsInLast('week')|num_format }}</td></tr>
+		<tr><td>{{ msg('last-month') }}</td><td>{{ ec.countRevisionsInLast('month')|num_format }}</td></tr>
+		<tr><td>{{ msg('last-year') }}</td><td>{{ ec.countRevisionsInLast('year')|num_format }}</td></tr>
+		<tr>
+			<td>{{ msg('average-edits-per-day', [msg('days', [1])]) }}</td>
+			<td>
+				{{ ec.averageRevisionsPerDay|num_format(3) }}
+				<span class="text-muted">
+					({{ ec.days|num_format }} {{ msg('num-days', [ec.days]) }})
+				</span>
+			</td>
+		</tr>
+		<tr>
+			<td>{{ msg('average-edit-size') }}*</td>
+			<td>{{ ec.averageEditSize|num_format(1) }} {{ msg('num-bytes', [ec.averageEditSize]) }}</td>
+		</tr>
+		<tr>
+			<td>{{ msg('minor-edits') }}</td>
+			<td>
+				{{ ec.countMinorRevisions|num_format }}
+				{% if ec.countLiveRevisions %}
+					&middot;
+					({{ ((ec.countMinorRevisions / ec.countLiveRevisions) * 100)|percent_format }})
+				{% endif %}
+			</td>
+		</tr>
+		<tr>
+			<td>{{ msg('auto-edits-tagged') }}*</td>
+			<td>
+				{{ ec.countAutoEdits|num_format }}
+				{% if ec.countLast5000 %}
+					&middot;
+					({{ ((ec.countAutoEdits / ec.countLast5000) * 100)|percent_format }} )
+				{% endif %}
+			</td>
+		<tr>
+			<td>{{ msg('small-edits') }}*</td>
+			<td>
+				{{ ec.countSmallEdits|num_format }}
+				{% if ec.countLast5000 %}
+					&middot;
+					({{ ((ec.countSmallEdits / ec.countLast5000) * 100)|percent_format }})
+				{% endif %}
+			</td>
+		</tr>
+		<tr>
+			<td>{{ msg('large-edits') }}*</td>
+			<td>
+				{{ ec.countLargeEdits|num_format }}
+				{% if ec.countLast5000 %}
+					&middot;
+					({{ ((ec.countLargeEdits / ec.countLast5000) * 100)|percent_format }})
+				{% endif %}
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" class="text-muted text-center stat-list--new-group stat-list--footer">
+				<strong>{{ msg('other') }}:</strong>
+				<a target="_blank" href="{{ path('EditSummaryResult', {project:project.domain, username:user.usernameIdent}) }}">{{ msg('tool-editsummary') }}</a>
+				&middot;
+				<a target="_blank" href="{{ path('AutoEditsResult', {project:project.domain, username:user.usernameIdent}) }}">{{ msg('tool-autoedits') }}</a>
+			</td>
+		</tr>
+	</tbody></table>
 </div>
 
 <hr style="clear:both" />
 
 {% set blockStats %}
-    {# ======================== BLOCKS ======================== #}
-    <tbody class="stat-list--group">
-        <tr>
-            <td colspan="2" class="text-muted">{{ msg('blocks') }}</td>
-        </tr>
-        <tr>
-            <td>{{ msg('re-blocks') }}</td>
-            <td>
-                {{ wiki.blockLogLink(user.username, project, ec.countBlocksReceived|num_format) }}
-            </td>
-        </tr>
-        <tr>
-            <td>{{ msg('block-longest') }}</td>
-            <td>
-                {% if ec.longestBlockSeconds == -1 %}
-                    &#x221e; {# infinity #}
-                {% elseif ec.longestBlockSeconds == false %}
-                    &ndash;
-                {% else %}
-                    {{ formatDuration(ec.longestBlockSeconds) }}
-                {% endif %}
-            </td>
-        </tr>
-        <tr>
-            <td>{{ msg('block-current-count') }}</td>
-            <td>
-                {% if user.isBlocked(project) %}
-                    <a href="{{ wiki.pageUrlRaw('Special:BlockList', project)~'?wpTarget='~user.username }}">{% apply spaceless %}
-                        {{ user.countActiveBlocks(project, user)|num_format }}
-                    {% endapply %}</a>
-                {% else %}
-                    &ndash;
-                {% endif %}
-            </td>
-        </tr>
-    </tbody>
+	{# ======================== BLOCKS ======================== #}
+	<tbody class="stat-list--group">
+		<tr>
+			<td colspan="2" class="text-muted">{{ msg('blocks') }}</td>
+		</tr>
+		<tr>
+			<td>{{ msg('re-blocks') }}</td>
+			<td>
+				{{ wiki.blockLogLink(user.username, project, ec.countBlocksReceived|num_format) }}
+			</td>
+		</tr>
+		<tr>
+			<td>{{ msg('block-longest') }}</td>
+			<td>
+				{% if ec.longestBlockSeconds == -1 %}
+					&#x221e; {# infinity #}
+				{% elseif ec.longestBlockSeconds == false %}
+					&ndash;
+				{% else %}
+					{{ formatDuration(ec.longestBlockSeconds) }}
+				{% endif %}
+			</td>
+		</tr>
+		<tr>
+			<td>{{ msg('block-current-count') }}</td>
+			<td>
+				{% if user.isBlocked(project) %}
+					<a href="{{ wiki.pageUrlRaw('Special:BlockList', project)~'?wpTarget='~user.username }}">{% apply spaceless %}
+						{{ user.countActiveBlocks(project, user)|num_format }}
+					{% endapply %}</a>
+				{% else %}
+					&ndash;
+				{% endif %}
+			</td>
+		</tr>
+	</tbody>
 {% endset %}
 
 <div class="col-lg-4 stat-list clearfix">
-    <table class="table">
-        {# ======================== PAGES ======================== #}
-        <tbody class="stat-list--group">
-            <tr>
-                <td colspan="2" class="text-muted">{{ msg('pages') }}</td>
-            </tr>
-            <tr>
-                <td>{{ msg('pages-edited-total') }}</td>
-                <td>{{ ec.countAllPagesEdited|num_format }}</td>
-            </tr>
-            <tr>
-                <td>{{ msg('average-per-page') }}</td>
-                <td>{{ ec.averageRevisionsPerPage|num_format(3) }}</td>
-            </tr>
-            <tr>
-                <td>{% apply spaceless %}
-                    <a class="glyphicon glyphicon-info-sign tooltipcss tooltipcss--pages-created" href="https://www.mediawiki.org/wiki/Special:MyLanguage/XTools/Edit_Counter#pages-created" role="dialog" aria-labelledby="pages-created-desc">
-                        <div id="pages-created-desc" class="tooltip-body">{{ msg('pages-created-tooltip') }}</div>
-                    </a>
-                    {{ msg('pages-created') }}
-                {% endapply %}</td>
-                <td>
-                    {% if user.isIpRange %}
-                        {{ wiki.pageLinkRaw('Special:Contributions/' ~ user.username, project, ec.countPagesCreated|num_format, 'namespace=all&newOnly=1') }}
-                    {% else %}
-                        <a href="{{ path('PagesResult', {project:project.domain, username:user.usernameIdent, namespace:'all', redirects:'noredirects'}) }}">{{ ec.countPagesCreated|num_format }}</a>
-                    {% endif %}
-                    <span class="text-muted">({{ msg('pages-created-since-deleted', [ec.countPagesCreatedDeleted|num_format]) }})</span>
-                </td>
-            </tr>
-        </tbody>
+	<table class="table">
+		{# ======================== PAGES ======================== #}
+		<tbody class="stat-list--group">
+			<tr>
+				<td colspan="2" class="text-muted">{{ msg('pages') }}</td>
+			</tr>
+			<tr>
+				<td>{{ msg('pages-edited-total') }}</td>
+				<td>{{ ec.countAllPagesEdited|num_format }}</td>
+			</tr>
+			<tr>
+				<td>{{ msg('average-per-page') }}</td>
+				<td>{{ ec.averageRevisionsPerPage|num_format(3) }}</td>
+			</tr>
+			<tr>
+				<td>{% apply spaceless %}
+					<a class="glyphicon glyphicon-info-sign tooltipcss tooltipcss--pages-created" href="https://www.mediawiki.org/wiki/Special:MyLanguage/XTools/Edit_Counter#pages-created" role="dialog" aria-labelledby="pages-created-desc">
+						<div id="pages-created-desc" class="tooltip-body">{{ msg('pages-created-tooltip') }}</div>
+					</a>
+					{{ msg('pages-created') }}
+				{% endapply %}</td>
+				<td>
+					{% if user.isIpRange %}
+						{{ wiki.pageLinkRaw('Special:Contributions/' ~ user.username, project, ec.countPagesCreated|num_format, 'namespace=all&newOnly=1') }}
+					{% else %}
+						<a href="{{ path('PagesResult', {project:project.domain, username:user.usernameIdent, namespace:'all', redirects:'noredirects'}) }}">{{ ec.countPagesCreated|num_format }}</a>
+					{% endif %}
+					<span class="text-muted">({{ msg('pages-created-since-deleted', [ec.countPagesCreatedDeleted|num_format]) }})</span>
+				</td>
+			</tr>
+		</tbody>
 
-        {# ======================== FILES ======================== #}
-        {% if not(user.isIpRange) %}
-            <tbody class="stat-list--group">
-                <tr>
-                    <td colspan="2" class="text-muted">{{ msg('files') }}</td>
-                </tr>
-                <tr>
-                    <td>{{ msg('files-uploaded') }}</td>
-                    <td>
-                        <a target="_blank" href="{{ wiki.pageUrlRaw('Special:Log/upload/' ~ user.username, project, 'subtype=upload') }}">{{ ec.countFilesUploaded|num_format }}</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>{{ msg('files-moved') }}</td>
-                    <td>
-                        {{ ec.countFilesMoved }}
-                    </td>
-                </tr>
-                {% if isWMF() and project.domain != 'commons.wikimedia.org' %}
-                    <tr>
-                        <td>{{ msg('files-uploaded-commons') }}</td>
-                        <td>
-                            <a target="_blank" href="https://commons.wikimedia.org/wiki/Special:Log/upload/{{ user.username }}?subtype=upload">{{ ec.countFilesUploadedCommons|num_format }}</a>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>{{ msg('files-moved-commons') }}</td>
-                        <td>
-                            {{ ec.countFilesMovedCommons }}
-                        </td>
-                    </tr>
-                {% endif %}
-            </tbody>
-        {% endif %}
+		{# ======================== FILES ======================== #}
+		{% if not(user.isIpRange) %}
+			<tbody class="stat-list--group">
+				<tr>
+					<td colspan="2" class="text-muted">{{ msg('files') }}</td>
+				</tr>
+				<tr>
+					<td>{{ msg('files-uploaded') }}</td>
+					<td>
+						<a target="_blank" href="{{ wiki.pageUrlRaw('Special:Log/upload/' ~ user.username, project, 'subtype=upload') }}">{{ ec.countFilesUploaded|num_format }}</a>
+					</td>
+				</tr>
+				<tr>
+					<td>{{ msg('files-moved') }}</td>
+					<td>
+						{{ ec.countFilesMoved }}
+					</td>
+				</tr>
+				{% if isWMF() and project.domain != 'commons.wikimedia.org' %}
+					<tr>
+						<td>{{ msg('files-uploaded-commons') }}</td>
+						<td>
+							<a target="_blank" href="https://commons.wikimedia.org/wiki/Special:Log/upload/{{ user.username }}?subtype=upload">{{ ec.countFilesUploadedCommons|num_format }}</a>
+						</td>
+					</tr>
+					<tr>
+						<td>{{ msg('files-moved-commons') }}</td>
+						<td>
+							{{ ec.countFilesMovedCommons }}
+						</td>
+					</tr>
+				{% endif %}
+			</tbody>
+		{% endif %}
 
-        {# Show the block stats here if they are an admin, since the middle column would become very tall. #}
-        {% if not(user.isAnon(project)) and adminStatus %}
-            {{ blockStats }}
-        {% endif %}
-    </table>
+		{# Show the block stats here if they are an admin, since the middle column would become very tall. #}
+		{% if not(user.isAnon(project)) and adminStatus %}
+			{{ blockStats }}
+		{% endif %}
+	</table>
 </div>
 <div class="col-lg-4 stat-list clearfix">
-    <table class="table">
-        {# ======================== ACTIONS ======================== #}
-        {% if not(user.isAnon(project)) %}
-            <tbody class="stat-list--group">
-                <tr>
-                    <td colspan="2" class="text-muted">{{ msg('actions') }}</td>
-                </tr>
-                <tr>
-                    <td>{{ msg('pages-moved') }}</td>
-                    <td>{{ wiki.userLogLink(user, project, ec.countPagesMoved|num_format, 'move') }}</td>
-                </tr>
-                <tr>
-                    <td>{{ msg('thank') }}</td>
-                    <td>
-                        {{ wiki.userLogLink(user, project, ec.thanks|num_format, 'thanks') }}
-                    </td>
-                </tr>
-                <tr>
-                    <td>{{ msg('approve') }}</td>
-                    <td>
-                        {{ wiki.userLogLink(user, project, ec.approvals|num_format, 'review', 'accept') }}
-                    </td>
-                </tr>
-                {% if project.hasPageTriage %}
-                    <tr>
-                        <td>{{ msg('page-curation') }}</td>
-                        <td>
-                            {{ wiki.userLogLink(user, project, ec.reviews|num_format, 'pagetriage-curation', 'review') }}
-                        </td>
-                    </tr>
-                {% endif %}
-                <tr>
-                    <td>{{ msg('patrol') }}</td>
-                    <td>
-                        {{ wiki.userLogLink(user, project, ec.patrols|num_format, 'patrol') }}
-                    </td>
-                </tr>
-                <tr>
-                    <td>{{ msg('accounts-created') }}</td>
-                    <td>
-                        {{ wiki.userLogLink(user, project, ec.accountsCreated|num_format, 'newusers') }}
-                    </td>
-                </tr>
-            </tbody>
-        {% endif %}
+	<table class="table">
+		{# ======================== ACTIONS ======================== #}
+		{% if not(user.isAnon(project)) %}
+			<tbody class="stat-list--group">
+				<tr>
+					<td colspan="2" class="text-muted">{{ msg('actions') }}</td>
+				</tr>
+				<tr>
+					<td>{{ msg('pages-moved') }}</td>
+					<td>{{ wiki.userLogLink(user, project, ec.countPagesMoved|num_format, 'move') }}</td>
+				</tr>
+				<tr>
+					<td>{{ msg('thank') }}</td>
+					<td>
+						{{ wiki.userLogLink(user, project, ec.thanks|num_format, 'thanks') }}
+					</td>
+				</tr>
+				<tr>
+					<td>{{ msg('approve') }}</td>
+					<td>
+						{{ wiki.userLogLink(user, project, ec.approvals|num_format, 'review', 'accept') }}
+					</td>
+				</tr>
+				{% if project.hasPageTriage %}
+					<tr>
+						<td>{{ msg('page-curation') }}</td>
+						<td>
+							{{ wiki.userLogLink(user, project, ec.reviews|num_format, 'pagetriage-curation', 'review') }}
+						</td>
+					</tr>
+				{% endif %}
+				<tr>
+					<td>{{ msg('patrol') }}</td>
+					<td>
+						{{ wiki.userLogLink(user, project, ec.patrols|num_format, 'patrol') }}
+					</td>
+				</tr>
+				<tr>
+					<td>{{ msg('accounts-created') }}</td>
+					<td>
+						{{ wiki.userLogLink(user, project, ec.accountsCreated|num_format, 'newusers') }}
+					</td>
+				</tr>
+			</tbody>
+		{% endif %}
 
-        {# ======================== ADMIN ACTIONS ======================== #}
-        {% if adminStatus is defined and adminStatus == true %}
-            <tbody class="stat-list--group">
-                <tr>
-                    <td colspan="2" class="text-muted">{{ msg('actions-as-admin') }}</td>
-                </tr>
-                <tr>
-                    <td>{{ msg('block') }}</td>
-                    <td>
-                        {{ wiki.userLogLink(user, project, ec.countBlocksSet|num_format, 'block', 'block') }}
-                    </td>
-                </tr>
-                <tr>
-                    <td>{{ msg('reblock') }}</td>
-                    <td>
-                        {{ wiki.userLogLink(user, project, ec.countReblocksSet|num_format, 'block', 'reblock') }}
-                    </td>
-                </tr>
-                <tr>
-                    <td>{{ msg('unblock') }}</td>
-                    <td>
-                        {{ wiki.userLogLink(user, project, ec.countUnblocksSet|num_format, 'block', 'unblock') }}
-                    </td>
-                </tr>
-                <tr>
-                    <td>{{ msg('protect') }}</td>
-                    <td>{{ wiki.userLogLink(user, project, ec.countPagesProtected|num_format, 'protect', 'protect') }}</td>
-                </tr>
-                <tr>
-                    <td>{{ msg('reprotect') }}</td>
-                    <td>{{ wiki.userLogLink(user, project, ec.countPagesReprotected|num_format, 'protect', 'modify') }}</td>
-                </tr>
-                <tr>
-                    <td>{{ msg('unprotect') }}</td>
-                    <td>{{ wiki.userLogLink(user, project, ec.countPagesUnprotected|num_format, 'protect', 'unprotect') }}</td>
-                </tr>
-                <tr>
-                    <td>{{ msg('delete') }}</td>
-                    <td>{{ wiki.userLogLink(user, project, ec.countPagesDeleted|num_format, 'delete', 'delete') }}</td>
-                </tr>
-                <tr>
-                    <td>{{ msg('revision-delete') }}</td>
-                    <td>{{ wiki.userLogLink(user, project, ec.countEditsDeleted|num_format, 'delete', 'revision') }}</td>
-                </tr>
-                <tr>
-                    <td>{{ msg('log-delete') }}</td>
-                    <td>{{ wiki.userLogLink(user, project, ec.countLogsDeleted|num_format, 'delete', 'event') }}</td>
-                </tr>
-                <tr>
-                    <td>{{ msg('restore') }}</td>
-                    <td>{{ wiki.userLogLink(user, project, ec.countPagesRestored|num_format, 'delete', 'restore') }}</td>
-                </tr>
-                <tr>
-                    <td>{{ msg('rights') }}</td>
-                    <td>{{ wiki.userLogLink(user, project, ec.countRightsModified|num_format, 'rights') }}</td>
-                </tr>
-                <tr>
-                    <td>{{ msg('merge') }}</td>
-                    <td>{{ wiki.userLogLink(user, project, ec.merges|num_format, 'merge') }}</td>
-                </tr>
-                <tr>
-                    <td>{{ msg('import') }}</td>
-                    <td>{{ wiki.userLogLink(user, project, ec.countPagesImported|num_format, 'import') }}</td>
-                </tr>
-                {% if isWMF() %}
-                    <tr>
-                        <td>{{ msg('abusefilter') }}</td>
-                        <td>{{ wiki.userLogLink(user, project, ec.countAbuseFilterChanges|num_format, 'abusefilter') }}</td>
-                    </tr>
-                {% endif %}
-                <tr>
-                    <td>{{ msg('contentmodel') }}</td>
-                    <td>{{ wiki.userLogLink(user, project, ec.countContentModelChanges|num_format, 'contentmodel') }}</td>
-                </tr>
-            </tbody>
-        {% else %}
-            {{ blockStats }}
-        {% endif %}
-    </table>
+		{# ======================== ADMIN ACTIONS ======================== #}
+		{% if adminStatus is defined and adminStatus == true %}
+			<tbody class="stat-list--group">
+				<tr>
+					<td colspan="2" class="text-muted">{{ msg('actions-as-admin') }}</td>
+				</tr>
+				<tr>
+					<td>{{ msg('block') }}</td>
+					<td>
+						{{ wiki.userLogLink(user, project, ec.countBlocksSet|num_format, 'block', 'block') }}
+					</td>
+				</tr>
+				<tr>
+					<td>{{ msg('reblock') }}</td>
+					<td>
+						{{ wiki.userLogLink(user, project, ec.countReblocksSet|num_format, 'block', 'reblock') }}
+					</td>
+				</tr>
+				<tr>
+					<td>{{ msg('unblock') }}</td>
+					<td>
+						{{ wiki.userLogLink(user, project, ec.countUnblocksSet|num_format, 'block', 'unblock') }}
+					</td>
+				</tr>
+				<tr>
+					<td>{{ msg('protect') }}</td>
+					<td>{{ wiki.userLogLink(user, project, ec.countPagesProtected|num_format, 'protect', 'protect') }}</td>
+				</tr>
+				<tr>
+					<td>{{ msg('reprotect') }}</td>
+					<td>{{ wiki.userLogLink(user, project, ec.countPagesReprotected|num_format, 'protect', 'modify') }}</td>
+				</tr>
+				<tr>
+					<td>{{ msg('unprotect') }}</td>
+					<td>{{ wiki.userLogLink(user, project, ec.countPagesUnprotected|num_format, 'protect', 'unprotect') }}</td>
+				</tr>
+				<tr>
+					<td>{{ msg('delete') }}</td>
+					<td>{{ wiki.userLogLink(user, project, ec.countPagesDeleted|num_format, 'delete', 'delete') }}</td>
+				</tr>
+				<tr>
+					<td>{{ msg('revision-delete') }}</td>
+					<td>{{ wiki.userLogLink(user, project, ec.countEditsDeleted|num_format, 'delete', 'revision') }}</td>
+				</tr>
+				<tr>
+					<td>{{ msg('log-delete') }}</td>
+					<td>{{ wiki.userLogLink(user, project, ec.countLogsDeleted|num_format, 'delete', 'event') }}</td>
+				</tr>
+				<tr>
+					<td>{{ msg('restore') }}</td>
+					<td>{{ wiki.userLogLink(user, project, ec.countPagesRestored|num_format, 'delete', 'restore') }}</td>
+				</tr>
+				<tr>
+					<td>{{ msg('rights') }}</td>
+					<td>{{ wiki.userLogLink(user, project, ec.countRightsModified|num_format, 'rights') }}</td>
+				</tr>
+				<tr>
+					<td>{{ msg('merge') }}</td>
+					<td>{{ wiki.userLogLink(user, project, ec.merges|num_format, 'merge') }}</td>
+				</tr>
+				<tr>
+					<td>{{ msg('import') }}</td>
+					<td>{{ wiki.userLogLink(user, project, ec.countPagesImported|num_format, 'import') }}</td>
+				</tr>
+				{% if isWMF() %}
+					<tr>
+						<td>{{ msg('abusefilter') }}</td>
+						<td>{{ wiki.userLogLink(user, project, ec.countAbuseFilterChanges|num_format, 'abusefilter') }}</td>
+					</tr>
+				{% endif %}
+				<tr>
+					<td>{{ msg('contentmodel') }}</td>
+					<td>{{ wiki.userLogLink(user, project, ec.countContentModelChanges|num_format, 'contentmodel') }}</td>
+				</tr>
+			</tbody>
+		{% else %}
+			{{ blockStats }}
+		{% endif %}
+	</table>
 </div>
 
 {% if not(user.isIP) %}
-    {# ======================== GLOBAL EDITS ======================== #}
-    <div class="col-lg-4 stat-list clearfix">
-        <table class="table top-project-edit-counts">
-            <tbody class="stat-list--group">
-                <tr>
-                    <td colspan="2" class="text-muted">
-                        {{- msg('top-projects-edit-counts') ~ ' (' ~ msg('approximate')|lower ~ ')' -}}
-                    </td>
-                </tr>
-                {% set topN = 10 %}
-                {% for topProj in gc.globalEditCountsTopN(topN)|filter(topProj => topProj.project.domain is not null) %}
-                    <tr>
-                        <td>
-                            {% if topProj.project.databaseName == project.databaseName %}
-                                <span title="{{ msg('selected') }}">{% if isRTL() %}&#9668;{% else %}&#9658;{% endif %}</span>
-                            {% endif %}
-                            {# use project.domain instead of title due to limited space available in the interface #}
-                            <a href="{{ path('EditCounterResult', {project:topProj.project.domain, username:user.usernameIdent}) }}">
-                                {{- topProj.project.domain -}}
-                            </a>{#-
-                        -#}</td>
-                        <td>
-                            {{- wiki.pageLinkRaw('Special:Contributions/'~user.username, topProj.project, topProj.total|num_format) -}}
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td>{{ msg('global-other-sites-edit-count') }}</td>
-                    <td>{{ gc.globalEditCountWithoutTopN(topN)|num_format }}</td>
-                </tr>
-                <tr>
-                    <td>{{ msg('all-projects') }}</td>
-                    <td>
-                        <strong>
-                            {% if is_sub_request %}
-                                <a href="{{ path('GlobalContribsResult', { username: user.usernameIdent }) }}">{{ gc.globalEditCount|num_format }}</a>
-                            {% else %}
-                                <a href="{{ path('GlobalContribsResult', {username:user.usernameIdent}) }}">
-                                    {{ gc.globalEditCount|num_format }}
-                                </a>
-                            {% endif %}
-                        </strong>
-                    </td>
-                </tr>
-            </tfoot>
-        </table>
-    </div>
+	{# ======================== GLOBAL EDITS ======================== #}
+	<div class="col-lg-4 stat-list clearfix">
+		<table class="table top-project-edit-counts">
+			<tbody class="stat-list--group">
+				<tr>
+					<td colspan="2" class="text-muted">
+						{{- msg('top-projects-edit-counts') ~ ' (' ~ msg('approximate')|lower ~ ')' -}}
+					</td>
+				</tr>
+				{% set topN = 10 %}
+				{% for topProj in gc.globalEditCountsTopN(topN)|filter(topProj => topProj.project.domain is not null) %}
+					<tr>
+						<td>
+							{% if topProj.project.databaseName == project.databaseName %}
+								<span title="{{ msg('selected') }}">{% if isRTL() %}&#9668;{% else %}&#9658;{% endif %}</span>
+							{% endif %}
+							{# use project.domain instead of title due to limited space available in the interface #}
+							<a href="{{ path('EditCounterResult', {project:topProj.project.domain, username:user.usernameIdent}) }}">
+								{{- topProj.project.domain -}}
+							</a>{#-
+						-#}</td>
+						<td>
+							{{- wiki.pageLinkRaw('Special:Contributions/'~user.username, topProj.project, topProj.total|num_format) -}}
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+			<tfoot>
+				<tr>
+					<td>{{ msg('global-other-sites-edit-count') }}</td>
+					<td>{{ gc.globalEditCountWithoutTopN(topN)|num_format }}</td>
+				</tr>
+				<tr>
+					<td>{{ msg('all-projects') }}</td>
+					<td>
+						<strong>
+							{% if is_sub_request %}
+								<a href="{{ path('GlobalContribsResult', { username: user.usernameIdent }) }}">{{ gc.globalEditCount|num_format }}</a>
+							{% else %}
+								<a href="{{ path('GlobalContribsResult', {username:user.usernameIdent}) }}">
+									{{ gc.globalEditCount|num_format }}
+								</a>
+							{% endif %}
+						</strong>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
 {% endif %}
 
 {% if ec.countLiveRevisions %}
-    <div class="basic-info-charts col-lg-12 clearfix">
-        {% if not(user.isIpRange) %}
-            {{
-                chart.pie_chart('deleted_edits',
-                    [{
-                        label: msg('live-edits'),
-                        value: ec.countLiveRevisions,
-                        percentage: ((ec.countLiveRevisions / ec.countAllRevisions) * 100)
-                    },
-                    {
-                        label: msg('deleted-edits'),
-                        value: ec.countDeletedRevisions,
-                        percentage: ((ec.countDeletedRevisions / ec.countAllRevisions) * 100)
-                    }]
-                )
-            }}
-        {% endif %}
-        <div class="pull-left">{{ msg('num-edits-size-interval') }}*
-        <div class="sizechart-container">
-            <canvas id="sizechart-canvas"></canvas>
-        </div>
-        </div>
-        <script type="text/javascript">
-            $(function() {
-                xtools.editcounter.setupSizeHistogram(
-                    {{ ec.editSizeData.sizes|json_encode()|raw }},
-                    ["{{ color(1) }}", "{{ color(0) }}", "{{ color(4) }}"],
-                    ["{{ msg('additions') }}", "{{ msg('removals') }}", "{{ msg('size-zero') }}"],
-                );
-            });
-        </script>
-        <div class="footnotes">
-            * {{ msg('data-limit', [5000, 5000|num_format]) }}
-        </div>
-    </div>
+	<div class="basic-info-charts col-lg-12 clearfix">
+		{% if not(user.isIpRange) %}
+			{{
+				chart.pie_chart('deleted_edits',
+					[{
+						label: msg('live-edits'),
+						value: ec.countLiveRevisions,
+						percentage: ((ec.countLiveRevisions / ec.countAllRevisions) * 100)
+					},
+					{
+						label: msg('deleted-edits'),
+						value: ec.countDeletedRevisions,
+						percentage: ((ec.countDeletedRevisions / ec.countAllRevisions) * 100)
+					}]
+				)
+			}}
+		{% endif %}
+		<div class="pull-left">{{ msg('num-edits-size-interval') }}*
+		<div class="sizechart-container">
+			<canvas id="sizechart-canvas"></canvas>
+		</div>
+		</div>
+		<script type="text/javascript">
+			$(function() {
+				xtools.editcounter.setupSizeHistogram(
+					{{ ec.editSizeData.sizes|json_encode()|raw }},
+					["{{ color(1) }}", "{{ color(0) }}", "{{ color(4) }}"],
+					["{{ msg('additions') }}", "{{ msg('removals') }}", "{{ msg('size-zero') }}"],
+				);
+			});
+		</script>
+		<div class="footnotes">
+			* {{ msg('data-limit', [5000, 5000|num_format]) }}
+		</div>
+	</div>
 {% endif %}
 
 {% endblock %}

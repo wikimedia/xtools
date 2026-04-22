@@ -4,150 +4,150 @@
 
 {% block body %}
 <div class="panel panel-primary">
-    <header class="panel-heading">
-        <div class="text-center xt-heading-top">
-            <a target="_blank" href="https://www.mediawiki.org/wiki/Special:MyLanguage/XTools/Admin_Stats" class="pull-right glyphicon glyphicon-question-sign plainlink help-icon"></a>
-            <a class="back-to-search" href="{{ path('AdminStats', {'group': as.type}) }}">
-                <span class="glyphicon glyphicon-chevron-left"></span>
-                {{ msg('back') }}
-            </a>
-            <a target="_blank" href="{{ project.url }}">{{ project.title }}</a>
-            <small>
-                &bull;
-                {{ as.startDate }}
-                &mdash;
-                {{ as.endDate }}
-            </small>
-        </div>
-    </header>
+	<header class="panel-heading">
+		<div class="text-center xt-heading-top">
+			<a target="_blank" href="https://www.mediawiki.org/wiki/Special:MyLanguage/XTools/Admin_Stats" class="pull-right glyphicon glyphicon-question-sign plainlink help-icon"></a>
+			<a class="back-to-search" href="{{ path('AdminStats', {'group': as.type}) }}">
+				<span class="glyphicon glyphicon-chevron-left"></span>
+				{{ msg('back') }}
+			</a>
+			<a target="_blank" href="{{ project.url }}">{{ project.title }}</a>
+			<small>
+				&bull;
+				{{ as.startDate }}
+				&mdash;
+				{{ as.endDate }}
+			</small>
+		</div>
+	</header>
 
-    <div class="panel-body xt-panel-body">
-        <h3 class="text-center">{{ msg('tool-' ~ as.type ~ 'stats') }}</h3>
+	<div class="panel-body xt-panel-body">
+		<h3 class="text-center">{{ msg('tool-' ~ as.type ~ 'stats') }}</h3>
 
-        {% set content %}
-            <div class="col-lg-12 stat-list">
-                <table class="table"><tbody>
-                    <tr>
-                        <td>{{ msg('start') }}</td>
-                        <td>{{ as.startDate }}</td>
-                    </tr>
-                    <tr>
-                        <td>{{ msg('end') }}</td>
-                        <td>
-                            {{ as.endDate }}
-                            ({{ as.numDays|num_format }} {{ msg('num-days', [as.numDays]) }})
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>{{ msg('log-types') }}</td>
-                        <td>
-                            {% for action in as.actions %}
-                                {{ msg(action)|lower }}{% if not loop.last %},{% endif %}
-                            {% endfor %}
-                        </td>
-                    </tr>
-                    {# The value is 0 on wikis that don't have the relevant user group, so this information is not applicable. #}
-                    {% if as.numInRelevantUserGroup > 0 %}
-                        <tr>
-                            <td>{{ msg('current-' ~ as.type ~ 's') }}</td>
-                            <td>
-                                {{ wiki.userGroupLink(as.relevantUserGroup, project, as.numInRelevantUserGroup|num_format) }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>{{ msg('non-' ~ as.type ~ 's-with-actions') }}</td>
-                            <td>{{ as.numWithActionsNotInGroup|num_format }}</td>
-                        </tr>
-                    {% endif %}
-                </tbody></table>
-            </div>
-        {% endset %}
-        {{ layout.content_block('summary', content) }}
+		{% set content %}
+			<div class="col-lg-12 stat-list">
+				<table class="table"><tbody>
+					<tr>
+						<td>{{ msg('start') }}</td>
+						<td>{{ as.startDate }}</td>
+					</tr>
+					<tr>
+						<td>{{ msg('end') }}</td>
+						<td>
+							{{ as.endDate }}
+							({{ as.numDays|num_format }} {{ msg('num-days', [as.numDays]) }})
+						</td>
+					</tr>
+					<tr>
+						<td>{{ msg('log-types') }}</td>
+						<td>
+							{% for action in as.actions %}
+								{{ msg(action)|lower }}{% if not loop.last %},{% endif %}
+							{% endfor %}
+						</td>
+					</tr>
+					{# The value is 0 on wikis that don't have the relevant user group, so this information is not applicable. #}
+					{% if as.numInRelevantUserGroup > 0 %}
+						<tr>
+							<td>{{ msg('current-' ~ as.type ~ 's') }}</td>
+							<td>
+								{{ wiki.userGroupLink(as.relevantUserGroup, project, as.numInRelevantUserGroup|num_format) }}
+							</td>
+						</tr>
+						<tr>
+							<td>{{ msg('non-' ~ as.type ~ 's-with-actions') }}</td>
+							<td>{{ as.numWithActionsNotInGroup|num_format }}</td>
+						</tr>
+					{% endif %}
+				</tbody></table>
+			</div>
+		{% endset %}
+		{{ layout.content_block('summary', content) }}
 
-        <div style="clear:both"></div>
+		<div style="clear:both"></div>
 
-        {% set content %}
-            <p>{{ msg(as.type ~ '-stats-notice') }} {{ msg(as.type ~ '-stats-notice2') }}</p>
-            <table class="table table-bordered table-hover table-striped top-editors-table table-sticky-header">
-                <thead><tr>
-                    <th>#</th>
-                    {% set headings = ['username', 'user-groups', 'links'] %}
-                    {% if as.actions|length > 1 %}
-                        {% set headings = headings|merge(['total']) %}
-                    {% endif %}
-                    {% for key in headings %}
-                        <th>
-                            <span{% if key != "links" %} class="sort-link sort-link--{{ key }}" data-column="{{ key }}"{% endif %}>
-                                {{ msg(key)|ucfirst }}
-                                {% if key != 'links' %}<span class="glyphicon glyphicon-sort"></span>{% endif %}
-                            </span>
-                        </th>
-                    {% endfor %}
-                    {% for key in as.actions %}
-                        <th>
-                            <span class="sort-link sort-link--{{ key }}" data-column="{{ key }}">
-                                {{ msg(key)|ucfirst }}
-                                <span class="glyphicon glyphicon-sort"></span>
-                            </span>
-                        </th>
-                    {% endfor %}
-                </tr>
-                <tr>
-                    {% set totals = as.totalsRow %}
-                    <td></td>
-                    <td><i>{{ msg('total') }}</i></td>
-                    <td></td>
-                    <td></td>
-                    {% if as.actions|length > 1 %}
-                        <td class="sort-entry--total" data-value="{{ totals.total }}">{{ totals.total|num_format }}</td>
-                    {% endif %}
-                    {% for action in as.actions %}
-                        <td class="sort-entry--{{ action }}" data-value="{{ totals[action] }}">{{ totals[action]|num_format }}</td>
-                    {% endfor %}
-                </tr>
-                </thead>
-                <tbody>
-                    {% for user in as.stats %}
-                        {% set username = user.username %}
-                        <tr>
-                            <td class="sort-entry--rank">{{ loop.index|num_format }}</td>
-                            <td class="sort-entry--username" data-value="{{ username }}">
-                                {{ wiki.userLink(username, project) }}
-                            </td>
-                            {% set groups = as.userGroupIcons|filter((url, group) => group in user['user-groups']) %}
-                            <td class="sort-entry--user-groups" data-value="{{ groups|length ~ '|' ~ groups|keys|sort|join('|') }}">
-                                {% for group, url in groups %}
-                                    <img class="user-group-icon" src="{{ url }}" title="{{ rightsNames[group]|ucfirst }}" alt="{{ rightsNames[group] }}" />
-                                {% endfor %}
-                            </td>
-                            <td>
-                                {% if enabled('EditCounter') %}
-                                    <a title="{{ msg('tool-editcounter') }}" href="{{ path('EditCounterResult', {project: project.domain, username: username}) }}" >ec</a>
-                                    &middot;
-                                {% endif %}
-                                {% if isWMF() %}
-                                    {{ wiki.gucLink(username, 'guc') }}
-                                    &middot;
-                                {% endif %}
-                                {{ wiki.userLogLink(username, project, msg('log')|lower) }}
-                            </td>
-                            {% if as.actions|length > 1 %}
-                                <td class="sort-entry--total" data-value="{{ user.total }}">{{ user.total|num_format }}</td>
-                            {% endif %}
-                            {% for action in as.actions %}
-                                <td class="sort-entry--{{ action }}" data-value="{{ user[action] }}">{{ user[action]|num_format }}</td>
-                            {% endfor %}
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% endset %}
+		{% set content %}
+			<p>{{ msg(as.type ~ '-stats-notice') }} {{ msg(as.type ~ '-stats-notice2') }}</p>
+			<table class="table table-bordered table-hover table-striped top-editors-table table-sticky-header">
+				<thead><tr>
+					<th>#</th>
+					{% set headings = ['username', 'user-groups', 'links'] %}
+					{% if as.actions|length > 1 %}
+						{% set headings = headings|merge(['total']) %}
+					{% endif %}
+					{% for key in headings %}
+						<th>
+							<span{% if key != "links" %} class="sort-link sort-link--{{ key }}" data-column="{{ key }}"{% endif %}>
+								{{ msg(key)|ucfirst }}
+								{% if key != 'links' %}<span class="glyphicon glyphicon-sort"></span>{% endif %}
+							</span>
+						</th>
+					{% endfor %}
+					{% for key in as.actions %}
+						<th>
+							<span class="sort-link sort-link--{{ key }}" data-column="{{ key }}">
+								{{ msg(key)|ucfirst }}
+								<span class="glyphicon glyphicon-sort"></span>
+							</span>
+						</th>
+					{% endfor %}
+				</tr>
+				<tr>
+					{% set totals = as.totalsRow %}
+					<td></td>
+					<td><i>{{ msg('total') }}</i></td>
+					<td></td>
+					<td></td>
+					{% if as.actions|length > 1 %}
+						<td class="sort-entry--total" data-value="{{ totals.total }}">{{ totals.total|num_format }}</td>
+					{% endif %}
+					{% for action in as.actions %}
+						<td class="sort-entry--{{ action }}" data-value="{{ totals[action] }}">{{ totals[action]|num_format }}</td>
+					{% endfor %}
+				</tr>
+				</thead>
+				<tbody>
+					{% for user in as.stats %}
+						{% set username = user.username %}
+						<tr>
+							<td class="sort-entry--rank">{{ loop.index|num_format }}</td>
+							<td class="sort-entry--username" data-value="{{ username }}">
+								{{ wiki.userLink(username, project) }}
+							</td>
+							{% set groups = as.userGroupIcons|filter((url, group) => group in user['user-groups']) %}
+							<td class="sort-entry--user-groups" data-value="{{ groups|length ~ '|' ~ groups|keys|sort|join('|') }}">
+								{% for group, url in groups %}
+									<img class="user-group-icon" src="{{ url }}" title="{{ rightsNames[group]|ucfirst }}" alt="{{ rightsNames[group] }}" />
+								{% endfor %}
+							</td>
+							<td>
+								{% if enabled('EditCounter') %}
+									<a title="{{ msg('tool-editcounter') }}" href="{{ path('EditCounterResult', {project: project.domain, username: username}) }}" >ec</a>
+									&middot;
+								{% endif %}
+								{% if isWMF() %}
+									{{ wiki.gucLink(username, 'guc') }}
+									&middot;
+								{% endif %}
+								{{ wiki.userLogLink(username, project, msg('log')|lower) }}
+							</td>
+							{% if as.actions|length > 1 %}
+								<td class="sort-entry--total" data-value="{{ user.total }}">{{ user.total|num_format }}</td>
+							{% endif %}
+							{% for action in as.actions %}
+								<td class="sort-entry--{{ action }}" data-value="{{ user[action] }}">{{ user[action]|num_format }}</td>
+							{% endfor %}
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		{% endset %}
 
-        {% set params = {'project': project.domain, 'start': as.startDate, 'end': as.endDate, 'group': as.type, 'actions': as.actions|join('|')} %}
-        {% set downloadLink %}
-            {{ layout.downloadLink('AdminStatsResult', params, ['wikitext', 'csv', 'tsv'], 'ProjectApiAdminStats') }}
-        {% endset %}
-        {{ layout.content_block(as.type ~ 's', content, downloadLink) }}
-    </div>
+		{% set params = {'project': project.domain, 'start': as.startDate, 'end': as.endDate, 'group': as.type, 'actions': as.actions|join('|')} %}
+		{% set downloadLink %}
+			{{ layout.downloadLink('AdminStatsResult', params, ['wikitext', 'csv', 'tsv'], 'ProjectApiAdminStats') }}
+		{% endset %}
+		{{ layout.content_block(as.type ~ 's', content, downloadLink) }}
+	</div>
 </div>
 {% endblock %}

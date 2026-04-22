@@ -1,41 +1,41 @@
 {#
  # Generate a collapsible Bootstrap .panel with a heading
- # @param string       title       - i18n message that is the title of the content block, shown in a header
- # @param string       content     - raw content to show in the section body
+ # @param string	   title	   - i18n message that is the title of the content block, shown in a header
+ # @param string	   content	 - raw content to show in the section body
  # @param string|array description - shown on the right in grayed text. Use array to show all in given order
- # @param string       id          - id of the section, defaults to the title
- # @param bool         notranslate - don't translate the 'title'
+ # @param string	   id		  - id of the section, defaults to the title
+ # @param bool		 notranslate - don't translate the 'title'
  #}
 {% macro content_block(title, content, description, id = null, notranslate = false, toggle = true) %}
-    {% if id is null %}
-        {% set id = title %}
-    {% endif %}
-    <section class="panel panel-default clearfix" id="{{ id }}">
-        <header class="panel-heading col-lg-12">
-            <h4>
-                {% if notranslate %}
-                    {{ title }}
-                {% else %}
-                    {{ msg(title) }}
-                {% endif %}
-                {% if toggle %}
-                    <small class='xt-show'>[{{ msg('show') | lower }}]</small>
-                    <small class='xt-hide'>[{{ msg('hide') | lower }}]</small>
-                {% endif %}
-                {% if description is defined %}
-                    {% if description is not iterable %}
-                        {% set description = [description] %}
-                    {% endif %}
-                    {% for el in description|reverse %}
-                        <span class='pull-right text-muted xt-panel-description'>
-                            {{ msgIfExists(el) }}
-                        </span>
-                    {% endfor %}
-                {% endif %}
-            </h4>
-        </header>
-        <div class="panel-body col-lg-12">{{ content }}</div>
-    </section>
+	{% if id is null %}
+		{% set id = title %}
+	{% endif %}
+	<section class="panel panel-default clearfix" id="{{ id }}">
+		<header class="panel-heading col-lg-12">
+			<h4>
+				{% if notranslate %}
+					{{ title }}
+				{% else %}
+					{{ msg(title) }}
+				{% endif %}
+				{% if toggle %}
+					<small class='xt-show'>[{{ msg('show') | lower }}]</small>
+					<small class='xt-hide'>[{{ msg('hide') | lower }}]</small>
+				{% endif %}
+				{% if description is defined %}
+					{% if description is not iterable %}
+						{% set description = [description] %}
+					{% endif %}
+					{% for el in description|reverse %}
+						<span class='pull-right text-muted xt-panel-description'>
+							{{ msgIfExists(el) }}
+						</span>
+					{% endfor %}
+				{% endif %}
+			</h4>
+		</header>
+		<div class="panel-body col-lg-12">{{ content }}</div>
+	</section>
 {% endmacro %}
 
 {#
@@ -47,25 +47,25 @@
  #   the link text will say 'See full statistics' instead of 'Back'.
  #}
 {% macro userHeading(user, project, tool, args = {}) %}
-    {% import 'macros/wiki.html.twig' as wiki %}
-    <header class="panel-heading">
-        <div class="text-center xt-heading-top">
-            <a target="_blank" href="https://www.mediawiki.org/wiki/Special:MyLanguage/XTools/{{ tool }}" class="pull-right glyphicon glyphicon-question-sign plainlink help-icon"></a>
-            <a class="back-to-search" href="{{ path(tool ~ (args is not empty ? 'Result' : 'Project'), {'project': project.domain}|merge(args)) }}">
-                <span class="glyphicon glyphicon-chevron-left"></span>
-                {% if args is not empty %}
-                    {{ msg('see-full-statistics') }}
-                {% else %}
-                    {{ msg('back') }}
-                {% endif %}
-            </a>
-            {{ wiki.userLink(user, project) }}
-            <small>
-                &bull;
-                {{ project.domain }}
-            </small>
-        </div>
-    </header>
+	{% import 'macros/wiki.html.twig' as wiki %}
+	<header class="panel-heading">
+		<div class="text-center xt-heading-top">
+			<a target="_blank" href="https://www.mediawiki.org/wiki/Special:MyLanguage/XTools/{{ tool }}" class="pull-right glyphicon glyphicon-question-sign plainlink help-icon"></a>
+			<a class="back-to-search" href="{{ path(tool ~ (args is not empty ? 'Result' : 'Project'), {'project': project.domain}|merge(args)) }}">
+				<span class="glyphicon glyphicon-chevron-left"></span>
+				{% if args is not empty %}
+					{{ msg('see-full-statistics') }}
+				{% else %}
+					{{ msg('back') }}
+				{% endif %}
+			</a>
+			{{ wiki.userLink(user, project) }}
+			<small>
+				&bull;
+				{{ project.domain }}
+			</small>
+		</div>
+	</header>
 {% endmacro %}
 
 {#
@@ -75,112 +75,112 @@
  # @param int[] namespaces - Namespaces that you want to be linked.
  #}
 {% macro nsToc(project, namespaces) %}
-    <div class="text-center xt-toc">
-        {% for ns in namespaces|filter(ns => ns is even or (ns is odd and not(ns - 1 in namespaces))) %}
-            <span>
-                <a href="#{{ ns }}" data-section="{{ ns }}">{{ nsName(ns, project.namespaces) }}</a>
-                {% if ns is even and ns + 1 in namespaces %}
-                    (<a href="#{{ ns + 1 }}" data-section="{{ ns + 1 }}">{{ msg('talk')|lower }}</a>)
-                {% endif %}
-            </span>
-        {% endfor %}
-    </div>
+	<div class="text-center xt-toc">
+		{% for ns in namespaces|filter(ns => ns is even or (ns is odd and not(ns - 1 in namespaces))) %}
+			<span>
+				<a href="#{{ ns }}" data-section="{{ ns }}">{{ nsName(ns, project.namespaces) }}</a>
+				{% if ns is even and ns + 1 in namespaces %}
+					(<a href="#{{ ns + 1 }}" data-section="{{ ns + 1 }}">{{ msg('talk')|lower }}</a>)
+				{% endif %}
+			</span>
+		{% endfor %}
+	</div>
 {% endmacro %}
 
 {% macro alert(style, message, raw = false) %}
-    <p class="alert alert-{{ style }} alert-dismissible xt-alert{% if style == 'danger' %} strong{% endif %}" role="alert">
-        <button class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-        {% if raw %}
-            {{ message|raw }}
-        {% else %}
-            {{ message }}
-        {% endif %}
-    </p>
+	<p class="alert alert-{{ style }} alert-dismissible xt-alert{% if style == 'danger' %} strong{% endif %}" role="alert">
+		<button class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
+		{% if raw %}
+			{{ message|raw }}
+		{% else %}
+			{{ message }}
+		{% endif %}
+	</p>
 {% endmacro %}
 
 {% macro downloadLink(path, params, types = ['wikitext', 'csv', 'json', 'png'], jsonPath) %}
-    <div class="btn-group download-dropdown dropdown">
-        <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <span class="glyphicon glyphicon-download-alt"></span>
-            {{ msg('download-label') }}
-            <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu dropdown-menu-right">
-            {% for type in types %}
-                <li>
-                    <a target="_blank" class="download-link download-{{ type|lower }}" href="{{ path(path, params|merge({format: type})) }}">{{ msgIfExists(type) }}</a>
-                </li>
-            {% endfor %}
-            {% if jsonPath is not empty %}
-                <li>
-                    <a target="_blank" class="download-link download-json" href="{{ path(jsonPath, params) }}">{{ msg('json') }}</a>
-                </li>
-            {% endif %}
-        </ul>
-    </div>
+	<div class="btn-group download-dropdown dropdown">
+		<button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			<span class="glyphicon glyphicon-download-alt"></span>
+			{{ msg('download-label') }}
+			<span class="caret"></span>
+		</button>
+		<ul class="dropdown-menu dropdown-menu-right">
+			{% for type in types %}
+				<li>
+					<a target="_blank" class="download-link download-{{ type|lower }}" href="{{ path(path, params|merge({format: type})) }}">{{ msgIfExists(type) }}</a>
+				</li>
+			{% endfor %}
+			{% if jsonPath is not empty %}
+				<li>
+					<a target="_blank" class="download-link download-json" href="{{ path(jsonPath, params) }}">{{ msg('json') }}</a>
+				</li>
+			{% endif %}
+		</ul>
+	</div>
 {% endmacro %}
 
 {% macro contributionsNav(offset, length, limit = 50) %}
-    <div class="contributions-nav clearfix">
-        {% if offset %}
-            <a href="#" class="pull-left contributions--prev">
-                <span class="glyphicon glyphicon-arrow-{% if isRTL() %}right{% else %}left{% endif %}"></span>
-                <span class="contributions--prev-text">{{ msg('pager-newer-n', [limit])|ucfirst }}</span>
-            </a>
-        {% endif %}
-        {% if length == limit %}
-            <a href="#" class="pull-right contributions--next">
-                <span class="contributions--next-text">{{ msg('pager-older-n', [limit])|ucfirst }}</span>
-                <span class="glyphicon glyphicon-arrow-{% if isRTL() %}left{% else %}right{% endif %}"></span>
-            </a>
-        {% endif %}
-    </div>
+	<div class="contributions-nav clearfix">
+		{% if offset %}
+			<a href="#" class="pull-left contributions--prev">
+				<span class="glyphicon glyphicon-arrow-{% if isRTL() %}right{% else %}left{% endif %}"></span>
+				<span class="contributions--prev-text">{{ msg('pager-newer-n', [limit])|ucfirst }}</span>
+			</a>
+		{% endif %}
+		{% if length == limit %}
+			<a href="#" class="pull-right contributions--next">
+				<span class="contributions--next-text">{{ msg('pager-older-n', [limit])|ucfirst }}</span>
+				<span class="glyphicon glyphicon-arrow-{% if isRTL() %}left{% else %}right{% endif %}"></span>
+			</a>
+		{% endif %}
+	</div>
 {% endmacro %}
 
 {% macro apiLink() %}
-    <a href="{{ path('app.swagger_ui') }}">{{ msg('api') }}</a>
+	<a href="{{ path('app.swagger_ui') }}">{{ msg('api') }}</a>
 {% endmacro %}
 
 {% macro contributions(project, revs, offset, limit = 50) %}
-    {% from _self import contributionsNav as contributionsNav %}
-    {% import 'macros/wiki.html.twig' as wiki %}
+	{% from _self import contributionsNav as contributionsNav %}
+	{% import 'macros/wiki.html.twig' as wiki %}
 
-    {% if revs|length == 0 %}
-        <div class="alert alert-info">
-            {{ msg('no-contribs') }}
-        </div>
-    {% else %}
-        {{ contributionsNav(offset, revs|length, limit) }}
-        <table class="table table-bordered table-hover table-striped contributions-table">
-            <thead>
-                {% for key in ['page-title', 'date', 'links', 'size', 'edit-summary'] %}
-                    <th>{{ msg(key)|ucfirst }}</th>
-                {% endfor %}
-            </thead>
-            <tbody>
-                {% for edit in revs %}
-                    <tr>
-                        <td>{{ wiki.pageLinkRaw(edit.page.title(true), project) }}</td>
-                        <td class="contribs-row-date" data-value="{{ edit.utcTimestamp }}">{{ wiki.permaLink(edit) }}</td>
-                        <td>
-                            {{ wiki.diffLink(edit) }}
-                            &middot;
-                            {{ wiki.pageHistLinkRaw(edit.page.title(true), project) }}
-                            {% if enabled('TopEdits') %}
-                            &middot;
-                            <a href="{{ path('TopEditsResultPage', { 'project': project.domain, 'username': edit.user.usernameIdent, 'namespace': '', 'page': edit.page.title(true) }) }}">{{ msg('tool-topedits') }}</a>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {{ edit.size|diff_format }}
-                        </td>
-                        <td>{{ edit.wikifiedComment(true)|raw }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {{ contributionsNav(offset, revs|length, limit) }}
-    {% endif %}
+	{% if revs|length == 0 %}
+		<div class="alert alert-info">
+			{{ msg('no-contribs') }}
+		</div>
+	{% else %}
+		{{ contributionsNav(offset, revs|length, limit) }}
+		<table class="table table-bordered table-hover table-striped contributions-table">
+			<thead>
+				{% for key in ['page-title', 'date', 'links', 'size', 'edit-summary'] %}
+					<th>{{ msg(key)|ucfirst }}</th>
+				{% endfor %}
+			</thead>
+			<tbody>
+				{% for edit in revs %}
+					<tr>
+						<td>{{ wiki.pageLinkRaw(edit.page.title(true), project) }}</td>
+						<td class="contribs-row-date" data-value="{{ edit.utcTimestamp }}">{{ wiki.permaLink(edit) }}</td>
+						<td>
+							{{ wiki.diffLink(edit) }}
+							&middot;
+							{{ wiki.pageHistLinkRaw(edit.page.title(true), project) }}
+							{% if enabled('TopEdits') %}
+							&middot;
+							<a href="{{ path('TopEditsResultPage', { 'project': project.domain, 'username': edit.user.usernameIdent, 'namespace': '', 'page': edit.page.title(true) }) }}">{{ msg('tool-topedits') }}</a>
+							{% endif %}
+						</td>
+						<td>
+							{{ edit.size|diff_format }}
+						</td>
+						<td>{{ edit.wikifiedComment(true)|raw }}</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+		{{ contributionsNav(offset, revs|length, limit) }}
+	{% endif %}
 {% endmacro %}

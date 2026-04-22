@@ -1,31 +1,31 @@
 {% extends '@!NelmioApiDoc/SwaggerUi/index.html.twig' %}
 
 {% block stylesheets %}
-    {{ nelmioAsset(assets_mode, 'swagger-ui/swagger-ui.css') }}
-    {{ nelmioAsset(assets_mode, 'style.css') }}
-    <style>
-        body {
-            background: url('{{ asset('/build/images/gradient.png') }}');
-        }
-        header::before {
-            background: #fff url('{{ asset('/build/images/gradient.png') }}');
-        }
-        header #logo img {
-            background: transparent;
-        }
-    </style>
+	{{ nelmioAsset(assets_mode, 'swagger-ui/swagger-ui.css') }}
+	{{ nelmioAsset(assets_mode, 'style.css') }}
+	<style>
+		body {
+			background: url('{{ asset('/build/images/gradient.png') }}');
+		}
+		header::before {
+			background: #fff url('{{ asset('/build/images/gradient.png') }}');
+		}
+		header #logo img {
+			background: transparent;
+		}
+	</style>
 {% endblock %}
 
 {% block swagger_initialization %}
-    <script type="text/javascript">
-        window.onload = loadSwaggerUI({
-            deepLinking: true,
-        });
-    </script>
+	<script type="text/javascript">
+		window.onload = loadSwaggerUI({
+			deepLinking: true,
+		});
+	</script>
 {% endblock %}
 
 {% block header %}
-    <a style="text-decoration: none;" id="logo" href="/">
-        <img src="{{ asset('/build/images/logo.svg') }}" alt="Logo" />
-    </a>
+	<a style="text-decoration: none;" id="logo" href="/">
+		<img src="{{ asset('/build/images/logo.svg') }}" alt="Logo" />
+	</a>
 {% endblock %}

@@ -5,180 +5,180 @@
 
 {% block body %}
 <div class="panel panel-primary">
-    {{ layout.userHeading(user, project, 'EditSummary') }}
+	{{ layout.userHeading(user, project, 'EditSummary') }}
 
-    <div class="panel-body xt-panel-body">
-        {{ wiki.userLinks(user, project, 'EditSummary') }}
+	<div class="panel-body xt-panel-body">
+		{{ wiki.userLinks(user, project, 'EditSummary') }}
 
-        <h3 class="text-center">{{ msg('tool-editsummary-desc') }}</h3>
+		<h3 class="text-center">{{ msg('tool-editsummary-desc') }}</h3>
 
-        {% set content %}
-            <div class="col-lg-6 stat-list clearfix">
-                <table class="table"><tbody>
-                    <tr>
-                        <td>{{ msg('username') }}</td>
-                        <td>{{ wiki.userLink(user, project) }}</td>
-                    </tr>
-                    <tr>
-                        <td>{{ msg('namespace') }}</td>
-                        <td>{{ nsName(namespace, project.namespaces) }}</td>
-                    </tr>
-                    {% if es.start is not empty %}
-                        <tr>
-                            <td>{{ msg('start') }}</td>
-                            <td>{{ es.startDate }}</td>
-                        </tr>
-                    {% endif %}
-                    {% if es.end is not empty %}
-                        <tr>
-                            <td>{{ msg('end') }}</td>
-                            <td>{{ es.endDate }}</td>
-                        </tr>
-                    {% endif %}
-                    <tr>
-                        <td class="stat-list--new-group">{{ msg('live-edits') }}</td>
-                        <td class="stat-list--new-group">{{ es.totalEdits|num_format }}</td>
-                    </tr>
-                    <tr>
-                        <td>{{ msg('edits-with-summaries') }}</td>
-                        <td>
-                            {{ es.totalSummaries|num_format }}
-                            &middot;
-                            ({{ es.totalSummaries|percent_format(es.totalEdits) }})
-                        </td>
-                    </tr>
-                </tbody></table>
-            </div>
-            <div class="col-lg-6 stat-list clearfix">
-                <table class="table"><tbody>
-                    <tr>
-                        <td class="stat-list--new-group">{{ msg('major-edits') }}</td>
-                        <td class="stat-list--new-group">{{ es.totalEditsMajor|num_format }}</td>
-                    </tr>
-                    <tr>
-                        <td>{{ msg('major-edits-with-summaries') }}</td>
-                        <td>
-                            {{ es.totalSummariesMajor|num_format }}
-                            &middot;
-                            ({{ es.totalSummariesMajor|percent_format(es.totalEditsMajor) }})
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>{{ msg('edit-summary-recent-major', [es.recentEditsMajor]) }}</td>
-                        <td>
-                            {{ es.recentSummariesMajor|num_format }}
-                            &middot;
-                            ({{ es.recentSummariesMajor|percent_format(es.recentEditsMajor) }})
-                        </td>
-                    </tr>
+		{% set content %}
+			<div class="col-lg-6 stat-list clearfix">
+				<table class="table"><tbody>
+					<tr>
+						<td>{{ msg('username') }}</td>
+						<td>{{ wiki.userLink(user, project) }}</td>
+					</tr>
+					<tr>
+						<td>{{ msg('namespace') }}</td>
+						<td>{{ nsName(namespace, project.namespaces) }}</td>
+					</tr>
+					{% if es.start is not empty %}
+						<tr>
+							<td>{{ msg('start') }}</td>
+							<td>{{ es.startDate }}</td>
+						</tr>
+					{% endif %}
+					{% if es.end is not empty %}
+						<tr>
+							<td>{{ msg('end') }}</td>
+							<td>{{ es.endDate }}</td>
+						</tr>
+					{% endif %}
+					<tr>
+						<td class="stat-list--new-group">{{ msg('live-edits') }}</td>
+						<td class="stat-list--new-group">{{ es.totalEdits|num_format }}</td>
+					</tr>
+					<tr>
+						<td>{{ msg('edits-with-summaries') }}</td>
+						<td>
+							{{ es.totalSummaries|num_format }}
+							&middot;
+							({{ es.totalSummaries|percent_format(es.totalEdits) }})
+						</td>
+					</tr>
+				</tbody></table>
+			</div>
+			<div class="col-lg-6 stat-list clearfix">
+				<table class="table"><tbody>
+					<tr>
+						<td class="stat-list--new-group">{{ msg('major-edits') }}</td>
+						<td class="stat-list--new-group">{{ es.totalEditsMajor|num_format }}</td>
+					</tr>
+					<tr>
+						<td>{{ msg('major-edits-with-summaries') }}</td>
+						<td>
+							{{ es.totalSummariesMajor|num_format }}
+							&middot;
+							({{ es.totalSummariesMajor|percent_format(es.totalEditsMajor) }})
+						</td>
+					</tr>
+					<tr>
+						<td>{{ msg('edit-summary-recent-major', [es.recentEditsMajor]) }}</td>
+						<td>
+							{{ es.recentSummariesMajor|num_format }}
+							&middot;
+							({{ es.recentSummariesMajor|percent_format(es.recentEditsMajor) }})
+						</td>
+					</tr>
 
-                    <tr>
-                        <td class="stat-list--new-group">{{ msg('minor-edits') }}</td>
-                        <td class="stat-list--new-group">{{ es.totalEditsMinor|num_format }}</td>
-                    </tr>
-                    <tr>
-                        <td>{{ msg('minor-edits-with-summaries') }}</td>
-                        <td>
-                            {{ es.totalSummariesMinor|num_format }}
-                            &middot;
-                            ({{ es.totalSummariesMinor|percent_format(es.totalEditsMinor) }})
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>{{ msg('edit-summary-recent-minor', [es.recentEditsMinor]) }}</td>
-                        <td>
-                            {{ es.recentSummariesMinor|num_format }}
-                            &middot;
-                            ({{ es.recentSummariesMinor|percent_format(es.recentEditsMinor) }})
-                        </td>
-                    </tr>
-                </tbody></table>
-            </div>
-            <div style="clear:both"></div>
-            {% if es.totalEdits > 0 %}
-                <div class="basic-info-charts col-lg-12 clearfix">
-                    {{
-                        chart.pie_chart('total_summaries',
-                            [{
-                                label: msg('with-summary'),
-                                value: es.totalSummaries,
-                                percentage: (es.totalSummaries / es.totalEdits) * 100
-                            },
-                            {
-                                label: msg('no-summary'),
-                                value: es.totalEdits - es.totalSummaries,
-                                percentage: 100 - ((es.totalSummaries / es.totalEdits) * 100)
-                            }]
-                        )
-                    }}
-                    {{
-                        chart.pie_chart('major_summaries',
-                            [{
-                                label: msg('major-edits-with-summaries'),
-                                value: es.totalSummariesMajor,
-                                percentage: (es.totalSummariesMajor / es.totalEditsMajor) * 100
-                            },
-                            {
-                                label: msg('no-summary'),
-                                value: es.totalEditsMajor - es.totalSummariesMajor,
-                                percentage: 100 - ((es.totalSummariesMajor / es.totalEditsMajor) * 100)
-                            }]
-                        )
-                    }}
-                </div>
-            {% endif %}
-        {% endset %}
-        {% set downloadLink %}
-            {{ layout.downloadLink('EditSummaryResult', {project: project.domain, username: user.usernameIdent, namespace: es.namespace, start: es.startDate, end: es.endDate}, [], 'UserApiEditSummaries') }}
-        {% endset %}
-        {{ layout.content_block('summary', content, downloadLink) }}
+					<tr>
+						<td class="stat-list--new-group">{{ msg('minor-edits') }}</td>
+						<td class="stat-list--new-group">{{ es.totalEditsMinor|num_format }}</td>
+					</tr>
+					<tr>
+						<td>{{ msg('minor-edits-with-summaries') }}</td>
+						<td>
+							{{ es.totalSummariesMinor|num_format }}
+							&middot;
+							({{ es.totalSummariesMinor|percent_format(es.totalEditsMinor) }})
+						</td>
+					</tr>
+					<tr>
+						<td>{{ msg('edit-summary-recent-minor', [es.recentEditsMinor]) }}</td>
+						<td>
+							{{ es.recentSummariesMinor|num_format }}
+							&middot;
+							({{ es.recentSummariesMinor|percent_format(es.recentEditsMinor) }})
+						</td>
+					</tr>
+				</tbody></table>
+			</div>
+			<div style="clear:both"></div>
+			{% if es.totalEdits > 0 %}
+				<div class="basic-info-charts col-lg-12 clearfix">
+					{{
+						chart.pie_chart('total_summaries',
+							[{
+								label: msg('with-summary'),
+								value: es.totalSummaries,
+								percentage: (es.totalSummaries / es.totalEdits) * 100
+							},
+							{
+								label: msg('no-summary'),
+								value: es.totalEdits - es.totalSummaries,
+								percentage: 100 - ((es.totalSummaries / es.totalEdits) * 100)
+							}]
+						)
+					}}
+					{{
+						chart.pie_chart('major_summaries',
+							[{
+								label: msg('major-edits-with-summaries'),
+								value: es.totalSummariesMajor,
+								percentage: (es.totalSummariesMajor / es.totalEditsMajor) * 100
+							},
+							{
+								label: msg('no-summary'),
+								value: es.totalEditsMajor - es.totalSummariesMajor,
+								percentage: 100 - ((es.totalSummariesMajor / es.totalEditsMajor) * 100)
+							}]
+						)
+					}}
+				</div>
+			{% endif %}
+		{% endset %}
+		{% set downloadLink %}
+			{{ layout.downloadLink('EditSummaryResult', {project: project.domain, username: user.usernameIdent, namespace: es.namespace, start: es.startDate, end: es.endDate}, [], 'UserApiEditSummaries') }}
+		{% endset %}
+		{{ layout.content_block('summary', content, downloadLink) }}
 
-        {% set content %}
-            {% if es.totalEdits > 0 %}
-                <table class="table table-bordered table-hover table-striped">
-                    <thead><tr>
-                        {% for key in ['month', 'total-edits', 'edit-summaries', 'edit-summaries-percentage'] %}
-                            <th>
-                                <span class="sort-link sort-link--{{ key }}" data-column="{{ key }}">
-                                    {{ msg(key)|ucfirst }}
-                                    <span class="glyphicon glyphicon-sort"></span>
-                                </span>
-                            </th>
-                        {% endfor %}
-                    </tr></thead>
-                    <tbody>
-                        {% for month, counts in es.monthCounts %}
-                            <tr>
-                                <td class="sort-entry--month" data-value="{{ month|replace({'-': ''}) }}">
-                                    {{ (month~'-01')|date_format('yyyy-MM') }}
-                                </td>
-                                <td class="sort-entry--total-edits" data-value="{{ counts.total }}">
-                                    {{ counts.total|num_format }}
-                                </td>
-                                {% if counts.summaries is defined %}
-                                    <td class="sort-entry--edit-summaries" data-value="{{ counts.summaries }}">
-                                        {{ counts.summaries|num_format }}
-                                    </td>
+		{% set content %}
+			{% if es.totalEdits > 0 %}
+				<table class="table table-bordered table-hover table-striped">
+					<thead><tr>
+						{% for key in ['month', 'total-edits', 'edit-summaries', 'edit-summaries-percentage'] %}
+							<th>
+								<span class="sort-link sort-link--{{ key }}" data-column="{{ key }}">
+									{{ msg(key)|ucfirst }}
+									<span class="glyphicon glyphicon-sort"></span>
+								</span>
+							</th>
+						{% endfor %}
+					</tr></thead>
+					<tbody>
+						{% for month, counts in es.monthCounts %}
+							<tr>
+								<td class="sort-entry--month" data-value="{{ month|replace({'-': ''}) }}">
+									{{ (month~'-01')|date_format('yyyy-MM') }}
+								</td>
+								<td class="sort-entry--total-edits" data-value="{{ counts.total }}">
+									{{ counts.total|num_format }}
+								</td>
+								{% if counts.summaries is defined %}
+									<td class="sort-entry--edit-summaries" data-value="{{ counts.summaries }}">
+										{{ counts.summaries|num_format }}
+									</td>
 
-                                    {% set editSummaryPercentage = counts.summaries|percent_format(counts.total) %}
-                                    <td class="sort-entry--edit-summaries-percentage" data-value="{{ editSummaryPercentage }}">
-                                        {{ editSummaryPercentage }}
-                                    </td>
-                                {% else %}
-                                    <td class="sort-entry--edit-summaries" data-value="0">0</td>
-                                    <td class="sort-entry--edit-summaries-percentage" data-value="0">0%</td>
-                                {% endif %}
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <div class="alert alert-info">
-                    {{ msg('no-contribs') }}
-                </div>
-            {% endif %}
-        {% endset %}
-        {{ layout.content_block('month-counts', content) }}
-    </div>
+									{% set editSummaryPercentage = counts.summaries|percent_format(counts.total) %}
+									<td class="sort-entry--edit-summaries-percentage" data-value="{{ editSummaryPercentage }}">
+										{{ editSummaryPercentage }}
+									</td>
+								{% else %}
+									<td class="sort-entry--edit-summaries" data-value="0">0</td>
+									<td class="sort-entry--edit-summaries-percentage" data-value="0">0%</td>
+								{% endif %}
+							</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			{% else %}
+				<div class="alert alert-info">
+					{{ msg('no-contribs') }}
+				</div>
+			{% endif %}
+		{% endset %}
+		{{ layout.content_block('month-counts', content) }}
+	</div>
 </div>
 {% endblock %}

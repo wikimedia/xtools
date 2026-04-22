@@ -110,30 +110,30 @@ class PageInfoRepository extends AutoEditsRepository {
 		}
 
 		$sql = "SELECT COUNT(DISTINCT rev_id) AS `count`, $actorSelect '0' AS `current`
-                FROM (
-                    SELECT rev_id, rev_actor, rev_timestamp
-                    FROM $revTable
-                    WHERE rev_page = :pageId
-                    ORDER BY rev_timestamp DESC
-                    $limitClause
-                ) a
-                JOIN $actorTable ON actor_id = rev_actor
-                LEFT JOIN $userFormerGroupsTable ON actor_user = ufg_user
-                WHERE ufg_group = 'bot' $datesConditions
-                $groupBy
-                UNION
-                SELECT COUNT(DISTINCT rev_id) AS count, $actorSelect '1' AS current
-                FROM (
-                    SELECT rev_id, rev_actor, rev_timestamp
-                    FROM $revTable
-                    WHERE rev_page = :pageId
-                    ORDER BY rev_timestamp DESC
-                    $limitClause
-                ) a
-                JOIN $actorTable ON actor_id = rev_actor
-                LEFT JOIN $userGroupsTable ON actor_user = ug_user
-                WHERE ug_group = 'bot' $datesConditions
-                $groupBy";
+				FROM (
+					SELECT rev_id, rev_actor, rev_timestamp
+					FROM $revTable
+					WHERE rev_page = :pageId
+					ORDER BY rev_timestamp DESC
+					$limitClause
+				) a
+				JOIN $actorTable ON actor_id = rev_actor
+				LEFT JOIN $userFormerGroupsTable ON actor_user = ufg_user
+				WHERE ufg_group = 'bot' $datesConditions
+				$groupBy
+				UNION
+				SELECT COUNT(DISTINCT rev_id) AS count, $actorSelect '1' AS current
+				FROM (
+					SELECT rev_id, rev_actor, rev_timestamp
+					FROM $revTable
+					WHERE rev_page = :pageId
+					ORDER BY rev_timestamp DESC
+					$limitClause
+				) a
+				JOIN $actorTable ON actor_id = rev_actor
+				LEFT JOIN $userGroupsTable ON actor_user = ug_user
+				WHERE ug_group = 'bot' $datesConditions
+				$groupBy";
 
 		$statement = $this->executeProjectsQuery( $project, $sql, [ 'pageId' => $page->getId() ] )
 			->fetchAllAssociative();
@@ -157,10 +157,10 @@ class PageInfoRepository extends AutoEditsRepository {
 		$datesConditions = $this->getDateConditions( $start, $end, false, '', 'log_timestamp' );
 
 		$sql = "SELECT log_action, log_type, log_timestamp AS 'timestamp'
-                FROM $loggingTable
-                WHERE log_namespace = '" . $page->getNamespace() . "'
-                AND log_title = :title AND log_timestamp > 1 $datesConditions
-                AND log_type IN ('delete', 'move', 'protect', 'stable')";
+				FROM $loggingTable
+				WHERE log_namespace = '" . $page->getNamespace() . "'
+				AND log_title = :title AND log_timestamp > 1 $datesConditions
+				AND log_type IN ('delete', 'move', 'protect', 'stable')";
 		$title = str_replace( ' ', '_', $page->getTitle() );
 
 		$result = $this->executeProjectsQuery( $page->getProject(), $sql, [ 'title' => $title ] )
@@ -183,18 +183,18 @@ class PageInfoRepository extends AutoEditsRepository {
 		$templatelinksTable = $page->getProject()->getTableName( 'templatelinks' );
 		$imagelinksTable = $page->getProject()->getTableName( 'imagelinks' );
 		$sql = "(
-                    SELECT 'categories' AS `key`, COUNT(*) AS val
-                    FROM $categorylinksTable
-                    WHERE cl_from = :pageId
-                ) UNION (
-                    SELECT 'templates' AS `key`, COUNT(*) AS val
-                    FROM $templatelinksTable
-                    WHERE tl_from = :pageId
-                ) UNION (
-                    SELECT 'files' AS `key`, COUNT(*) AS val
-                    FROM $imagelinksTable
-                    WHERE il_from = :pageId
-                )";
+					SELECT 'categories' AS `key`, COUNT(*) AS val
+					FROM $categorylinksTable
+					WHERE cl_from = :pageId
+				) UNION (
+					SELECT 'templates' AS `key`, COUNT(*) AS val
+					FROM $templatelinksTable
+					WHERE tl_from = :pageId
+				) UNION (
+					SELECT 'files' AS `key`, COUNT(*) AS val
+					FROM $imagelinksTable
+					WHERE il_from = :pageId
+				)";
 		$resultQuery = $this->executeProjectsQuery( $page->getProject(), $sql, [ 'pageId' => $page->getId() ] );
 		$transclusionCounts = [];
 
@@ -223,9 +223,9 @@ class PageInfoRepository extends AutoEditsRepository {
 		$ns = $page->getNamespace();
 
 		$sql = "SELECT COUNT(page_id) as `count`
-            FROM $pageTable
-            WHERE page_title LIKE :title
-            AND page_namespace = :namespace";
+			FROM $pageTable
+			WHERE page_title LIKE :title
+			AND page_namespace = :namespace";
 
 		$result = $this->executeProjectsQuery( $project, $sql, [ 'title' => $title . '/%', 'namespace' => $ns ] )
 			->fetchAllAssociative();
@@ -262,29 +262,29 @@ class PageInfoRepository extends AutoEditsRepository {
 		$dateConditions = $this->getDateConditions( $start, $end );
 
 		$sql = "SELECT actor_name AS username,
-                    COUNT(rev_id) AS count,
-                    SUM(rev_minor_edit) AS minor,
-                    MIN(rev_timestamp) AS first_timestamp,
-                    MIN(rev_id) AS first_revid,
-                    MAX(rev_timestamp) AS latest_timestamp,
-                    MAX(rev_id) AS latest_revid
-                FROM $revTable
-                JOIN $actorTable ON rev_actor = actor_id
-                WHERE rev_page = :pageId $dateConditions";
+					COUNT(rev_id) AS count,
+					SUM(rev_minor_edit) AS minor,
+					MIN(rev_timestamp) AS first_timestamp,
+					MIN(rev_id) AS first_revid,
+					MAX(rev_timestamp) AS latest_timestamp,
+					MAX(rev_id) AS latest_revid
+				FROM $revTable
+				JOIN $actorTable ON rev_actor = actor_id
+				WHERE rev_page = :pageId $dateConditions";
 
 		if ( $noBots ) {
 			$userGroupsTable = $project->getTableName( 'user_groups' );
 			$sql .= "AND NOT EXISTS (
-                         SELECT 1
-                         FROM $userGroupsTable
-                         WHERE ug_user = actor_user
-                         AND ug_group = 'bot'
-                     )";
+						 SELECT 1
+						 FROM $userGroupsTable
+						 WHERE ug_user = actor_user
+						 AND ug_group = 'bot'
+					 )";
 		}
 
 		$sql .= "GROUP BY actor_id
-                 ORDER BY count DESC
-                 LIMIT $limit";
+				 ORDER BY count DESC
+				 LIMIT $limit";
 
 		$result = $this->executeProjectsQuery( $project, $sql, [
 			'pageId' => $page->getId(),
@@ -316,45 +316,45 @@ class PageInfoRepository extends AutoEditsRepository {
 		$actorTable = $project->getTableName( 'actor' );
 
 		$sql = "SELECT *, (
-                    SELECT user_editcount
-                    FROM $userTable
-                    WHERE user_id = creator_user_id
-                ) AS creator_editcount
-                FROM (
-                    (
-                        SELECT COUNT(rev_id) AS num_edits,
-                            COUNT(DISTINCT(rev_actor)) AS num_editors,
-                            SUM(actor_user IS NULL) AS anon_edits,
-                            SUM(rev_minor_edit) AS minor_edits
-                        FROM $revTable
-                        JOIN $actorTable ON actor_id = rev_actor
-                        WHERE rev_page = :pageid
-                        AND rev_timestamp > 0 # Use rev_timestamp index
-                    ) a,
-                    (
-                        # With really old pages, the rev_timestamp may need to be sorted ASC,
-                        #   and the lowest rev_id may not be the first revision.
-                        SELECT actor_name AS creator,
-                               actor_user AS creator_user_id,
-                               rev_timestamp AS created_at,
-                               rev_id AS created_rev_id
-                        FROM $revTable
-                        JOIN $actorTable ON actor_id = rev_actor
-                        WHERE rev_page = :pageid
-                        AND rev_timestamp > 0 # Protects from weird revs with rev_timestamp containing only null bytes
-                        ORDER BY rev_timestamp ASC
-                        LIMIT 1
-                    ) b,
-                    (
-                        SELECT rev_timestamp AS modified_at,
-                               rev_id AS modified_rev_id
-                        FROM $revWithoutExtension
-                        JOIN $pageTable ON page_id = rev_page
-                        WHERE rev_page = :pageid
-                        AND rev_id = page_latest
-                        AND rev_timestamp > 0 # Protects from weird revs with rev_timestamp containing only null bytes
-                    ) c
-                )";
+					SELECT user_editcount
+					FROM $userTable
+					WHERE user_id = creator_user_id
+				) AS creator_editcount
+				FROM (
+					(
+						SELECT COUNT(rev_id) AS num_edits,
+							COUNT(DISTINCT(rev_actor)) AS num_editors,
+							SUM(actor_user IS NULL) AS anon_edits,
+							SUM(rev_minor_edit) AS minor_edits
+						FROM $revTable
+						JOIN $actorTable ON actor_id = rev_actor
+						WHERE rev_page = :pageid
+						AND rev_timestamp > 0 # Use rev_timestamp index
+					) a,
+					(
+						# With really old pages, the rev_timestamp may need to be sorted ASC,
+						#   and the lowest rev_id may not be the first revision.
+						SELECT actor_name AS creator,
+							   actor_user AS creator_user_id,
+							   rev_timestamp AS created_at,
+							   rev_id AS created_rev_id
+						FROM $revTable
+						JOIN $actorTable ON actor_id = rev_actor
+						WHERE rev_page = :pageid
+						AND rev_timestamp > 0 # Protects from weird revs with rev_timestamp containing only null bytes
+						ORDER BY rev_timestamp ASC
+						LIMIT 1
+					) b,
+					(
+						SELECT rev_timestamp AS modified_at,
+							   rev_id AS modified_rev_id
+						FROM $revWithoutExtension
+						JOIN $pageTable ON page_id = rev_page
+						WHERE rev_page = :pageid
+						AND rev_id = page_latest
+						AND rev_timestamp > 0 # Protects from weird revs with rev_timestamp containing only null bytes
+					) c
+				)";
 		$params = [ 'pageid' => $page->getId() ];
 
 		// Get current time so we can compare timestamps
@@ -413,14 +413,14 @@ class PageInfoRepository extends AutoEditsRepository {
 			}
 
 			$queries[] .= "
-                SELECT $toolName AS toolname, COUNT(DISTINCT(rev_id)) AS count
-                FROM $revisionTable
-                $pageJoin
-                $commentJoin
-                $tagJoin
-                WHERE $condTool
-                    AND rev_page = :pageId
-                $revDateConditions";
+				SELECT $toolName AS toolname, COUNT(DISTINCT(rev_id)) AS count
+				FROM $revisionTable
+				$pageJoin
+				$commentJoin
+				$tagJoin
+				WHERE $condTool
+					AND rev_page = :pageId
+				$revDateConditions";
 		}
 
 		$sql = implode( ' UNION ', $queries );

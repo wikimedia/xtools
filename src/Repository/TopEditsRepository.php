@@ -93,12 +93,12 @@ class TopEditsRepository extends UserRepository {
 		$paTable = $project->getTableName( 'page_assessments' );
 		$paSelect = $hasPageAssessments
 			? ", (
-                    SELECT pa_class
-                    FROM $paTable
-                    WHERE pa_page_id = page_id
-                    AND pa_class != ''
-                    LIMIT 1
-                ) AS pa_class"
+					SELECT pa_class
+					FROM $paTable
+					WHERE pa_page_id = page_id
+					AND pa_class != ''
+					LIMIT 1
+				) AS pa_class"
 			: '';
 
 		$ipcJoin = '';
@@ -113,19 +113,19 @@ class TopEditsRepository extends UserRepository {
 
 		$offset = $pagination * $limit;
 		$sql = "SELECT page_namespace AS `namespace`, page_title,
-                    page_is_redirect AS `redirect`, COUNT(page_title) AS `count`
-                    $paSelect
-                FROM $pageTable
+					page_is_redirect AS `redirect`, COUNT(page_title) AS `count`
+					$paSelect
+				FROM $pageTable
 
-                JOIN $revisionTable ON page_id = rev_page
-                $ipcJoin
-                WHERE $whereClause
-                AND page_namespace = :namespace
-                $revDateConditions
-                GROUP BY page_namespace, page_title
-                ORDER BY count DESC
-                LIMIT $limit
-                OFFSET $offset";
+				JOIN $revisionTable ON page_id = rev_page
+				$ipcJoin
+				WHERE $whereClause
+				AND page_namespace = :namespace
+				$revDateConditions
+				GROUP BY page_namespace, page_title
+				ORDER BY count DESC
+				LIMIT $limit
+				OFFSET $offset";
 
 		$resultQuery = $this->executeQuery( $sql, $project, $user, $namespace, $params );
 		$result = $resultQuery->fetchAllAssociative();
@@ -172,12 +172,12 @@ class TopEditsRepository extends UserRepository {
 		}
 
 		$sql = "SELECT COUNT(DISTINCT page_id)
-                FROM $pageTable
-                JOIN $revisionTable ON page_id = rev_page
-                $ipcJoin
-                WHERE $whereClause
-                $nsCondition
-                $revDateConditions";
+				FROM $pageTable
+				JOIN $revisionTable ON page_id = rev_page
+				$ipcJoin
+				WHERE $whereClause
+				$nsCondition
+				$revDateConditions";
 
 		$resultQuery = $this->executeQuery( $sql, $project, $user, $namespace, $params );
 
@@ -223,21 +223,21 @@ class TopEditsRepository extends UserRepository {
 		}
 
 		$sql = "SELECT pap_project_title, SUM(`edit_count`) AS `count`
-                FROM (
-                    SELECT page_id, COUNT(page_id) AS `edit_count`
-                    FROM $revisionTable
-                    $ipcJoin
-                    JOIN $pageTable ON page_id = rev_page
-                    WHERE $whereClause
-                    AND page_namespace = :namespace
-                    $revDateConditions
-                    GROUP BY page_id
-                ) a
-                JOIN $pageAssessmentsTable ON pa_page_id = page_id
-                JOIN $paProjectsTable ON pa_project_id = pap_project_id
-                GROUP BY pap_project_title
-                ORDER BY `count` DESC
-                LIMIT 10";
+				FROM (
+					SELECT page_id, COUNT(page_id) AS `edit_count`
+					FROM $revisionTable
+					$ipcJoin
+					JOIN $pageTable ON page_id = rev_page
+					WHERE $whereClause
+					AND page_namespace = :namespace
+					$revDateConditions
+					GROUP BY page_id
+				) a
+				JOIN $pageAssessmentsTable ON pa_page_id = page_id
+				JOIN $paProjectsTable ON pa_project_id = pap_project_id
+				GROUP BY pap_project_title
+				ORDER BY `count` DESC
+				LIMIT 10";
 
 		$totals = $this->executeQuery( $sql, $project, $user, $ns )
 			->fetchAllAssociative();
@@ -275,12 +275,12 @@ class TopEditsRepository extends UserRepository {
 		$pageAssessmentsTable = $this->getTableName( $project->getDatabaseName(), 'page_assessments' );
 		$paSelect = $hasPageAssessments
 			? ", (
-                    SELECT pa_class
-                    FROM $pageAssessmentsTable
-                    WHERE pa_page_id = e.page_id
-                    AND pa_class != ''
-                    LIMIT 1
-                ) AS pa_class"
+					SELECT pa_class
+					FROM $pageAssessmentsTable
+					WHERE pa_page_id = e.page_id
+					AND pa_class != ''
+					LIMIT 1
+				) AS pa_class"
 			: '';
 
 		$ipcJoin = '';
@@ -294,27 +294,27 @@ class TopEditsRepository extends UserRepository {
 		}
 
 		$sql = "SELECT c.page_namespace AS `namespace`, e.page_title,
-                    c.page_is_redirect AS `redirect`, c.count $paSelect
-                FROM
-                (
-                    SELECT b.page_namespace, b.page_is_redirect, b.rev_page, b.count
-                        ,@rn := if(@ns = b.page_namespace, @rn + 1, 1) AS `row_number`
-                        ,@ns := b.page_namespace AS dummy
-                    FROM
-                    (
-                        SELECT page_namespace, page_is_redirect, rev_page, count(rev_page) AS count
-                        FROM $revisionTable
-                        $ipcJoin
-                        JOIN $pageTable ON page_id = rev_page
-                        WHERE $whereClause
-                        $revDateConditions
-                        GROUP BY page_namespace, rev_page
-                    ) AS b
-                    JOIN (SELECT @ns := NULL, @rn := 0) AS vars
-                    ORDER BY b.page_namespace ASC, b.count DESC
-                ) AS c
-                JOIN $pageTable e ON e.page_id = c.rev_page
-                WHERE c.`row_number` <= $limit";
+					c.page_is_redirect AS `redirect`, c.count $paSelect
+				FROM
+				(
+					SELECT b.page_namespace, b.page_is_redirect, b.rev_page, b.count
+						,@rn := if(@ns = b.page_namespace, @rn + 1, 1) AS `row_number`
+						,@ns := b.page_namespace AS dummy
+					FROM
+					(
+						SELECT page_namespace, page_is_redirect, rev_page, count(rev_page) AS count
+						FROM $revisionTable
+						$ipcJoin
+						JOIN $pageTable ON page_id = rev_page
+						WHERE $whereClause
+						$revDateConditions
+						GROUP BY page_namespace, rev_page
+					) AS b
+					JOIN (SELECT @ns := NULL, @rn := 0) AS vars
+					ORDER BY b.page_namespace ASC, b.count DESC
+				) AS c
+				JOIN $pageTable e ON e.page_id = c.rev_page
+				WHERE c.`row_number` <= $limit";
 		$resultQuery = $this->executeQuery( $sql, $project, $user, 'all', $params );
 		$result = $resultQuery->fetchAllAssociative();
 
@@ -379,28 +379,28 @@ class TopEditsRepository extends UserRepository {
 		$contentTable = $page->getProject()->getTableName( 'content' );
 		if ( $childRevs ) {
 			$childSelect = ", (
-                    CASE WHEN
-                        childcontent.content_sha1 = parentcontent.content_sha1
-                        OR (
-                            SELECT 1
-                            FROM $tagTable
-                            WHERE ct_rev_id = revs.rev_id
-                            AND ct_tag_id = (
-                                SELECT ctd_id
-                                FROM $tagDefTable
-                                WHERE ctd_name = 'mw-reverted'
-                            )
-                        )
-                    THEN 1
-                    ELSE 0
-                    END
-                ) AS `reverted`,
-                childcomments.comment_text AS `parent_comment`";
+					CASE WHEN
+						childcontent.content_sha1 = parentcontent.content_sha1
+						OR (
+							SELECT 1
+							FROM $tagTable
+							WHERE ct_rev_id = revs.rev_id
+							AND ct_tag_id = (
+								SELECT ctd_id
+								FROM $tagDefTable
+								WHERE ctd_name = 'mw-reverted'
+							)
+						)
+					THEN 1
+					ELSE 0
+					END
+				) AS `reverted`,
+				childcomments.comment_text AS `parent_comment`";
 			$childJoin = "LEFT JOIN $revTable AS childrevs ON (revs.rev_id = childrevs.rev_parent_id)
-                LEFT JOIN $slotsTable AS childslots ON childslots.slot_revision_id = childrevs.rev_id
-                LEFT JOIN $contentTable AS childcontent ON childslots.slot_content_id = childcontent.content_id
-                LEFT OUTER JOIN $commentTable AS childcomments
-                ON (childrevs.rev_comment_id = childcomments.comment_id)";
+				LEFT JOIN $slotsTable AS childslots ON childslots.slot_revision_id = childrevs.rev_id
+				LEFT JOIN $contentTable AS childcontent ON childslots.slot_content_id = childcontent.content_id
+				LEFT OUTER JOIN $commentTable AS childcomments
+				ON (childrevs.rev_comment_id = childcomments.comment_id)";
 			$childWhere = 'AND childrevs.rev_page = :pageid';
 			$childLimit = '';
 		} else {
@@ -430,30 +430,30 @@ class TopEditsRepository extends UserRepository {
 		}
 
 		$sql = "SELECT * FROM (
-                    SELECT
-                        revs.rev_id AS id,
-                        revs.rev_timestamp AS timestamp,
-                        revs.rev_minor_edit AS minor,
-                        revs.rev_len AS length,
-                        (CAST(revs.rev_len AS SIGNED) - IFNULL(parentrevs.rev_len, 0)) AS length_change,
-                        $userId
-                        $username AS username,
-                        comments.comment_text AS `comment`
-                        $childSelect
-                    FROM $revTable AS revs
-                    LEFT JOIN $revTable AS parentrevs ON (revs.rev_parent_id = parentrevs.rev_id)
-                    LEFT JOIN $slotsTable AS parentslots ON parentslots.slot_revision_id = parentrevs.rev_id
-                    LEFT JOIN $contentTable AS parentcontent ON parentslots.slot_content_id = parentcontent.content_id
-                    $ipcJoin
-                    LEFT OUTER JOIN $commentTable AS comments ON (revs.rev_comment_id = comments.comment_id)
-                    $childJoin
-                    WHERE $whereClause
-                    $revDateConditions
-                    AND revs.rev_page = :pageid
-                    $childWhere
-                ) a
-                ORDER BY timestamp DESC
-                $childLimit";
+					SELECT
+						revs.rev_id AS id,
+						revs.rev_timestamp AS timestamp,
+						revs.rev_minor_edit AS minor,
+						revs.rev_len AS length,
+						(CAST(revs.rev_len AS SIGNED) - IFNULL(parentrevs.rev_len, 0)) AS length_change,
+						$userId
+						$username AS username,
+						comments.comment_text AS `comment`
+						$childSelect
+					FROM $revTable AS revs
+					LEFT JOIN $revTable AS parentrevs ON (revs.rev_parent_id = parentrevs.rev_id)
+					LEFT JOIN $slotsTable AS parentslots ON parentslots.slot_revision_id = parentrevs.rev_id
+					LEFT JOIN $contentTable AS parentcontent ON parentslots.slot_content_id = parentcontent.content_id
+					$ipcJoin
+					LEFT OUTER JOIN $commentTable AS comments ON (revs.rev_comment_id = comments.comment_id)
+					$childJoin
+					WHERE $whereClause
+					$revDateConditions
+					AND revs.rev_page = :pageid
+					$childWhere
+				) a
+				ORDER BY timestamp DESC
+				$childLimit";
 
 		$resultQuery = $this->executeQuery( $sql, $project, $user, null, $params );
 		return $resultQuery->fetchAllAssociative();

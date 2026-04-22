@@ -3,86 +3,86 @@
 {% import 'macros/layout.html.twig' as layout %}
 
 {% block downloadLink %}
-    {{ layout.downloadLink('EditCounterTimecard', {project:project.domain, username:user.usernameIdent}, ['wikitext', 'csv'], 'UserApiTimeCard') }}
+	{{ layout.downloadLink('EditCounterTimecard', {project:project.domain, username:user.usernameIdent}, ['wikitext', 'csv'], 'UserApiTimeCard') }}
 {% endblock %}
 
 {% block ecBody %}
 
 {% if not project.userHasOptedIn(user) %}
-    {{ wiki.userOptedOut(project, user) }}
+	{{ wiki.userOptedOut(project, user) }}
 {% else %}
 
 <div class="sr-only">
-    {% set days = {
-        1: msg('sunday'),
-        2: msg('monday'),
-        3: msg('tuesday'),
-        4: msg('wednesday'),
-        5: msg('thursday'),
-        6: msg('friday'),
-        7: msg('saturday')
-    }%}
+	{% set days = {
+		1: msg('sunday'),
+		2: msg('monday'),
+		3: msg('tuesday'),
+		4: msg('wednesday'),
+		5: msg('thursday'),
+		6: msg('friday'),
+		7: msg('saturday')
+	}%}
 
-    <table>
-        <thead>
-            <th></th>
-            {% for period in 0..11 %}
-                <th>
-                    <time>{{ (period * 2 ~ ':' ~ 00)|date_format('HH:mm') }}</time>
-                </th>
-            {% endfor %}
-        </thead>
-        <tbody>
-            {% for day in 1..7 %}
-                <tr>
-                    <th>{{ days[day] }}</th>
-                    {% for item in ec.timeCard|filter(item => item.day_of_week == day and item.hour != 24) %}
-                        <td>{{ item.value }}</td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+	<table>
+		<thead>
+			<th></th>
+			{% for period in 0..11 %}
+				<th>
+					<time>{{ (period * 2 ~ ':' ~ 00)|date_format('HH:mm') }}</time>
+				</th>
+			{% endfor %}
+		</thead>
+		<tbody>
+			{% for day in 1..7 %}
+				<tr>
+					<th>{{ days[day] }}</th>
+					{% for item in ec.timeCard|filter(item => item.day_of_week == day and item.hour != 24) %}
+						<td>{{ item.value }}</td>
+					{% endfor %}
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
 </div>
 
 <canvas id="timecard-bubble-chart" height="100"></canvas>
 
 <script type="text/javascript">
-    $(function () {
-        // MySQL uses ODBC standard, treating the first day (1) as Sunday
-        var days = {
-            1: "{{ msg('sunday') }}",
-            2: "{{ msg('monday') }}",
-            3: "{{ msg('tuesday') }}",
-            4: "{{ msg('wednesday') }}",
-            5: "{{ msg('thursday') }}",
-            6: "{{ msg('friday') }}",
-            7: "{{ msg('saturday') }}"
-        };
+	$(function () {
+		// MySQL uses ODBC standard, treating the first day (1) as Sunday
+		var days = {
+			1: "{{ msg('sunday') }}",
+			2: "{{ msg('monday') }}",
+			3: "{{ msg('tuesday') }}",
+			4: "{{ msg('wednesday') }}",
+			5: "{{ msg('thursday') }}",
+			6: "{{ msg('friday') }}",
+			7: "{{ msg('saturday') }}"
+		};
 
-        var timeCardDatasets = [
-        {% for i in 0..6 %}
-            {
-                backgroundColor: "{{ chartColor(i) }}",
-                data: {{ ec.timecard|slice(i*24, 24)|json_encode()|raw }}
-            },
-        {% endfor %}
-        ];
-        timeCardDatasets.forEach((day) => day.data.forEach((entry) => {
-                entry.x = entry.hour;
-                entry.y = 8 - entry.day_of_week;
-            })
-        );
+		var timeCardDatasets = [
+		{% for i in 0..6 %}
+			{
+				backgroundColor: "{{ chartColor(i) }}",
+				data: {{ ec.timecard|slice(i*24, 24)|json_encode()|raw }}
+			},
+		{% endfor %}
+		];
+		timeCardDatasets.forEach((day) => day.data.forEach((entry) => {
+				entry.x = entry.hour;
+				entry.y = 8 - entry.day_of_week;
+			})
+		);
 
-        xtools.editcounter.setupTimecard(timeCardDatasets, days);
-    });
+		xtools.editcounter.setupTimecard(timeCardDatasets, days);
+	});
 </script>
 
 <div class="checkbox times-in-utc">
-    <label>
-        <input type="checkbox" data-value="utc" class="use-local-time" />
-        {{ msg('time-local') }}
-    </label>
+	<label>
+		<input type="checkbox" data-value="utc" class="use-local-time" />
+		{{ msg('time-local') }}
+	</label>
 </div>
 
 {% endif %}

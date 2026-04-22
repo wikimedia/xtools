@@ -5,112 +5,112 @@
 {% block body %}
 
 {% if not is_sub_request %}
-    <div class="panel panel-primary">
-        <header class="panel-heading">
-            <div class="text-center xt-heading-top">
-                <a class="back-to-search" href="{{ path('EditCounterResult', {project: project.domain, username:user.usernameIdent}) }}">
-                    <span class="glyphicon glyphicon-chevron-left"></span>
-                    {{ msg('see-full-statistics') }}
-                </a>
-                {{ wiki.userLink(user, project) }}
-                <small>&bull; {{ project.domain }}</small>
-            </div>
-        </header>
-        <div class="panel-body xt-panel-body">
-            {{ wiki.userLinks(user, project) }}
+	<div class="panel panel-primary">
+		<header class="panel-heading">
+			<div class="text-center xt-heading-top">
+				<a class="back-to-search" href="{{ path('EditCounterResult', {project: project.domain, username:user.usernameIdent}) }}">
+					<span class="glyphicon glyphicon-chevron-left"></span>
+					{{ msg('see-full-statistics') }}
+				</a>
+				{{ wiki.userLink(user, project) }}
+				<small>&bull; {{ project.domain }}</small>
+			</div>
+		</header>
+		<div class="panel-body xt-panel-body">
+			{{ wiki.userLinks(user, project) }}
 
-            <h3 class="text-center">{{ msg('rights-changes') }}</h3>
+			<h3 class="text-center">{{ msg('rights-changes') }}</h3>
 
-            {% set content %}
-                <div class="col-lg-12 stat-list clearfix">
-                    <table class="table rights-changes-summary"><tbody>
-                        {% set regDate = user.registrationDate(project) %}
-                        {% if regDate is not empty %}
-                            <tr>
-                                <td>{{ msg('registration-date') }}</td>
-                                <td>{{ regDate|date_format }}</td>
-                            </tr>
-                        {% endif %}
-                        {% for state in ['current', 'former'] %}
-                            <tr>
-                                {##
-                                 # The follow messages are used here:
-                                 # * current-user-groups
-                                 # * former-user-groups
-                                 #}
-                                <td>{{ msg(state ~ '-user-groups') }}</td>
-                                <td>
-                                    {% set localList = ec.userRights.rightsStates.local[state] %}
-                                    {% set globalList = ec.userRights.rightsStates.global[state] %}
-                                    {% if localList|merge(globalList)|length  == 0 %}
-                                        <em class="text-muted">{{ msg('none') }}</em>
-                                    {% else %}
-                                        {% for right in localList %}
-                                            <span class="rights-change-name">
-                                                <a target="_blank" href="{{ wiki.pageUrlRaw('Special:ListGroupRights', project) }}#{{ right }}">{{ ec.userRights.rightsName(right) }}</a>{#-
-                                                -#}{% if not loop.last or (loop.last and globalList|length > 0) %},{% endif %}
-                                            </span>
-                                        {% endfor %}
-                                        {% for right in globalList %}
-                                            <span class="rights-change-name">
-                                                <a target="_blank" href="{{ wiki.pageUrlRaw('Special:GlobalGroupPermissions', project) }}#{{ right }}">{{ ec.userRights.rightsName(right) }}</a>
-                                                <span class="text-muted">(global)</span>{#-
-                                                -#}{% if not loop.last %},{% endif %}
-                                            </span>
-                                        {% endfor %}
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody></table>
-                </div>
-            {% endset %}
-            {{ layout.content_block('summary', content) }}
+			{% set content %}
+				<div class="col-lg-12 stat-list clearfix">
+					<table class="table rights-changes-summary"><tbody>
+						{% set regDate = user.registrationDate(project) %}
+						{% if regDate is not empty %}
+							<tr>
+								<td>{{ msg('registration-date') }}</td>
+								<td>{{ regDate|date_format }}</td>
+							</tr>
+						{% endif %}
+						{% for state in ['current', 'former'] %}
+							<tr>
+								{##
+								 # The follow messages are used here:
+								 # * current-user-groups
+								 # * former-user-groups
+								 #}
+								<td>{{ msg(state ~ '-user-groups') }}</td>
+								<td>
+									{% set localList = ec.userRights.rightsStates.local[state] %}
+									{% set globalList = ec.userRights.rightsStates.global[state] %}
+									{% if localList|merge(globalList)|length  == 0 %}
+										<em class="text-muted">{{ msg('none') }}</em>
+									{% else %}
+										{% for right in localList %}
+											<span class="rights-change-name">
+												<a target="_blank" href="{{ wiki.pageUrlRaw('Special:ListGroupRights', project) }}#{{ right }}">{{ ec.userRights.rightsName(right) }}</a>{#-
+												-#}{% if not loop.last or (loop.last and globalList|length > 0) %},{% endif %}
+											</span>
+										{% endfor %}
+										{% for right in globalList %}
+											<span class="rights-change-name">
+												<a target="_blank" href="{{ wiki.pageUrlRaw('Special:GlobalGroupPermissions', project) }}#{{ right }}">{{ ec.userRights.rightsName(right) }}</a>
+												<span class="text-muted">(global)</span>{#-
+												-#}{% if not loop.last %},{% endif %}
+											</span>
+										{% endfor %}
+									{% endif %}
+								</td>
+							</tr>
+						{% endfor %}
+					</tbody></table>
+				</div>
+			{% endset %}
+			{{ layout.content_block('summary', content) }}
 
-            <section class="panel panel-default clearfix">
-                <header class="panel-heading col-lg-12">
-                    <h4>
-                        {{ msg('log') }}
-                        <span class='pull-right text-muted xt-panel-description'>
-                            {{ layout.downloadLink('EditCounterRightsChanges', {project:project.domain, username:user.usernameIdent}, ['wikitext']) }}
-                        </span>
-                    </h4>
-                </header>
-                <div class="panel-body col-lg-12">
+			<section class="panel panel-default clearfix">
+				<header class="panel-heading col-lg-12">
+					<h4>
+						{{ msg('log') }}
+						<span class='pull-right text-muted xt-panel-description'>
+							{{ layout.downloadLink('EditCounterRightsChanges', {project:project.domain, username:user.usernameIdent}, ['wikitext']) }}
+						</span>
+					</h4>
+				</header>
+				<div class="panel-body col-lg-12">
 {% endif %}
 
 {% set limit = is_sub_request ? 10 : null %}
 {% if ec.userRights.rightsChanges|length > 0 %}
-    {% include 'editCounter/rights_changes_table.html.twig' with {'rightsChanges': ec.userRights.rightsChanges(limit), 'remaining': ec.userRights.rightsChanges|length - limit} %}
+	{% include 'editCounter/rights_changes_table.html.twig' with {'rightsChanges': ec.userRights.rightsChanges(limit), 'remaining': ec.userRights.rightsChanges|length - limit} %}
 {% else %}
-    <div class="alert alert-info">
-        {{ msg('no-result', [user.username]) }}
-    </div>
+	<div class="alert alert-info">
+		{{ msg('no-result', [user.username]) }}
+	</div>
 {% endif %}
 
 {% if ec.userRights.globalRightsChanges|length > 0 %}
-    <h4 class="xt-show-hide--parent">
-        {{ msg('global-rights-changes') }}
-        <small class='xt-show'>[{{ msg('show')|lower }}]</small>
-        <small class='xt-hide'>[{{ msg('hide')|lower }}]</small>
-    </h4>
-    <div class="xt-show-hide--target">
-        {% include 'editCounter/rights_changes_table.html.twig' with {'rightsChanges': ec.userRights.globalRightsChanges(limit), 'remaining': ec.userRights.globalRightsChanges|length - limit} %}
-    </div>
+	<h4 class="xt-show-hide--parent">
+		{{ msg('global-rights-changes') }}
+		<small class='xt-show'>[{{ msg('show')|lower }}]</small>
+		<small class='xt-hide'>[{{ msg('hide')|lower }}]</small>
+	</h4>
+	<div class="xt-show-hide--target">
+		{% include 'editCounter/rights_changes_table.html.twig' with {'rightsChanges': ec.userRights.globalRightsChanges(limit), 'remaining': ec.userRights.globalRightsChanges|length - limit} %}
+	</div>
 {% endif %}
 
 {% if ec.userRights.hasImpossibleLogs %}
-    <div class="text-muted">
-        {{ msg('impossible-logs') }}
-    </div>
+	<div class="text-muted">
+		{{ msg('impossible-logs') }}
+	</div>
 {% endif %}
 
 {% if not is_sub_request %}
-    <div class="text-muted times-in-utc" style="clear:both">
-        {{ msg('times-in-utc') }}
-    </div>
+	<div class="text-muted times-in-utc" style="clear:both">
+		{{ msg('times-in-utc') }}
+	</div>
 
-    </div></section></div></div>
+	</div></section></div></div>
 {% endif %}
 
 {% endblock %}

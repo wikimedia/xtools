@@ -2,47 +2,47 @@
 {% import 'macros/forms.html.twig' as forms %}
 
 {% block body %}
-    <form class="col-lg-8 col-lg-offset-2" action="{{ path('EditCounter') }}" method="get" accept-charset="utf-8">
-        <fieldset class="form-fieldset">
-            {{ forms.wiki_input(project) }}
-            {{ forms.user_input(true, false, project) }}
-            <div class="input-group form-row">
-                <label class="input-group-addon form-label">
-                    {{ msg('show') }}
-                    <div class="glyphicon glyphicon-info-sign tooltipcss pull-right" role="dialog" aria-labelledby="show-sections-desc">
-                        <div class="tooltip-body" id="show-sections-desc">
-                            {{ msg('show-sections-desc') }}
-                        </div>
-                    </div>
-                </label>
-                <div class="form-control multi-select">
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" class="multi-select--all"{% if isAllSections %} checked="checked"{% endif %}>
-                            {{ msg('all') }}
-                        </label>
-                    </div>
-                    <div class="multi-select--body">
-                        {% for section in availableSections %}
-                            <div class="checkbox">
-                                <label>
-                                    <input type="checkbox" class="multi-select--option" name="sections[]" value="{{ section }}"{% if section in sections %} checked="checked"{% endif %}>
-                                    {{ msg(section) }}
-                                </label>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-        </fieldset>
-        <fieldset class="form-fieldset">
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" name="format" value="wikitext">
-                    {{ msg('view-wikitext') }}
-                </label>
-            </div>
-        </fieldset>
-        {{ forms.submit_btn }}
-    </form>
+	<form class="col-lg-8 col-lg-offset-2" action="{{ path('EditCounter') }}" method="get" accept-charset="utf-8">
+		<fieldset class="form-fieldset">
+			{{ forms.wiki_input(project) }}
+			{{ forms.user_input(true, false, project) }}
+			<div class="input-group form-row">
+				<label class="input-group-addon form-label">
+					{{ msg('show') }}
+					<div class="glyphicon glyphicon-info-sign tooltipcss pull-right" role="dialog" aria-labelledby="show-sections-desc">
+						<div class="tooltip-body" id="show-sections-desc">
+							{{ msg('show-sections-desc') }}
+						</div>
+					</div>
+				</label>
+				<div class="form-control multi-select">
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" class="multi-select--all"{% if isAllSections %} checked="checked"{% endif %}>
+							{{ msg('all') }}
+						</label>
+					</div>
+					<div class="multi-select--body">
+						{% for section in availableSections %}
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" class="multi-select--option" name="sections[]" value="{{ section }}"{% if section in sections %} checked="checked"{% endif %}>
+									{{ msg(section) }}
+								</label>
+							</div>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+		</fieldset>
+		<fieldset class="form-fieldset">
+			<div class="checkbox">
+				<label>
+					<input type="checkbox" name="format" value="wikitext">
+					{{ msg('view-wikitext') }}
+				</label>
+			</div>
+		</fieldset>
+		{{ forms.submit_btn }}
+	</form>
 {% endblock %}

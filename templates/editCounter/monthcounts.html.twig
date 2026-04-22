@@ -3,89 +3,89 @@
 {% import 'macros/layout.html.twig' as layout %}
 
 {% block downloadLink %}
-    {{ layout.downloadLink('EditCounterMonthCounts', {project:project.domain, username:user.usernameIdent}, ['wikitext', 'csv'], 'UserApiMonthCounts') }}
+	{{ layout.downloadLink('EditCounterMonthCounts', {project:project.domain, username:user.usernameIdent}, ['wikitext', 'csv'], 'UserApiMonthCounts') }}
 {% endblock %}
 
 {% block ecBody %}
 {% if not project.userHasOptedIn(user) %}
-    {{ wiki.userOptedOut(project, user) }}
+	{{ wiki.userOptedOut(project, user) }}
 {% elseif ec.monthCounts.monthLabels|length > 0 %}
 
-    <table class="sr-only">
-        <thead>
-            <tr>
-                <th>{{ msg('month') }}</th>
-                <th>{{ msg('count') }}</th>
-                {% for ns in ec.monthCounts.totals|keys %}
-                    <th>{{ nsName(ns, project.namespaces) }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for month,counts in ec.monthCountsWithNamespaces %}
-                <tr>
-                    <td>{{ month }}</td>
-                    <td>{{ counts|reduce((carry, v) => carry + v)|num_format }}</td>
-                    {% for _ns,count in counts %}
-                        <td>{{ count|num_format }}</td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+	<table class="sr-only">
+		<thead>
+			<tr>
+				<th>{{ msg('month') }}</th>
+				<th>{{ msg('count') }}</th>
+				{% for ns in ec.monthCounts.totals|keys %}
+					<th>{{ nsName(ns, project.namespaces) }}</th>
+				{% endfor %}
+			</tr>
+		</thead>
+		<tbody>
+			{% for month,counts in ec.monthCountsWithNamespaces %}
+				<tr>
+					<td>{{ month }}</td>
+					<td>{{ counts|reduce((carry, v) => carry + v)|num_format }}</td>
+					{% for _ns,count in counts %}
+						<td>{{ count|num_format }}</td>
+					{% endfor %}
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
 
-    <div class="yearmonth-container">
-        {% if not is_sub_request %}
-            {{ include('editCounter/externallegend.html.twig') }}
-        {% endif %}
+	<div class="yearmonth-container">
+		{% if not is_sub_request %}
+			{{ include('editCounter/externallegend.html.twig') }}
+		{% endif %}
 
-        <div class="yearmonth-chart-container">
-            {# Set height of chart based on how many months (horizontal rows) are being reported. #}
-            {# the pointer events is to not capture legend clicks #}
-            <div style="position:relative; pointer-events:none; height:{{ 30 * (ec.monthCounts.monthLabels|length + 1) }}px">
-                <canvas id="monthcounts-canvas" style="pointer-events:all;"></canvas>
-            </div>
+		<div class="yearmonth-chart-container">
+			{# Set height of chart based on how many months (horizontal rows) are being reported. #}
+			{# the pointer events is to not capture legend clicks #}
+			<div style="position:relative; pointer-events:none; height:{{ 30 * (ec.monthCounts.monthLabels|length + 1) }}px">
+				<canvas id="monthcounts-canvas" style="pointer-events:all;"></canvas>
+			</div>
 
-            <script type="text/javascript">
-                $(function() {
-                    /** @type {Array} The labels for the y-axis. */
-                    var labels = {{ ec.monthCounts.monthLabels|json_encode|raw }};
+			<script type="text/javascript">
+				$(function() {
+					/** @type {Array} The labels for the y-axis. */
+					var labels = {{ ec.monthCounts.monthLabels|json_encode|raw }};
 
-                    /** @type {Number} Max value of the year totals */
-                    var maxTotal = {{ max(ec.monthCounts.totals|map(x => max(x))) }};
+					/** @type {Number} Max value of the year totals */
+					var maxTotal = {{ max(ec.monthCounts.totals|map(x => max(x))) }};
 
-                    /** @type {Array} To be passed into Chart.js */
-                    var datasets = [
-                    // Format data for use in charts.
-                    {% for nsId,namespaceData in ec.monthCounts.totals %}
-                        {
-                            label: "{{ nsName(nsId, project.namespaces) }}",
-                            backgroundColor: "{{ color(nsId) }}",
-                            data: Object.values({{ namespaceData|json_encode()|raw }}),
-                        },
-                    {% endfor %}
-                    ];
+					/** @type {Array} To be passed into Chart.js */
+					var datasets = [
+					// Format data for use in charts.
+					{% for nsId,namespaceData in ec.monthCounts.totals %}
+						{
+							label: "{{ nsName(nsId, project.namespaces) }}",
+							backgroundColor: "{{ color(nsId) }}",
+							data: Object.values({{ namespaceData|json_encode()|raw }}),
+						},
+					{% endfor %}
+					];
 
-                    var showLegend = false;
-                    window.namespaces = {{ project.namespaces|json_encode()|raw }};
-                    window.namespaceTotals = {{ ec.namespaceTotals|json_encode()|raw }};
-                    xtools.editcounter.setupMonthYearChart('month', datasets, labels, maxTotal);
-                });
-            </script>
+					var showLegend = false;
+					window.namespaces = {{ project.namespaces|json_encode()|raw }};
+					window.namespaceTotals = {{ ec.namespaceTotals|json_encode()|raw }};
+					xtools.editcounter.setupMonthYearChart('month', datasets, labels, maxTotal);
+				});
+			</script>
 
-            <div class="checkbox log-scale">
-                <label>
-                    <input type="checkbox" data-value="log" class="use-log-scale" />
-                    {{ msg('use-log-scale') }}
-                </label>
-            </div>
-        </div>
-    </div>
+			<div class="checkbox log-scale">
+				<label>
+					<input type="checkbox" data-value="log" class="use-log-scale" />
+					{{ msg('use-log-scale') }}
+				</label>
+			</div>
+		</div>
+	</div>
 
 {% else %}
-    <div class="alert alert-info">
-        {{ msg('no-contribs') }}
-    </div>
+	<div class="alert alert-info">
+		{{ msg('no-contribs') }}
+	</div>
 {% endif %}
 
 {% endblock %}

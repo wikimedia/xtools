@@ -87,12 +87,12 @@ class CategoryEditsRepository extends Repository {
 		}
 
 		$sql = "SELECT COUNT(DISTINCT revs.rev_id)
-                FROM $revisionTable revs
-                $ipcJoin
-                JOIN $categorylinksTable ON cl_from = rev_page
-                WHERE $whereClause
-                    AND cl_target_id IN (?)
-                    $revDateConditions";
+				FROM $revisionTable revs
+				$ipcJoin
+				JOIN $categorylinksTable ON cl_from = rev_page
+				WHERE $whereClause
+					AND cl_target_id IN (?)
+					$revDateConditions";
 		$result = (int)$this->executeStmt( $sql, $project, $user, $categories )->fetchOne();
 
 		// Cache and return.
@@ -133,14 +133,14 @@ class CategoryEditsRepository extends Repository {
 		}
 
 		$sql = "SELECT cl_target_id, COUNT(rev_id) AS edit_count, COUNT(DISTINCT rev_page) AS page_count
-                FROM $revisionTable revs
-                $ipcJoin
-                JOIN $categorylinksTable ON cl_from = rev_page
-                WHERE $whereClause
-                    AND cl_target_id IN (?)
-                    $revDateConditions
-                GROUP BY cl_target_id
-                ORDER BY edit_count DESC";
+				FROM $revisionTable revs
+				$ipcJoin
+				JOIN $categorylinksTable ON cl_from = rev_page
+				WHERE $whereClause
+					AND cl_target_id IN (?)
+					$revDateConditions
+				GROUP BY cl_target_id
+				ORDER BY edit_count DESC";
 
 		$counts = [];
 		$stmt = $this->executeStmt( $sql, $project, $user, $categories );
@@ -195,21 +195,21 @@ class CategoryEditsRepository extends Repository {
 		}
 
 		$sql = "SELECT page_title, page_namespace AS `namespace`, revs.rev_id AS `rev_id`,
-                    revs.rev_timestamp AS `timestamp`, revs.rev_minor_edit AS `minor`, revs.rev_len AS `length`,
-                    (CAST(revs.rev_len AS SIGNED) - IFNULL(parentrevs.rev_len, 0)) AS `length_change`,
-                    comment_text AS `comment`
-                FROM $pageTable
-                JOIN $revisionTable revs ON page_id = revs.rev_page
-                $ipcJoin
-                JOIN $categorylinksTable ON cl_from = rev_page
-                LEFT JOIN $commentTable comment ON revs.rev_comment_id = comment_id
-                LEFT JOIN $revisionTable parentrevs ON revs.rev_parent_id = parentrevs.rev_id
-                WHERE $whereClause
-                    AND cl_target_id IN (?)
-                    $revDateConditions
-                GROUP BY revs.rev_id
-                ORDER BY revs.rev_timestamp DESC
-                LIMIT 50";
+					revs.rev_timestamp AS `timestamp`, revs.rev_minor_edit AS `minor`, revs.rev_len AS `length`,
+					(CAST(revs.rev_len AS SIGNED) - IFNULL(parentrevs.rev_len, 0)) AS `length_change`,
+					comment_text AS `comment`
+				FROM $pageTable
+				JOIN $revisionTable revs ON page_id = revs.rev_page
+				$ipcJoin
+				JOIN $categorylinksTable ON cl_from = rev_page
+				LEFT JOIN $commentTable comment ON revs.rev_comment_id = comment_id
+				LEFT JOIN $revisionTable parentrevs ON revs.rev_parent_id = parentrevs.rev_id
+				WHERE $whereClause
+					AND cl_target_id IN (?)
+					$revDateConditions
+				GROUP BY revs.rev_id
+				ORDER BY revs.rev_timestamp DESC
+				LIMIT 50";
 
 		$result = $this->executeStmt( $sql, $project, $user, $categories )->fetchAllAssociative();
 

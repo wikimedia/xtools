@@ -194,15 +194,15 @@ class AutoEditsRepository extends UserRepository {
 		$condTool = 'AND (' . implode( ' OR ', $condTools ) . ')';
 
 		$sql = "SELECT COUNT(DISTINCT(rev_id))
-                FROM $revisionTable
-                $ipcJoin
-                $pageJoin
-                $commentJoin
-                $tagJoin
-                WHERE $whereClause
-                $condNamespace
-                $condTool
-                $revDateConditions";
+				FROM $revisionTable
+				$ipcJoin
+				$pageJoin
+				$commentJoin
+				$tagJoin
+				WHERE $whereClause
+				$condNamespace
+				$condTool
+				$revDateConditions";
 
 		$resultQuery = $this->executeQuery( $sql, $project, $user, $namespace, $params );
 		$result = (int)$resultQuery->fetchOne();
@@ -260,33 +260,33 @@ class AutoEditsRepository extends UserRepository {
 
 		$condNamespace = $namespace === 'all' ? '' : 'AND page_namespace = :namespace';
 		$condTag = $tagIds != '' ? "AND NOT EXISTS (
-            SELECT 1 FROM $tagTable
-            WHERE ct_rev_id = revs.rev_id
-            AND ct_tag_id IN ($tagIds))" : '';
+			SELECT 1 FROM $tagTable
+			WHERE ct_rev_id = revs.rev_id
+			AND ct_tag_id IN ($tagIds))" : '';
 
 		$sql = "SELECT
-                    page_title,
-                    page_namespace AS `namespace`,
-                    revs.rev_id AS rev_id,
-                    revs.rev_timestamp AS `timestamp`,
-                    revs.rev_minor_edit AS `minor`,
-                    revs.rev_len AS `length`,
-                    (CAST(revs.rev_len AS SIGNED) - IFNULL(parentrevs.rev_len, 0)) AS `length_change`,
-                    comment_text AS `comment`
-                FROM $pageTable
-                JOIN $revisionTable AS revs ON (page_id = revs.rev_page)
-                $ipcJoin
-                LEFT JOIN $revisionTable AS parentrevs ON (revs.rev_parent_id = parentrevs.rev_id)
-                LEFT OUTER JOIN $commentTable ON (revs.rev_comment_id = comment_id)
-                WHERE $whereClause
-                AND revs.rev_timestamp > 0
-                AND comment_text NOT RLIKE :tools
-                $condTag
-                $revDateConditions
-                $condNamespace
-                GROUP BY revs.rev_id
-                ORDER BY revs.rev_timestamp DESC
-                LIMIT $limit";
+					page_title,
+					page_namespace AS `namespace`,
+					revs.rev_id AS rev_id,
+					revs.rev_timestamp AS `timestamp`,
+					revs.rev_minor_edit AS `minor`,
+					revs.rev_len AS `length`,
+					(CAST(revs.rev_len AS SIGNED) - IFNULL(parentrevs.rev_len, 0)) AS `length_change`,
+					comment_text AS `comment`
+				FROM $pageTable
+				JOIN $revisionTable AS revs ON (page_id = revs.rev_page)
+				$ipcJoin
+				LEFT JOIN $revisionTable AS parentrevs ON (revs.rev_parent_id = parentrevs.rev_id)
+				LEFT OUTER JOIN $commentTable ON (revs.rev_comment_id = comment_id)
+				WHERE $whereClause
+				AND revs.rev_timestamp > 0
+				AND comment_text NOT RLIKE :tools
+				$condTag
+				$revDateConditions
+				$condNamespace
+				GROUP BY revs.rev_id
+				ORDER BY revs.rev_timestamp DESC
+				LIMIT $limit";
 
 		$resultQuery = $this->executeQuery( $sql, $project, $user, $namespace, $params );
 		$result = $resultQuery->fetchAllAssociative();
@@ -377,27 +377,27 @@ class AutoEditsRepository extends UserRepository {
 		}
 
 		$sql = "SELECT
-                    page_title,
-                    page_namespace AS `namespace`,
-                    revs.rev_id AS `rev_id`,
-                    revs.rev_timestamp AS `timestamp`,
-                    revs.rev_minor_edit AS `minor`,
-                    revs.rev_len AS `length`,
-                    (CAST(revs.rev_len AS SIGNED) - IFNULL(parentrevs.rev_len, 0)) AS `length_change`,
-                    comment_text AS `comment`
-                FROM $pageTable
-                JOIN $revisionTable AS revs ON (page_id = revs.rev_page)
-                $ipcJoin
-                LEFT JOIN $revisionTable AS parentrevs ON (revs.rev_parent_id = parentrevs.rev_id)
-                LEFT OUTER JOIN $commentTable ON (revs.rev_comment_id = comment_id)
-                $tagJoin
-                WHERE $whereClause
-                $revDateConditions
-                $condNamespace
-                $condsTool
-                GROUP BY revs.rev_id
-                ORDER BY revs.rev_timestamp DESC
-                LIMIT $limit";
+					page_title,
+					page_namespace AS `namespace`,
+					revs.rev_id AS `rev_id`,
+					revs.rev_timestamp AS `timestamp`,
+					revs.rev_minor_edit AS `minor`,
+					revs.rev_len AS `length`,
+					(CAST(revs.rev_len AS SIGNED) - IFNULL(parentrevs.rev_len, 0)) AS `length_change`,
+					comment_text AS `comment`
+				FROM $pageTable
+				JOIN $revisionTable AS revs ON (page_id = revs.rev_page)
+				$ipcJoin
+				LEFT JOIN $revisionTable AS parentrevs ON (revs.rev_parent_id = parentrevs.rev_id)
+				LEFT OUTER JOIN $commentTable ON (revs.rev_comment_id = comment_id)
+				$tagJoin
+				WHERE $whereClause
+				$revDateConditions
+				$condNamespace
+				$condsTool
+				GROUP BY revs.rev_id
+				ORDER BY revs.rev_timestamp DESC
+				LIMIT $limit";
 
 		$resultQuery = $this->executeQuery( $sql, $project, $user, $namespace, $params );
 		$result = $resultQuery->fetchAllAssociative();
@@ -517,16 +517,16 @@ class AutoEditsRepository extends UserRepository {
 			}
 
 			$queries[] .= "
-                SELECT $toolName AS toolname, COUNT(DISTINCT(rev_id)) AS count
-                FROM $revisionTable
-                $ipcJoin
-                $pageJoin
-                $commentJoin
-                $tagJoin
-                WHERE $whereClause
-                AND $condTool
-                $condNamespace
-                $revDateConditions";
+				SELECT $toolName AS toolname, COUNT(DISTINCT(rev_id)) AS count
+				FROM $revisionTable
+				$ipcJoin
+				$pageJoin
+				$commentJoin
+				$tagJoin
+				WHERE $whereClause
+				AND $condTool
+				$condNamespace
+				$revDateConditions";
 		}
 
 		// Combine to one big query.
@@ -668,7 +668,7 @@ class AutoEditsRepository extends UserRepository {
 		$tags = implode( ',', $tags );
 		$tagDefTable = $project->getTableName( 'change_tag_def' );
 		$sql = "SELECT ctd_name, ctd_id FROM $tagDefTable
-                WHERE ctd_name IN ($tags)";
+				WHERE ctd_name IN ($tags)";
 		$this->tags = $this->executeProjectsQuery( $project, $sql )->fetchAllKeyValue();
 
 		// Cache and return.
@@ -698,10 +698,10 @@ class AutoEditsRepository extends UserRepository {
 
 			if ( strlen( $excludesList ) ) {
 				$excludesSql = "AND NOT EXISTS(
-                    SELECT 1
-                    FROM $tagTable
-                    WHERE (ct_rev_id = rev_id
-                    AND ct_tag_id IN ($excludesList)))";
+					SELECT 1
+					FROM $tagTable
+					WHERE (ct_rev_id = rev_id
+					AND ct_tag_id IN ($excludesList)))";
 			}
 		}
 

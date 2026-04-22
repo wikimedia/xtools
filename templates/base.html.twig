@@ -3,275 +3,275 @@
 <!DOCTYPE html>
 <html lang="{{ lang() }}"{% if isRTL() %} dir="rtl"{% endif %}>
 <head>
-    <title>
-        {% if xtTitle is defined %}{{ xtTitle }} - {% endif %}{% if xtPage != 'home' and xtPage != '' %}{{ msg('tool-' ~ xtPage|lower) }} - {% endif %}{{ msg('xtools-title') }}
-    </title>
+	<title>
+		{% if xtTitle is defined %}{{ xtTitle }} - {% endif %}{% if xtPage != 'home' and xtPage != '' %}{{ msg('tool-' ~ xtPage|lower) }} - {% endif %}{{ msg('xtools-title') }}
+	</title>
 
-    {# Must be before loading the individual JS files #}
-    <script type="text/javascript">
-        xtBaseUrl = "{{ path('homepage') }}";
+	{# Must be before loading the individual JS files #}
+	<script type="text/javascript">
+		xtBaseUrl = "{{ path('homepage') }}";
 
-        {# For $.i18n, loaded in application.js #}
-        i18nLang = "{{ lang() }}";
-        i18nPaths = {};
-        {% for lang in fallbackLangs() %}
-            i18nPaths["{{ lang }}"] = "{{ asset('i18n/' ~ lang ~ '.json') }}";
-        {% endfor %}
+		{# For $.i18n, loaded in application.js #}
+		i18nLang = "{{ lang() }}";
+		i18nPaths = {};
+		{% for lang in fallbackLangs() %}
+			i18nPaths["{{ lang }}"] = "{{ asset('i18n/' ~ lang ~ '.json') }}";
+		{% endfor %}
 
-        i18nRTL = {% if isRTL() %}true{% else %}false{% endif %};
-    </script>
+		i18nRTL = {% if isRTL() %}true{% else %}false{% endif %};
+	</script>
 
-    {% block javascripts %}
-        <script type="text/javascript" src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-        <script type="text/javascript" src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
-        <script type="text/javascript" src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/select2/4.0.5/js/select2.full.min.js"></script>
-        {{ encore_entry_script_tags('app') }}
-    {% endblock %}
-    {% block stylesheets %}
-        <link rel="stylesheet" type="text/css" media="screen" href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
-        <link rel="stylesheet" type="text/css" media="screen" href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/select2/4.0.5/css/select2.min.css">
-        {% if isRTL() %}
-            <link rel="stylesheet" type="text/css" href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap-rtl/3.4.0/css/bootstrap-flipped.min.css">
-        {% endif %}
-        {{ encore_entry_link_tags('app') }}
-    {% endblock %}
+	{% block javascripts %}
+		<script type="text/javascript" src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script type="text/javascript" src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="https://tools-static.wmflabs.org/cdnjs/ajax/libs/select2/4.0.5/js/select2.full.min.js"></script>
+		{{ encore_entry_script_tags('app') }}
+	{% endblock %}
+	{% block stylesheets %}
+		<link rel="stylesheet" type="text/css" media="screen" href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+		<link rel="stylesheet" type="text/css" media="screen" href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/select2/4.0.5/css/select2.min.css">
+		{% if isRTL() %}
+			<link rel="stylesheet" type="text/css" href="https://tools-static.wmflabs.org/cdnjs/ajax/libs/bootstrap-rtl/3.4.0/css/bootstrap-flipped.min.css">
+		{% endif %}
+		{{ encore_entry_link_tags('app') }}
+	{% endblock %}
 
-    <link rel="shortcut icon" sizes="16x16 32x32 48x48 96x96 144x144" href="{{ asset('/build/images/favicon.ico') }}" />
-    <link rel="apple-touch-icon" sizes="16x16 32x32 48x48 96x96 144x144" href="{{ asset('/build/images/apple-touch-icon.png') }}" />
-    <link rel="apple-touch-icon-precomposed icon" sizes="16x16 32x32 48x48 96x96 144x144" href="{{ asset('/build/images/apple-touch-icon-precomposed.png') }}" />
-    <link rel="icon" sizes="196x196" href="{{ asset('/build/images/apple-touch-icon.png') }}">
+	<link rel="shortcut icon" sizes="16x16 32x32 48x48 96x96 144x144" href="{{ asset('/build/images/favicon.ico') }}" />
+	<link rel="apple-touch-icon" sizes="16x16 32x32 48x48 96x96 144x144" href="{{ asset('/build/images/apple-touch-icon.png') }}" />
+	<link rel="apple-touch-icon-precomposed icon" sizes="16x16 32x32 48x48 96x96 144x144" href="{{ asset('/build/images/apple-touch-icon-precomposed.png') }}" />
+	<link rel="icon" sizes="196x196" href="{{ asset('/build/images/apple-touch-icon.png') }}">
 
-    <meta charset="utf-8">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    {# Don't index or follow links on result pages. #}
-    {% if xtTitle is defined %}
-        <meta name="robots" content="noindex, nofollow">
-    {% endif %}
+	<meta charset="utf-8">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	{# Don't index or follow links on result pages. #}
+	{% if xtTitle is defined %}
+		<meta name="robots" content="noindex, nofollow">
+	{% endif %}
 </head>
 
 <body class="{{ xtPage|lower }}{% if isRTL() %} rtl{% endif %}" >
 {# Link to a page that throws a 500, with "possible spider detected." #}
 <a class="hidden-link" href="/foo" style="visibility: hidden;"></a>
 <header class="navbar navbar-default navbar-top" role="navigation">
-    <button class="navbar-toggle collapsed pull-left" data-toggle="collapse" data-target=".tool-links" aria-expanded="false">
-      <span class="sr-only">Toggle navigation</span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-    </button>
-    <ol class="nav-buttons list-inline pull-right">
-        {% if exception is not defined %}
-        <li>
-            <div class="lang-group btn-group dropdown">
-                <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                      <path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"></path>
-                    </svg>
-                    {{ langName() }}
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-right">
-                    <li>
-                        <a href="https://translatewiki.net/w/i.php?title=Special:MessageGroupStats&amp;group=xtools">{{ msg('help-translate') }}</a>
-                    </li>
-                    <li class="divider" role="separator"></li>
-                    {% for key, value in allLangs()|filter((value, key) => key != 'qqq') %}
-                        <li>
-                            <a class="lang-link" href="{{ path(app.request.attributes.get('_route'), app.request.get('_route_params')|merge({'uselang': key})) }}" data-lang="{{ key }}">{{ value|e }}</a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </li>
-        {% endif %}
+	<button class="navbar-toggle collapsed pull-left" data-toggle="collapse" data-target=".tool-links" aria-expanded="false">
+	  <span class="sr-only">Toggle navigation</span>
+	  <span class="icon-bar"></span>
+	  <span class="icon-bar"></span>
+	  <span class="icon-bar"></span>
+	</button>
+	<ol class="nav-buttons list-inline pull-right">
+		{% if exception is not defined %}
+		<li>
+			<div class="lang-group btn-group dropdown">
+				<button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+					  <path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"></path>
+					</svg>
+					{{ langName() }}
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu dropdown-menu-right">
+					<li>
+						<a href="https://translatewiki.net/w/i.php?title=Special:MessageGroupStats&amp;group=xtools">{{ msg('help-translate') }}</a>
+					</li>
+					<li class="divider" role="separator"></li>
+					{% for key, value in allLangs()|filter((value, key) => key != 'qqq') %}
+						<li>
+							<a class="lang-link" href="{{ path(app.request.attributes.get('_route'), app.request.get('_route_params')|merge({'uselang': key})) }}" data-lang="{{ key }}">{{ value|e }}</a>
+						</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</li>
+		{% endif %}
 
-        <li>
-        {% if logged_in_user() %}
-            <a class="btn btn-default logout-btn" href="{{ path('logout') }}" title="{{ msg("logout-msg", [logged_in_user().username]) }}">
-                <span class="glyphicon glyphicon-user"></span>
-                {{ msg("logout") }}
-            </a>
-        {% else %}
-            <a class="btn btn-default login-btn" href="{{ login_url(app.request) }}">
-                <span class="glyphicon glyphicon-user"></span>
-                {{ msg("login") }}
-            </a>
-        {% endif %}
-        </li>
+		<li>
+		{% if logged_in_user() %}
+			<a class="btn btn-default logout-btn" href="{{ path('logout') }}" title="{{ msg("logout-msg", [logged_in_user().username]) }}">
+				<span class="glyphicon glyphicon-user"></span>
+				{{ msg("logout") }}
+			</a>
+		{% else %}
+			<a class="btn btn-default login-btn" href="{{ login_url(app.request) }}">
+				<span class="glyphicon glyphicon-user"></span>
+				{{ msg("login") }}
+			</a>
+		{% endif %}
+		</li>
 
-    </ol>
-    <nav class="tool-links navbar-collapse collapse">
-        <ol class="tool-links--nav nav navbar-nav navbar-left">
-            <li>
-                <a class="home-link" href="{{ path('homepage') }}">
-                    <img src="{{ asset('/build/images/logo.svg') }}" alt="Logo" style="height:32px" />
-                </a>
-            </li>
+	</ol>
+	<nav class="tool-links navbar-collapse collapse">
+		<ol class="tool-links--nav nav navbar-nav navbar-left">
+			<li>
+				<a class="home-link" href="{{ path('homepage') }}">
+					<img src="{{ asset('/build/images/logo.svg') }}" alt="Logo" style="height:32px" />
+				</a>
+			</li>
 
-            {% if enabled('EditCounter') %}
-                <li role="presentation" class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        {{ msg('tool-editcounter') }}
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li class="tool-links--entry">
-                            <a href="{{ path('EditCounter', {sections: 'all'}) }}">{{ msg('tool-editcounter') }}</a>
-                        </li>
-                        <li class="divider" role="separator"></li>
-                        {% for tool, msg in top_nav_ec() %}
-                            <li class="tool-links--entry">
-                                <a href="{{ path(tool) }}">{{ msg }}</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </li>
-            {% endif %}
-            {% if top_nav_user()|length %}
-                <li role="presentation" class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        {{ msg('user') }}
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        {% for tool, msg in top_nav_user() %}
-                            <li class="tool-links--entry">
-                                <a href="{{ path(tool) }}">{{ msg }}</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </li>
-            {% endif %}
-            {% if top_nav_page()|length %}
-                <li role="presentation" class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        {{ msg('page') }}
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        {% for tool, msg in top_nav_page() %}
-                            <li class="tool-links--entry">
-                                <a href="{{ path(tool) }}">{{ msg }}</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </li>
-            {% endif %}
-            {% if top_nav_project()|length %}
-                <li role="presentation" class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        {{ msg('project') }}
-                        <span class="caret"></span>
-                    </a>
-                    <ul class="dropdown-menu">
-                        {% for tool, msg in top_nav_project() %}
-                            <li class="tool-links--entry">
-                                <a href="{{ path(tool) }}">{{ msg }}</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </li>
-            {% endif %}
+			{% if enabled('EditCounter') %}
+				<li role="presentation" class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						{{ msg('tool-editcounter') }}
+						<span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu">
+						<li class="tool-links--entry">
+							<a href="{{ path('EditCounter', {sections: 'all'}) }}">{{ msg('tool-editcounter') }}</a>
+						</li>
+						<li class="divider" role="separator"></li>
+						{% for tool, msg in top_nav_ec() %}
+							<li class="tool-links--entry">
+								<a href="{{ path(tool) }}">{{ msg }}</a>
+							</li>
+						{% endfor %}
+					</ul>
+				</li>
+			{% endif %}
+			{% if top_nav_user()|length %}
+				<li role="presentation" class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						{{ msg('user') }}
+						<span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu">
+						{% for tool, msg in top_nav_user() %}
+							<li class="tool-links--entry">
+								<a href="{{ path(tool) }}">{{ msg }}</a>
+							</li>
+						{% endfor %}
+					</ul>
+				</li>
+			{% endif %}
+			{% if top_nav_page()|length %}
+				<li role="presentation" class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						{{ msg('page') }}
+						<span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu">
+						{% for tool, msg in top_nav_page() %}
+							<li class="tool-links--entry">
+								<a href="{{ path(tool) }}">{{ msg }}</a>
+							</li>
+						{% endfor %}
+					</ul>
+				</li>
+			{% endif %}
+			{% if top_nav_project()|length %}
+				<li role="presentation" class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						{{ msg('project') }}
+						<span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu">
+						{% for tool, msg in top_nav_project() %}
+							<li class="tool-links--entry">
+								<a href="{{ path(tool) }}">{{ msg }}</a>
+							</li>
+						{% endfor %}
+					</ul>
+				</li>
+			{% endif %}
 
-            {# Populated by JS when not all entires fit in the nav #}
-            <li class="tool-links--more dropdown hidden">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                    {{ msg('more') }}
-                    <span class="caret"></span>
-                </a>
-                <ul class="dropdown-menu"></ul>
-            </li>
-        </ol>
-    </nav>
+			{# Populated by JS when not all entires fit in the nav #}
+			<li class="tool-links--more dropdown hidden">
+				<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+					{{ msg('more') }}
+					<span class="caret"></span>
+				</a>
+				<ul class="dropdown-menu"></ul>
+			</li>
+		</ol>
+	</nav>
 </header>
 
 <div class="site-notice">
-    {% if notice_display is defined and notice_display == true %}
-        {{ layout.alert(notice_style, notice_text, true) }}
-    {% endif %}
+	{% if notice_display is defined and notice_display == true %}
+		{{ layout.alert(notice_style, notice_text, true) }}
+	{% endif %}
 
-    {% if app.session.flashBag.peekAll %}
-        {% for level, messages in app.session.flashBag.all %}
-            {% set level = level == 'notice' ? 'danger' : level %}
-            {{ layout.alert(level, messages[0]) }}
-        {% endfor %}
-    {% endif %}
+	{% if app.session.flashBag.peekAll %}
+		{% for level, messages in app.session.flashBag.all %}
+			{% set level = level == 'notice' ? 'danger' : level %}
+			{{ layout.alert(level, messages[0]) }}
+		{% endfor %}
+	{% endif %}
 
-    {# Show replag on result pages, if applicable #}
-    {% if xtTitle is defined %}
-        {% set replagValue = replag() %}
-        {% if replagValue > getReplagThreshold() %}
-            {{ layout.alert('warning', msg('high-replag', [formatDuration(replagValue)])) }}
-        {% endif %}
-    {% endif %}
+	{# Show replag on result pages, if applicable #}
+	{% if xtTitle is defined %}
+		{% set replagValue = replag() %}
+		{% if replagValue > getReplagThreshold() %}
+			{{ layout.alert('warning', msg('high-replag', [formatDuration(replagValue)])) }}
+		{% endif %}
+	{% endif %}
 </div>
 
 <div id="wrapper">
 <main id="content" class="clearfix">
-    {% block title %}
-    <div class="col-lg-8 col-lg-offset-2">
-        {% if xtPageTitle is defined %}
-            <h2 class="xt-page-title">
-                <a target="_blank" href="https://www.mediawiki.org/wiki/Special:MyLanguage/XTools/{{ xtPage }}" class="pull-right glyphicon glyphicon-question-sign plainlink help-icon"></a>
-                <span class="xt-page-title--title">{{ msg(xtPageTitle) }}</span>
-                {% if xtSubtitle is defined %}
-                    <small class="xt-page-title--desc">{{ msg(xtSubtitle) }}</small>
-                {% endif %}
-            </h2>
-        {% endif %}
-    </div>
-    {% endblock %}
+	{% block title %}
+	<div class="col-lg-8 col-lg-offset-2">
+		{% if xtPageTitle is defined %}
+			<h2 class="xt-page-title">
+				<a target="_blank" href="https://www.mediawiki.org/wiki/Special:MyLanguage/XTools/{{ xtPage }}" class="pull-right glyphicon glyphicon-question-sign plainlink help-icon"></a>
+				<span class="xt-page-title--title">{{ msg(xtPageTitle) }}</span>
+				{% if xtSubtitle is defined %}
+					<small class="xt-page-title--desc">{{ msg(xtSubtitle) }}</small>
+				{% endif %}
+			</h2>
+		{% endif %}
+	</div>
+	{% endblock %}
 
-    {% block body %}
-    {% endblock %}
+	{% block body %}
+	{% endblock %}
 </main>
 </div>
 
 <footer class="app-footer container-fluid">
-    <span>
-        <small>
-            <span>{{ msg('executed', [request_time()|num_format(3), request_time()]) }}</span> &middot;
-            <span>{{ msg('memory-usage', [memory_usage()|num_format(2), memory_usage()]) }}</span>
-        </small>
-    </span>
-    <hr>
-    <div class="footer-content">
-        <div class="pull-right footer-branding">
-            <a style="margin-right:5px;" href="//translatewiki.net/?setlang=en "><img height="36px" src="//upload.wikimedia.org/wikipedia/commons/5/51/Translatewiki.net_logo.svg" alt="translatewiki.net logo"/></a>
-            {% if isWMF() %}
-            <a href="https://wikitech.wikimedia.org/wiki/Portal:Cloud_VPS" target="_blank"><img height="40px" src="{{ asset('/build/images/VPS-badge.svg') }}" alt="Powered by Wikimedia Cloud Services" /></a>
-            {% endif %}
-        </div>
-        <div class="footer-about">
-            <span>
-                {# The release process is documented at https://www.mediawiki.org/wiki/XTools/Development#Releases #}
-                &copy; {{ 'jan-2008'|date_format('Y') }}-{{ 'now'|date_format('Y') }}
-                &middot;
-                <a href="https://gerrit.wikimedia.org/g/labs/xtools/+/refs/tags/{{ version }}" target="_blank" title="Current XTools version">v.{{ version }}</a>
-                (<a href="https://gerrit.wikimedia.org/g/labs/xtools/+/{{ hash() }}" target="_blank" title="Current code revision">r.{{ shortHash() }}</a>)
-                &middot;
-                {{ layout.apiLink }}
-                &middot;
-                <a target="_blank" href="https://www.mediawiki.org/wiki/Special:MyLanguage/XTools">{{ msg('documentation') }}</a>
-                &middot;
-                {% include 'default/_report_issue_links.html.twig' %}
-            </span>
-            {% set translateWikiLink = "<a href='https://translatewiki.net'>translatewiki.net</a>" %}
-            {% set intuitionLink = "<a href='https://intuition.toolforge.org/#tab-about'>Intuition</a>" %}
-            {% set jqueryI18nLink = "<a href='https://github.com/wikimedia/jquery.i18n'>jQuery.i18n</a>" %}
-            <div>{{ msg('translation-credits', [translateWikiLink, intuitionLink, jqueryI18nLink]) }}</div>
-            <small class="footer-quote text-muted">{{ quote() }}</small>
-        </div>
-    </div>
+	<span>
+		<small>
+			<span>{{ msg('executed', [request_time()|num_format(3), request_time()]) }}</span> &middot;
+			<span>{{ msg('memory-usage', [memory_usage()|num_format(2), memory_usage()]) }}</span>
+		</small>
+	</span>
+	<hr>
+	<div class="footer-content">
+		<div class="pull-right footer-branding">
+			<a style="margin-right:5px;" href="//translatewiki.net/?setlang=en "><img height="36px" src="//upload.wikimedia.org/wikipedia/commons/5/51/Translatewiki.net_logo.svg" alt="translatewiki.net logo"/></a>
+			{% if isWMF() %}
+			<a href="https://wikitech.wikimedia.org/wiki/Portal:Cloud_VPS" target="_blank"><img height="40px" src="{{ asset('/build/images/VPS-badge.svg') }}" alt="Powered by Wikimedia Cloud Services" /></a>
+			{% endif %}
+		</div>
+		<div class="footer-about">
+			<span>
+				{# The release process is documented at https://www.mediawiki.org/wiki/XTools/Development#Releases #}
+				&copy; {{ 'jan-2008'|date_format('Y') }}-{{ 'now'|date_format('Y') }}
+				&middot;
+				<a href="https://gerrit.wikimedia.org/g/labs/xtools/+/refs/tags/{{ version }}" target="_blank" title="Current XTools version">v.{{ version }}</a>
+				(<a href="https://gerrit.wikimedia.org/g/labs/xtools/+/{{ hash() }}" target="_blank" title="Current code revision">r.{{ shortHash() }}</a>)
+				&middot;
+				{{ layout.apiLink }}
+				&middot;
+				<a target="_blank" href="https://www.mediawiki.org/wiki/Special:MyLanguage/XTools">{{ msg('documentation') }}</a>
+				&middot;
+				{% include 'default/_report_issue_links.html.twig' %}
+			</span>
+			{% set translateWikiLink = "<a href='https://translatewiki.net'>translatewiki.net</a>" %}
+			{% set intuitionLink = "<a href='https://intuition.toolforge.org/#tab-about'>Intuition</a>" %}
+			{% set jqueryI18nLink = "<a href='https://github.com/wikimedia/jquery.i18n'>jQuery.i18n</a>" %}
+			<div>{{ msg('translation-credits', [translateWikiLink, intuitionLink, jqueryI18nLink]) }}</div>
+			<small class="footer-quote text-muted">{{ quote() }}</small>
+		</div>
+	</div>
 </footer>
 {% if xtPage is defined and project.domain is defined and 'indexAction' not in app.request.attributes.get('_controller') %}
 <script>
-    $.ajax({
-        url: "{{ path('homepage') }}meta/usage/{{ xtPage }}/{{ project.domain }}/{{ csrf_token('intention') }}",
-        method: 'PUT'
-    });
+	$.ajax({
+		url: "{{ path('homepage') }}meta/usage/{{ xtPage }}/{{ project.domain }}/{{ csrf_token('intention') }}",
+		method: 'PUT'
+	});
 </script>
 {% endif %}
 </body>

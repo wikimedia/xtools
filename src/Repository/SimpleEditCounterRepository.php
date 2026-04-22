@@ -75,34 +75,34 @@ class SimpleEditCounterRepository extends Repository {
 		$arNamespaceWhereSql = $namespace === 'all' ? '' : "AND ar_namespace = $namespace";
 
 		$sql = "SELECT 'id' AS source, user_id as value
-                    FROM $userTable
-                    WHERE user_name = :username
-                UNION
-                SELECT 'arch' AS source, COUNT(*) AS value
-                    FROM $archiveTable
-                    WHERE ar_actor = :actorId
-                    $arNamespaceWhereSql
-                    $arDateConditions
-                UNION
-                SELECT 'rev' AS source,
-                    CONCAT(COUNT(*), \";\",
-                    COUNT(
-                        CASE rev_parent_id
-                        WHEN 0
-                        THEN 1
-                        ELSE NULL
-                        END
-                    )) AS value
-                    FROM $revisionTable
-                    $revNamespaceJoinSql
-                    WHERE rev_actor = :actorId
-                    $revNamespaceWhereSql
-                    $revDateConditions
-                UNION
-                SELECT 'groups' AS source, ug_group AS value
-                    FROM $userGroupsTable
-                    JOIN $userTable ON user_id = ug_user
-                    WHERE user_name = :username";
+					FROM $userTable
+					WHERE user_name = :username
+				UNION
+				SELECT 'arch' AS source, COUNT(*) AS value
+					FROM $archiveTable
+					WHERE ar_actor = :actorId
+					$arNamespaceWhereSql
+					$arDateConditions
+				UNION
+				SELECT 'rev' AS source,
+					CONCAT(COUNT(*), \";\",
+					COUNT(
+						CASE rev_parent_id
+						WHEN 0
+						THEN 1
+						ELSE NULL
+						END
+					)) AS value
+					FROM $revisionTable
+					$revNamespaceJoinSql
+					WHERE rev_actor = :actorId
+					$revNamespaceWhereSql
+					$revDateConditions
+				UNION
+				SELECT 'groups' AS source, ug_group AS value
+					FROM $userGroupsTable
+					JOIN $userTable ON user_id = ug_user
+					WHERE user_name = :username";
 
 		return $this->executeProjectsQuery( $project, $sql, [
 			'username' => $user->getUsername(),
@@ -137,11 +137,11 @@ class SimpleEditCounterRepository extends Repository {
 		$revNamespaceWhereSql = $namespace === 'all' ? '' : "AND page_namespace = $namespace";
 
 		$sql = "SELECT 'rev' AS source, COUNT(*) AS value
-                FROM $ipcTable
-                $revNamespaceJoinSql
-                WHERE ipc_hex BETWEEN :start AND :end
-                $revDateConditions
-                $revNamespaceWhereSql";
+				FROM $ipcTable
+				$revNamespaceJoinSql
+				WHERE ipc_hex BETWEEN :start AND :end
+				$revDateConditions
+				$revNamespaceWhereSql";
 
 		return $this->executeProjectsQuery( $project, $sql, [
 			'start' => $startHex,

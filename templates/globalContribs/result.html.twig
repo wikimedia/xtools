@@ -6,198 +6,198 @@
 {% block body %}
 
 {% if not is_sub_request %}
-    <div class="panel panel-primary">
-        <header class="panel-heading">
-            <div class="text-center xt-heading-top">
-                <a target="_blank" href="https://www.mediawiki.org/wiki/Special:MyLanguage/XTools/Global_Contributions" class="pull-right glyphicon glyphicon-question-sign plainlink help-icon"></a>
-                <a class="back-to-search" href="{{ path('GlobalContribs', {namespace: gc.namespace, start: gc.startDate, end: gc.endDate}) }}">
-                    <span class="glyphicon glyphicon-chevron-left"></span>
-                    {{ msg('back') }}
-                </a>
-                {% if user.isAnon(project) %}
-                    {{ wiki.pageLinkRaw('Special:Contributions/' ~ user.username, project, user.prettyUsername) }}
-                {% else %}
-                    {{ wiki.pageLinkRaw('Special:CentralAuth/' ~ user.username, project, user.username) }}
-                {% endif %}
-            </div>
-        </header>
-        <div class="panel-body xt-panel-body">
-            <p class="text-center xt-heading-subtitle">
-                {% if user.isIP %}
-                    {{ wiki.pageLogLinkRaw('User:' ~ user.username, project, msg('global-block-log'), 'gblblock') }}
-                    &middot;
-                    <a target="_blank" href="https://whois-referral.toolforge.org/gateway.py?lookup=true&amp;ip={{ user.prettyUsername|e('url') }}">{{ msg('whois') }}</a>
-                    &middot;
-                    <a target="_blank" href="https://ipcheck.toolforge.org/index.php?ip={{ user.prettyUsername }}">{{ msg('proxy-check') }}</a>
-                    &middot;
-                    <a target="_blank" href="https://meta.toolforge.org/stalktoy/{{ user.prettyUsername }}">Stalk toy</a>
-                {% else %}
-                    {{ wiki.pageLinkRaw('Special:CentralAuth/' ~ user.username, project, msg('sul-info')) }}
-                    &middot;
-                    {{ wiki.pageLogLinkRaw('User:' ~ user.username ~ '@global', project, msg('global-account-log'), 'globalauth') }}
-                {% endif %}
-            </p>
+	<div class="panel panel-primary">
+		<header class="panel-heading">
+			<div class="text-center xt-heading-top">
+				<a target="_blank" href="https://www.mediawiki.org/wiki/Special:MyLanguage/XTools/Global_Contributions" class="pull-right glyphicon glyphicon-question-sign plainlink help-icon"></a>
+				<a class="back-to-search" href="{{ path('GlobalContribs', {namespace: gc.namespace, start: gc.startDate, end: gc.endDate}) }}">
+					<span class="glyphicon glyphicon-chevron-left"></span>
+					{{ msg('back') }}
+				</a>
+				{% if user.isAnon(project) %}
+					{{ wiki.pageLinkRaw('Special:Contributions/' ~ user.username, project, user.prettyUsername) }}
+				{% else %}
+					{{ wiki.pageLinkRaw('Special:CentralAuth/' ~ user.username, project, user.username) }}
+				{% endif %}
+			</div>
+		</header>
+		<div class="panel-body xt-panel-body">
+			<p class="text-center xt-heading-subtitle">
+				{% if user.isIP %}
+					{{ wiki.pageLogLinkRaw('User:' ~ user.username, project, msg('global-block-log'), 'gblblock') }}
+					&middot;
+					<a target="_blank" href="https://whois-referral.toolforge.org/gateway.py?lookup=true&amp;ip={{ user.prettyUsername|e('url') }}">{{ msg('whois') }}</a>
+					&middot;
+					<a target="_blank" href="https://ipcheck.toolforge.org/index.php?ip={{ user.prettyUsername }}">{{ msg('proxy-check') }}</a>
+					&middot;
+					<a target="_blank" href="https://meta.toolforge.org/stalktoy/{{ user.prettyUsername }}">Stalk toy</a>
+				{% else %}
+					{{ wiki.pageLinkRaw('Special:CentralAuth/' ~ user.username, project, msg('sul-info')) }}
+					&middot;
+					{{ wiki.pageLogLinkRaw('User:' ~ user.username ~ '@global', project, msg('global-account-log'), 'globalauth') }}
+				{% endif %}
+			</p>
 
-            <h3 class="text-center">{{ msg('tool-globalcontribs') }}</h3>
+			<h3 class="text-center">{{ msg('tool-globalcontribs') }}</h3>
 
-            {% set content %}
-                <div class="col-lg-6 stat-list clearfix">
-                    <table class="table"><tbody>
-                        <tr>
-                            <td>{{ msg('user') }}</td>
-                            <td>
-                                {% if user.isAnon(project) %}
-                                    {{ wiki.pageLinkRaw('Special:Contributions/' ~ user.username, project, user.prettyUsername) }}
-                                {% else %}
-                                    {{ wiki.pageLinkRaw('Special:CentralAuth/' ~ user.username, project, user.username) }}
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% if gc.namespace is not same as('all') or gc.namespace == '' %}
-                            <tr>
-                                <td>{{ msg('namespace') }}</td>
-                                <td>{{ nsName(gc.namespace, project.namespaces) }}</td>
-                            </tr>
-                        {% endif %}
-                        {% if gc.start %}
-                            <tr>
-                                <td>{{ msg('start') }}</td>
-                                <td>{{ gc.startDate }}</td>
-                            </tr>
-                        {% endif %}
-                        {% if gc.end %}
-                            <tr>
-                                <td>{{ msg('end') }}</td>
-                                <td>{{ gc.endDate }}</td>
-                            </tr>
-                        {% endif %}
-                        {% if not(gc.start) and not(gc.end) %}
-                            {% if not(user.isIP) %}
-                                <tr>
-                                    <td>{{ msg('global-edit-count') }}</td>
-                                    <td>{{ gc.globalEditCount|num_format }}</td>
-                                </tr>
-                            {% endif %}
-                            <tr>
-                                <td>{{ msg('projects') }}</td>
-                                <td>
-                                    {{ gc.numProjectsWithEdits|num_format }}
-                                </td>
-                            </tr>
-                        {% endif %}
-                        </tbody></table>
-                </div>
-            {% endset %}
-            {{ layout.content_block('summary', content) }}
+			{% set content %}
+				<div class="col-lg-6 stat-list clearfix">
+					<table class="table"><tbody>
+						<tr>
+							<td>{{ msg('user') }}</td>
+							<td>
+								{% if user.isAnon(project) %}
+									{{ wiki.pageLinkRaw('Special:Contributions/' ~ user.username, project, user.prettyUsername) }}
+								{% else %}
+									{{ wiki.pageLinkRaw('Special:CentralAuth/' ~ user.username, project, user.username) }}
+								{% endif %}
+							</td>
+						</tr>
+						{% if gc.namespace is not same as('all') or gc.namespace == '' %}
+							<tr>
+								<td>{{ msg('namespace') }}</td>
+								<td>{{ nsName(gc.namespace, project.namespaces) }}</td>
+							</tr>
+						{% endif %}
+						{% if gc.start %}
+							<tr>
+								<td>{{ msg('start') }}</td>
+								<td>{{ gc.startDate }}</td>
+							</tr>
+						{% endif %}
+						{% if gc.end %}
+							<tr>
+								<td>{{ msg('end') }}</td>
+								<td>{{ gc.endDate }}</td>
+							</tr>
+						{% endif %}
+						{% if not(gc.start) and not(gc.end) %}
+							{% if not(user.isIP) %}
+								<tr>
+									<td>{{ msg('global-edit-count') }}</td>
+									<td>{{ gc.globalEditCount|num_format }}</td>
+								</tr>
+							{% endif %}
+							<tr>
+								<td>{{ msg('projects') }}</td>
+								<td>
+									{{ gc.numProjectsWithEdits|num_format }}
+								</td>
+							</tr>
+						{% endif %}
+						</tbody></table>
+				</div>
+			{% endset %}
+			{{ layout.content_block('summary', content) }}
 
-            <section class="panel panel-default clearfix">
-                <header class="panel-heading col-lg-12">
-                    <h4>
-                        {{ msg('contributions') }}
-                        <span class='pull-right text-muted xt-panel-description'>
-                            {{ layout.downloadLink('UserApiGlobalContribs', {'username': user.usernameIdent, 'namespace': gc.namespace, 'start': gc.startDate, 'end': gc.endDate}, [], 'UserApiGlobalContribs') }}
-                        </span>
-                        {{ forms.contributions_limit(gc.limit) }}
-                    </h4>
-                </header>
-                <div class="panel-body col-lg-12">
-                    <em class="contributions-loading text-muted" style="display:none">{{ msg('loading') }}...</em>
-                    <div class="contributions-container"
-                        data-project="{{ project.domain }}"
-                        data-username="{{ user.usernameIdent }}"
-                        data-namespace="{{ gc.namespace }}"
-                        data-start="{{ gc.startDate }}"
-                        data-end="{{ gc.endDate }}"
-                        data-offset="{{ gc.offsetISO(gc.globalEdits) }}"
-                        data-limit="{{ gc.limit }}">
+			<section class="panel panel-default clearfix">
+				<header class="panel-heading col-lg-12">
+					<h4>
+						{{ msg('contributions') }}
+						<span class='pull-right text-muted xt-panel-description'>
+							{{ layout.downloadLink('UserApiGlobalContribs', {'username': user.usernameIdent, 'namespace': gc.namespace, 'start': gc.startDate, 'end': gc.endDate}, [], 'UserApiGlobalContribs') }}
+						</span>
+						{{ forms.contributions_limit(gc.limit) }}
+					</h4>
+				</header>
+				<div class="panel-body col-lg-12">
+					<em class="contributions-loading text-muted" style="display:none">{{ msg('loading') }}...</em>
+					<div class="contributions-container"
+						data-project="{{ project.domain }}"
+						data-username="{{ user.usernameIdent }}"
+						data-namespace="{{ gc.namespace }}"
+						data-start="{{ gc.startDate }}"
+						data-end="{{ gc.endDate }}"
+						data-offset="{{ gc.offsetISO(gc.globalEdits) }}"
+						data-limit="{{ gc.limit }}">
 {% endif %}
 
 {% if gc.globalEdits|length > 0 %}
-    {{ layout.contributionsNav(gc.offset, gc.globalEdits|length, gc.limit) }}
-    <table class="table table-bordered table-hover table-striped contributions-table">
-        <thead><tr>
-            {% set columns = ['date', 'project'] %}
-            {% if user.isIpRange %}
-                {% set columns = columns|merge(['user']) %}
-            {% endif %}
-            {% set columns = columns|merge(['page-title', 'size', 'edit-summary']) %}
-            {% for key in columns %}
-                <th>
-                    <span{% if key != 'links' %} class="sort-link sort-link--{{ key }}" data-column="{{ key }}"{% endif %}>
-                        {{ msg(key)|ucfirst }}
-                        {% if key != 'links' %}
-                            <span class="glyphicon glyphicon-sort"></span>
-                        {% endif %}
-                    </span>
-                </th>
-            {% endfor %}
-        </tr></thead>
-        <tbody>
-        {% set substr = user.ipSubstringFromCidr %}
-        {% for edit in gc.globalEdits %}
-            {% if edit.project.exists %}
-                <tr{% if edit.isReverted %} class="reverted-edit"{% endif %}>
-                    <td class="sort-entry--date contribs-row-date" data-value="{{ edit.utcTimestamp }}">
-                        {{ wiki.diffLink(edit, edit.timestamp) }}
-                    </td>
-                    <td class="sort-entry--project" data-value="{{ edit.project.domain }}">
-                        {# Use project.domain here instead of title to preserve limited space in the interface #}
-                        <a href="{{ edit.project.url }}">{{ edit.project.domain|replace({'.org': ''}) }}</a>
-                    </td>
-                    {% if user.isIpRange %}
-                        {% set username = edit.user.username|replace({(substr): '…'}) %}
-                        <td class="sort-entry--user" data-value="{{ username|lower }}">
-                            {{ wiki.userLink(edit.user, edit.project, username|lower) }}
-                        </td>
-                    {% endif %}
-                    <td class="sort-entry--page-title display-title" data-value="{{ edit.page.title(true) }}">
-                        {{ wiki.pageLinkRaw(edit.page.title(true), edit.project) }}
-                    </td>
-                    <td class="sort-entry--size" data-value="{{ edit.lengthChange }}">
-                        {{ edit.lengthChange|diff_format }}
-                    </td>
-                    <td class="sort-entry--summary" data-value="{{ edit.comment }}">
-                        {% if edit.isReverted %}<i class="text-info">({{ msg('reverted')|lower }})</i>&nbsp;{% endif %}
-                        {% if edit.deletedSummary %}
-                            <i class="text-muted">{{ msg('edit-summary-removed') }}</i>
-                        {% else %}
-                            {{ edit.wikifiedComment(true)|raw }}
-                        {% endif %}
-                    </td>
-                </tr>
-            {% endif %}
-        {% endfor %}
-        </tbody>
-    </table>
-    {{ layout.contributionsNav(gc.offset, gc.globalEdits|length, gc.limit) }}
+	{{ layout.contributionsNav(gc.offset, gc.globalEdits|length, gc.limit) }}
+	<table class="table table-bordered table-hover table-striped contributions-table">
+		<thead><tr>
+			{% set columns = ['date', 'project'] %}
+			{% if user.isIpRange %}
+				{% set columns = columns|merge(['user']) %}
+			{% endif %}
+			{% set columns = columns|merge(['page-title', 'size', 'edit-summary']) %}
+			{% for key in columns %}
+				<th>
+					<span{% if key != 'links' %} class="sort-link sort-link--{{ key }}" data-column="{{ key }}"{% endif %}>
+						{{ msg(key)|ucfirst }}
+						{% if key != 'links' %}
+							<span class="glyphicon glyphicon-sort"></span>
+						{% endif %}
+					</span>
+				</th>
+			{% endfor %}
+		</tr></thead>
+		<tbody>
+		{% set substr = user.ipSubstringFromCidr %}
+		{% for edit in gc.globalEdits %}
+			{% if edit.project.exists %}
+				<tr{% if edit.isReverted %} class="reverted-edit"{% endif %}>
+					<td class="sort-entry--date contribs-row-date" data-value="{{ edit.utcTimestamp }}">
+						{{ wiki.diffLink(edit, edit.timestamp) }}
+					</td>
+					<td class="sort-entry--project" data-value="{{ edit.project.domain }}">
+						{# Use project.domain here instead of title to preserve limited space in the interface #}
+						<a href="{{ edit.project.url }}">{{ edit.project.domain|replace({'.org': ''}) }}</a>
+					</td>
+					{% if user.isIpRange %}
+						{% set username = edit.user.username|replace({(substr): '…'}) %}
+						<td class="sort-entry--user" data-value="{{ username|lower }}">
+							{{ wiki.userLink(edit.user, edit.project, username|lower) }}
+						</td>
+					{% endif %}
+					<td class="sort-entry--page-title display-title" data-value="{{ edit.page.title(true) }}">
+						{{ wiki.pageLinkRaw(edit.page.title(true), edit.project) }}
+					</td>
+					<td class="sort-entry--size" data-value="{{ edit.lengthChange }}">
+						{{ edit.lengthChange|diff_format }}
+					</td>
+					<td class="sort-entry--summary" data-value="{{ edit.comment }}">
+						{% if edit.isReverted %}<i class="text-info">({{ msg('reverted')|lower }})</i>&nbsp;{% endif %}
+						{% if edit.deletedSummary %}
+							<i class="text-muted">{{ msg('edit-summary-removed') }}</i>
+						{% else %}
+							{{ edit.wikifiedComment(true)|raw }}
+						{% endif %}
+					</td>
+				</tr>
+			{% endif %}
+		{% endfor %}
+		</tbody>
+	</table>
+	{{ layout.contributionsNav(gc.offset, gc.globalEdits|length, gc.limit) }}
 {% else %}
-    {% if nsName(gc.namespace, project.namespaces) == msg('unknown') and gc.user.isIP %}
-        <div class="alert alert-warning">
-            <p>{{ msg('global-contribs-ip-range-warning-1', ['<strong>' ~ gc.user.prettyUsername ~ '</strong>', '<strong>' ~ gc.namespace ~ '</strong>']) }}</p>
-            {% set ipRangeLink -%}
-                <a href="{{ path('GlobalContribsResult', {username: 'ipr-' ~ gc.user.username ~ '/' ~ gc.namespace, start: gc.startDate, end: gc.endDate}) }}">
-                    {{ gc.user.username }}/{{ gc.namespace -}}
-                </a>
-            {%- endset %}
-            <p>{{ msg('global-contribs-ip-range-warning-2', [ipRangeLink]) }}</p>
-        </div>
-    {% else %}
-        <div class="alert alert-info">
-            {{ msg('no-contribs') }}
-        </div>
-    {% endif %}
+	{% if nsName(gc.namespace, project.namespaces) == msg('unknown') and gc.user.isIP %}
+		<div class="alert alert-warning">
+			<p>{{ msg('global-contribs-ip-range-warning-1', ['<strong>' ~ gc.user.prettyUsername ~ '</strong>', '<strong>' ~ gc.namespace ~ '</strong>']) }}</p>
+			{% set ipRangeLink -%}
+				<a href="{{ path('GlobalContribsResult', {username: 'ipr-' ~ gc.user.username ~ '/' ~ gc.namespace, start: gc.startDate, end: gc.endDate}) }}">
+					{{ gc.user.username }}/{{ gc.namespace -}}
+				</a>
+			{%- endset %}
+			<p>{{ msg('global-contribs-ip-range-warning-2', [ipRangeLink]) }}</p>
+		</div>
+	{% else %}
+		<div class="alert alert-info">
+			{{ msg('no-contribs') }}
+		</div>
+	{% endif %}
 {% endif %}
 
 {% if not is_sub_request %}
-    </div></div></section>
-    <div class="text-muted times-in-utc" style="clear:both">
-        {{ msg('times-in-utc') }}
-    </div>
-    </div></div>
+	</div></div></section>
+	<div class="text-muted times-in-utc" style="clear:both">
+		{{ msg('times-in-utc') }}
+	</div>
+	</div></div>
 {% endif %}
 
 <script>
-    xtools.globalcontribs.limit = {{ gc.limit }};
+	xtools.globalcontribs.limit = {{ gc.limit }};
 </script>
 
 {% endblock %}

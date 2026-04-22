@@ -58,9 +58,9 @@ class UserRepository extends Repository {
 
 		$userTable = $this->getTableName( $databaseName, 'user' );
 		$sql = "SELECT user_id AS userId, user_registration AS regDate
-                FROM $userTable
-                WHERE user_name = :username
-                LIMIT 1";
+				FROM $userTable
+				WHERE user_name = :username
+				LIMIT 1";
 		$resultQuery = $this->executeProjectsQuery( $databaseName, $sql, [ 'username' => $username ] );
 
 		// Cache and return.
@@ -86,9 +86,9 @@ class UserRepository extends Repository {
 		$actorTable = $this->getTableName( $databaseName, 'actor' );
 
 		$sql = "SELECT actor_id
-                FROM $actorTable
-                WHERE actor_name = :username
-                LIMIT 1";
+				FROM $actorTable
+				WHERE actor_name = :username
+				LIMIT 1";
 		$resultQuery = $this->executeProjectsQuery( $databaseName, $sql, [ 'username' => $username ] );
 
 		// Cache and return.
@@ -139,8 +139,8 @@ class UserRepository extends Repository {
 			$userId = $user->getId( $project );
 		}
 		$sql = "SELECT bt_count
-                FROM $blockTargetTable
-                WHERE $userField = :user";
+				FROM $blockTargetTable
+				WHERE $userField = :user";
 		$resultQuery = $this->executeProjectsQuery( $project->getDatabaseName(), $sql, [ 'user' => $userId ] );
 		return $this->setCache( $cacheKey, (int)$resultQuery->fetchOne() );
 	}
@@ -175,19 +175,19 @@ class UserRepository extends Repository {
 			[ $params['startIp'], $params['endIp'] ] = IPUtils::parseRange( $user->getUsername() );
 			$ipcTable = $project->getTableName( 'ip_changes' );
 			$sql = "SELECT COUNT(ipc_rev_id)
-                    FROM $ipcTable
-                    JOIN $revisionTable ON ipc_rev_id = rev_id
-                    $pageJoin
-                    WHERE ipc_hex BETWEEN :startIp AND :endIp
-                    $condNamespace
-                    $revDateConditions";
+					FROM $ipcTable
+					JOIN $revisionTable ON ipc_rev_id = rev_id
+					$pageJoin
+					WHERE ipc_hex BETWEEN :startIp AND :endIp
+					$condNamespace
+					$revDateConditions";
 		} else {
 			$sql = "SELECT COUNT(rev_id)
-                FROM $revisionTable
-                $pageJoin
-                WHERE rev_actor = :actorId
-                $condNamespace
-                $revDateConditions";
+				FROM $revisionTable
+				$pageJoin
+				WHERE rev_actor = :actorId
+				$condNamespace
+				$revDateConditions";
 		}
 
 		$resultQuery = $this->executeQuery( $sql, $project, $user, $namespace, $params );
@@ -317,10 +317,10 @@ class UserRepository extends Repository {
 		$userTable = $project->getTableName( 'user' );
 
 		$sql = "SELECT ug_group
-                FROM $userGroupsTable
-                JOIN $userTable ON user_id = ug_user
-                WHERE user_name = :username
-                AND (ug_expiry IS NULL OR ug_expiry > CURRENT_TIMESTAMP)";
+				FROM $userGroupsTable
+				JOIN $userTable ON user_id = ug_user
+				WHERE user_name = :username
+				AND (ug_expiry IS NULL OR ug_expiry > CURRENT_TIMESTAMP)";
 
 		$ret = $this->executeProjectsQuery( $project, $sql, [
 			'username' => $user->getUsername(),

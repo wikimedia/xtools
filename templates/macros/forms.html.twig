@@ -1,67 +1,67 @@
 {% macro wiki_input(project = null) %}
 <div class="input-group{% if isSingleWiki() %} hidden{% endif %} form-row">
-    <label class="input-group-addon form-label" for="project_input">
-        {{ msg('project') }}
-        <div class="glyphicon glyphicon-info-sign tooltipcss pull-right" role="dialog" aria-labelledby="accepted-formats-desc">
-            <div class="tooltip-body" id="accepted-formats-desc">
-                <strong>{{ msg('accepted-formats') }}:</strong>
-                <code>enwiki</code>, <code>en.wikipedia</code>,
-                <span class="text-nowrap"><code>en.wikipedia.org</code></span>
-            </div>
-        </div>
-    </label>
-    <input type="text" class="form-control"
-        {% if project is not null %}value="{{ project.domain }}"
-        {% elseif isSingleWiki() %}value="wiki"
-        {% endif %}
-        name="project"
-        id="project_input"
-        required>
+	<label class="input-group-addon form-label" for="project_input">
+		{{ msg('project') }}
+		<div class="glyphicon glyphicon-info-sign tooltipcss pull-right" role="dialog" aria-labelledby="accepted-formats-desc">
+			<div class="tooltip-body" id="accepted-formats-desc">
+				<strong>{{ msg('accepted-formats') }}:</strong>
+				<code>enwiki</code>, <code>en.wikipedia</code>,
+				<span class="text-nowrap"><code>en.wikipedia.org</code></span>
+			</div>
+		</div>
+	</label>
+	<input type="text" class="form-control"
+		{% if project is not null %}value="{{ project.domain }}"
+		{% elseif isSingleWiki() %}value="wiki"
+		{% endif %}
+		name="project"
+		id="project_input"
+		required>
 </div>
 {% endmacro %}
 
 {% macro page_input(required = true, project = null, value = '') %}
 <div class="input-group form-row">
-    <label class="input-group-addon form-label" for="page_input">
-        {{ msg('page-title') }}
-        {% if required == false %}
-            <span class="text-muted"><small>({{ msg('optional') }})</small></span>
-        {% endif %}
-    </label>
-    <input type="text" class="form-control"
-           name="page" id="page_input"{% if required %} required{% endif %}
-           {% if project is not null %}autocomplete="off" data-api="{{ project.apiUrl }}"
-            value="{{ value }}"{% endif %}>
+	<label class="input-group-addon form-label" for="page_input">
+		{{ msg('page-title') }}
+		{% if required == false %}
+			<span class="text-muted"><small>({{ msg('optional') }})</small></span>
+		{% endif %}
+	</label>
+	<input type="text" class="form-control"
+		   name="page" id="page_input"{% if required %} required{% endif %}
+		   {% if project is not null %}autocomplete="off" data-api="{{ project.apiUrl }}"
+			value="{{ value }}"{% endif %}>
 </div>
 {% endmacro %}
 
 {% macro user_input(required = true, multiple = false, project = null, noip = false, value = '', ipRanges = true) %}
 <div class="input-group form-row">
-    <label class="input-group-addon form-label" for="user_input">
-        {% if ipRanges %}{{ msg('user') }}{% else %}{{ msg('username') }}{% endif %}
-        {% if multiple or noip == false %}
-            <div class="glyphicon glyphicon-info-sign tooltipcss pull-right" role="dialog" aria-labelledby="user-format-desc">
-                <div class="tooltip-body" id="user-format-desc">
-                    {% if multiple %}
-                        <strong>{{ msg('multiple-users-allowed') }}:</strong>
-                        <br>e.g. <code>UserX|UserY|UserZ</code>
-                    {% elseif noip %}
-                        {{ msg('username') }}
-                    {% elseif ipRanges %}
-                        {{ msg('username-ip-or-cidr') }}
-                    {% else %}
-                        {{ msg('username-or-ip') }}
-                    {% endif %}
-                </div>
-            </div>
-        {% endif %}
-    </label>
-    <input type="text" class="form-control" name="username"
-           id="user_input"{% if required %} required{% endif %}
-           {% if project is not null %}autocomplete="off"
-               data-api="{{ project.apiUrl }}"
-               value="{{ value }}"
-           {% endif %}>
+	<label class="input-group-addon form-label" for="user_input">
+		{% if ipRanges %}{{ msg('user') }}{% else %}{{ msg('username') }}{% endif %}
+		{% if multiple or noip == false %}
+			<div class="glyphicon glyphicon-info-sign tooltipcss pull-right" role="dialog" aria-labelledby="user-format-desc">
+				<div class="tooltip-body" id="user-format-desc">
+					{% if multiple %}
+						<strong>{{ msg('multiple-users-allowed') }}:</strong>
+						<br>e.g. <code>UserX|UserY|UserZ</code>
+					{% elseif noip %}
+						{{ msg('username') }}
+					{% elseif ipRanges %}
+						{{ msg('username-ip-or-cidr') }}
+					{% else %}
+						{{ msg('username-or-ip') }}
+					{% endif %}
+				</div>
+			</div>
+		{% endif %}
+	</label>
+	<input type="text" class="form-control" name="username"
+		   id="user_input"{% if required %} required{% endif %}
+		   {% if project is not null %}autocomplete="off"
+			   data-api="{{ project.apiUrl }}"
+			   value="{{ value }}"
+		   {% endif %}>
 </div>
 {% endmacro %}
 
@@ -69,66 +69,66 @@
 {# Needs to be a string for proper comparison (Twig thinks a string == 0) #}
 {% set value = value|trim %}
 <div class="input-group form-row">
-    <label class="input-group-addon form-label" for="namespace_select">
-        {{ msg('namespace') }}
-    </label>
-    <select class="form-control namespace-selector" name="namespace" id="namespace_select">
-        {% if allOption %}
-            <option value="all" {% if value == 'all' %}selected="selected"{% endif %}>
-                {{ msg('all') | ucfirst }}
-            </option>
-        {% endif %}
-        {% for id, name in project.namespaces %}
-            <option value="{{ id }}" {% if value != 'all' and value == id %}selected="selected"{% endif %}>
-                {% if id == 0 %}
-                    {{ msg('mainspace') }}
-                {% else %}
-                    {{ name }}
-                {% endif %}
-            </option>
-        {% endfor %}
-    </select>
+	<label class="input-group-addon form-label" for="namespace_select">
+		{{ msg('namespace') }}
+	</label>
+	<select class="form-control namespace-selector" name="namespace" id="namespace_select">
+		{% if allOption %}
+			<option value="all" {% if value == 'all' %}selected="selected"{% endif %}>
+				{{ msg('all') | ucfirst }}
+			</option>
+		{% endif %}
+		{% for id, name in project.namespaces %}
+			<option value="{{ id }}" {% if value != 'all' and value == id %}selected="selected"{% endif %}>
+				{% if id == 0 %}
+					{{ msg('mainspace') }}
+				{% else %}
+					{{ name }}
+				{% endif %}
+			</option>
+		{% endfor %}
+	</select>
 </div>
 {% endmacro %}
 
 {% macro date_input(type = 'start', required = false, value) %}
 <div class="input-group form-row">
-    <label class="input-group-addon form-label" for="date_{{ type }}_input">
-        {{ msg(type) }}
-        {% if required == false %}
-            <span class="text-muted"><small>({{ msg('optional') }})</small></span>
-        {% endif %}
-    </label>
-    <input type="date" class="form-control" name="{{ type }}"
-        placeholder="2016-12-31"{% if required %} required{% endif %}
-        value="{{ value }}" />
+	<label class="input-group-addon form-label" for="date_{{ type }}_input">
+		{{ msg(type) }}
+		{% if required == false %}
+			<span class="text-muted"><small>({{ msg('optional') }})</small></span>
+		{% endif %}
+	</label>
+	<input type="date" class="form-control" name="{{ type }}"
+		placeholder="2016-12-31"{% if required %} required{% endif %}
+		value="{{ value }}" />
 </div>
 {% endmacro %}
 
 {% macro redirects_select(value) %}
 <div class="input-group form-row">
-    <span class="input-group-addon form-label">{{ msg('redirects') }}</span>
-    <select class="form-control" name="redirects">
-        {% for type in ['noredirects', 'all', 'onlyredirects'] %}
-            <option value="{{ type }}"{% if value == type %} selected="selected"{% endif %}>
-                {{ msg('redirfilter-' ~ type) }}
-            </option>
-        {% endfor %}
-    </select>
+	<span class="input-group-addon form-label">{{ msg('redirects') }}</span>
+	<select class="form-control" name="redirects">
+		{% for type in ['noredirects', 'all', 'onlyredirects'] %}
+			<option value="{{ type }}"{% if value == type %} selected="selected"{% endif %}>
+				{{ msg('redirfilter-' ~ type) }}
+			</option>
+		{% endfor %}
+	</select>
 </div>
 {% endmacro %}
 
 {% macro deleted_pages_select(value) %}
 <div class="input-group form-row">
-    <span class="input-group-addon form-label">{{ msg('deleted-pages') }}</span>
-    <select class="form-control" name="deleted">
-        {% for type in ['all', 'live', 'deleted'] %}
-            <option value="{{ type }}"{% if value == type %} selected="selected"{% endif %}>
-                {{ msg('delpagesfilter-' ~ type) }}
-            </option>
-        {% endfor %}
-    </select>
-    </div>
+	<span class="input-group-addon form-label">{{ msg('deleted-pages') }}</span>
+	<select class="form-control" name="deleted">
+		{% for type in ['all', 'live', 'deleted'] %}
+			<option value="{{ type }}"{% if value == type %} selected="selected"{% endif %}>
+				{{ msg('delpagesfilter-' ~ type) }}
+			</option>
+		{% endfor %}
+	</select>
+	</div>
 {% endmacro %}
 
 {% macro submit_btn() %}
@@ -136,17 +136,17 @@
 {% endmacro %}
 
 {% macro contributions_limit(value = 50, options = [50, 100, 250, 500]) %}
-    {% if value not in options %}
-        {% set options = [value]|merge(options) %}
-    {% endif %}
-    <div class="pull-right contributions-limit--wrapper">
-        <label for="contributions_limit" class="text-muted">{{ msg('limit') }}:</label>
-        <div class="btn-group dropup">
-            <select class="form-control contributions-limit" id="contributions_limit">
-                {% for limit in options|sort %}
-                    <option {% if value == limit %}selected{% endif %}>{{ limit }}</option>
-                {% endfor %}
-            </select>
-        </div>
-    </div>
+	{% if value not in options %}
+		{% set options = [value]|merge(options) %}
+	{% endif %}
+	<div class="pull-right contributions-limit--wrapper">
+		<label for="contributions_limit" class="text-muted">{{ msg('limit') }}:</label>
+		<div class="btn-group dropup">
+			<select class="form-control contributions-limit" id="contributions_limit">
+				{% for limit in options|sort %}
+					<option {% if value == limit %}selected{% endif %}>{{ limit }}</option>
+				{% endfor %}
+			</select>
+		</div>
+	</div>
 {% endmacro %}

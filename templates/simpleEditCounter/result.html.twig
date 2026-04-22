@@ -4,94 +4,94 @@
 
 {% block body %}
 <div class="panel panel-primary">
-    {{ layout.userHeading(user, project, 'SimpleEditCounter') }}
+	{{ layout.userHeading(user, project, 'SimpleEditCounter') }}
 
-    <div class="panel-body xt-panel-body">
-        {{ wiki.userLinks(user, project, 'SimpleEditCounter') }}
+	<div class="panel-body xt-panel-body">
+		{{ wiki.userLinks(user, project, 'SimpleEditCounter') }}
 
-        {% set content %}
-            <div class="col-lg-12 stat-list clearfix">
-                <table class="table">
-                    {% if sec.namespace is not same as('all') or sec.namespace == '' %}
-                        <tr>
-                            <td>{{ msg('namespace') }}</td>
-                            <td>{{ nsName(sec.namespace, project.namespaces) }}</td>
-                        </tr>
-                    {% endif %}
-                    {% if sec.start %}
-                        <tr>
-                            <td>{{ msg('start') }}</td>
-                            <td>{{ sec.startDate }}</td>
-                        </tr>
-                    {% endif %}
-                    {% if sec.end %}
-                        <tr>
-                            <td>{{ msg('end') }}</td>
-                            <td>{{ sec.endDate }}</td>
-                        </tr>
-                    {% endif %}
-                    <tr>
-                        <td class="stat-list--new-group">{{ msg('username') }}</td>
-                        <td class="stat-list--new-group">{{ wiki.userLink(user, project) }}</td>
-                    </tr>
-                    {% if not(user.isIP(project)) %}
-                        <tr>
-                            <td>{{ msg('user-id') }}</td>
-                            <td>{{ sec.userId }}</td>
-                        </tr>
-                        <tr>
-                            <td>{{ msg('user-groups') }}</td>
-                            <td>
-                                {% if sec.userGroups|length == 0 %}
-                                    <em class="text-muted">{{ msg('none') }}</em>
-                                {% else %}
-                                    {{ sec.userGroups|join(', ') }}
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% if sec.globalUserGroups|length > 0 %}
-                            <tr>
-                                <td>{{ msg('global-user-groups') }}</td>
-                                <td>{{ sec.globalUserGroups|join(', ') }}</td>
-                            </tr>
-                        {% endif %}
-                    {% endif %}
-                    {% if not(user.ipRange) %}
-                        <tr>
-                            <td>{{ msg('total') }}{% if sec.limited %} ({{ msg('approximate')|lower }}){% endif %}</td>
-                            <td>{{ sec.totalEditCount|num_format }}</td>
-                        </tr>
-                    {% endif %}
-                    {% if not(sec.limited) %}
-                        <tr>
-                            <td>{{ msg('live-edits') }}</td>
-                            <td>{{ wiki.pageLinkRaw('Special:Contributions/' ~ user.username, project, sec.liveEditCount|num_format) }}</td>
-                        </tr>
-                        {% if user.ipRange %}
-                            <tr>
-                                <td>{{ msg('deleted-edits') }}</td>
-                                <td class="text-muted">{{ msg('ip-range-unavailable') }}</td>
-                            </tr>
-                        {% else %}
-                            <tr>
-                                <td>{{ msg('deleted-edits') }}</td>
-                                <td>{{ wiki.pageLinkRaw('Special:DeletedContributions/' ~ user.username, project, sec.deletedEditCount|num_format) }}</td>
-                            </tr>
-                        {% endif %}
-                        <tr>
-                            <td>{{ msg('pages-created') }}</td>
-                            <td>
-                                <a href="{{ path('PagesResult', {project: project.domain, username: user.usernameIdent, namespace: sec.namespace, start: sec.startDate, end: sec.endDate, redirects: 'all', deleted: 'live'}) }}">{{ sec.creationCount|num_format }}</a>
-                            </td>
-                        </tr>
-                    {% endif %}
-                </table>
-            </div>
-        {% endset %}
-        {% set downloadLink %}
-            {{ layout.downloadLink('SimpleEditCounterResult', {project: project.domain, username: user.usernameIdent, namespace: sec.namespace, start: sec.startDate, end: sec.endDate}, [], 'SimpleEditCounterApi') }}
-        {% endset %}
-        {{ layout.content_block('tool-simpleeditcounter-desc', content, downloadLink) }}
-    </div>
+		{% set content %}
+			<div class="col-lg-12 stat-list clearfix">
+				<table class="table">
+					{% if sec.namespace is not same as('all') or sec.namespace == '' %}
+						<tr>
+							<td>{{ msg('namespace') }}</td>
+							<td>{{ nsName(sec.namespace, project.namespaces) }}</td>
+						</tr>
+					{% endif %}
+					{% if sec.start %}
+						<tr>
+							<td>{{ msg('start') }}</td>
+							<td>{{ sec.startDate }}</td>
+						</tr>
+					{% endif %}
+					{% if sec.end %}
+						<tr>
+							<td>{{ msg('end') }}</td>
+							<td>{{ sec.endDate }}</td>
+						</tr>
+					{% endif %}
+					<tr>
+						<td class="stat-list--new-group">{{ msg('username') }}</td>
+						<td class="stat-list--new-group">{{ wiki.userLink(user, project) }}</td>
+					</tr>
+					{% if not(user.isIP(project)) %}
+						<tr>
+							<td>{{ msg('user-id') }}</td>
+							<td>{{ sec.userId }}</td>
+						</tr>
+						<tr>
+							<td>{{ msg('user-groups') }}</td>
+							<td>
+								{% if sec.userGroups|length == 0 %}
+									<em class="text-muted">{{ msg('none') }}</em>
+								{% else %}
+									{{ sec.userGroups|join(', ') }}
+								{% endif %}
+							</td>
+						</tr>
+						{% if sec.globalUserGroups|length > 0 %}
+							<tr>
+								<td>{{ msg('global-user-groups') }}</td>
+								<td>{{ sec.globalUserGroups|join(', ') }}</td>
+							</tr>
+						{% endif %}
+					{% endif %}
+					{% if not(user.ipRange) %}
+						<tr>
+							<td>{{ msg('total') }}{% if sec.limited %} ({{ msg('approximate')|lower }}){% endif %}</td>
+							<td>{{ sec.totalEditCount|num_format }}</td>
+						</tr>
+					{% endif %}
+					{% if not(sec.limited) %}
+						<tr>
+							<td>{{ msg('live-edits') }}</td>
+							<td>{{ wiki.pageLinkRaw('Special:Contributions/' ~ user.username, project, sec.liveEditCount|num_format) }}</td>
+						</tr>
+						{% if user.ipRange %}
+							<tr>
+								<td>{{ msg('deleted-edits') }}</td>
+								<td class="text-muted">{{ msg('ip-range-unavailable') }}</td>
+							</tr>
+						{% else %}
+							<tr>
+								<td>{{ msg('deleted-edits') }}</td>
+								<td>{{ wiki.pageLinkRaw('Special:DeletedContributions/' ~ user.username, project, sec.deletedEditCount|num_format) }}</td>
+							</tr>
+						{% endif %}
+						<tr>
+							<td>{{ msg('pages-created') }}</td>
+							<td>
+								<a href="{{ path('PagesResult', {project: project.domain, username: user.usernameIdent, namespace: sec.namespace, start: sec.startDate, end: sec.endDate, redirects: 'all', deleted: 'live'}) }}">{{ sec.creationCount|num_format }}</a>
+							</td>
+						</tr>
+					{% endif %}
+				</table>
+			</div>
+		{% endset %}
+		{% set downloadLink %}
+			{{ layout.downloadLink('SimpleEditCounterResult', {project: project.domain, username: user.usernameIdent, namespace: sec.namespace, start: sec.startDate, end: sec.endDate}, [], 'SimpleEditCounterApi') }}
+		{% endset %}
+		{{ layout.content_block('tool-simpleeditcounter-desc', content, downloadLink) }}
+	</div>
 </div>
 {% endblock %}

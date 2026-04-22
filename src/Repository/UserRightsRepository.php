@@ -80,13 +80,13 @@ class UserRightsRepository extends Repository {
 		$logType = $type === 'global' ? 'gblrights' : 'rights';
 
 		$sql = "SELECT log_id, log_timestamp, log_params, log_action, actor_name AS `performer`,
-                    comment_text AS `log_comment`, log_deleted, '$type' AS type
-                FROM $loggingTable
-                LEFT OUTER JOIN $actorTable ON log_actor = actor_id
-                LEFT OUTER JOIN $commentTable ON comment_id = log_comment_id
-                WHERE log_type = '$logType'
-                AND log_namespace = 2
-                AND log_title IN (:username, :username2)";
+					comment_text AS `log_comment`, log_deleted, '$type' AS type
+				FROM $loggingTable
+				LEFT OUTER JOIN $actorTable ON log_actor = actor_id
+				LEFT OUTER JOIN $commentTable ON comment_id = log_comment_id
+				WHERE log_type = '$logType'
+				AND log_namespace = 2
+				AND log_title IN (:username, :username2)";
 
 		return $this->executeProjectsQuery( $dbName, $sql, [
 			'username' => $username,
@@ -143,10 +143,10 @@ class UserRightsRepository extends Repository {
 		$ugTable = $project->getTableName( 'user_groups' );
 		$ufgTable = $project->getTableName( 'user_former_groups' );
 		$sql = "SELECT DISTINCT(ug_group)
-                FROM $ugTable
-                UNION
-                SELECT DISTINCT(ufg_group)
-                FROM $ufgTable";
+				FROM $ugTable
+				UNION
+				SELECT DISTINCT(ufg_group)
+				FROM $ufgTable";
 
 		$groups = $this->executeProjectsQuery( $project, $sql )->fetchFirstColumn();
 
@@ -241,10 +241,10 @@ class UserRightsRepository extends Repository {
 
 		$revisionTable = $project->getTableName( 'revision' );
 		$sql = "SELECT rev_timestamp
-                FROM $revisionTable
-                WHERE rev_actor = :actorId
-                AND rev_timestamp >= $offset
-                LIMIT 1 OFFSET " . ( $edits - 1 );
+				FROM $revisionTable
+				WHERE rev_actor = :actorId
+				AND rev_timestamp >= $offset
+				LIMIT 1 OFFSET " . ( $edits - 1 );
 
 		$ret = $this->executeProjectsQuery( $project, $sql, [
 			'actorId' => $user->getActorId( $project ),
@@ -269,9 +269,9 @@ class UserRightsRepository extends Repository {
 
 		$revisionTable = $project->getTableName( 'revision' );
 		$sql = "SELECT COUNT(rev_id)
-                FROM $revisionTable
-                WHERE rev_actor = :actorId
-                AND rev_timestamp <= $timestamp";
+				FROM $revisionTable
+				WHERE rev_actor = :actorId
+				AND rev_timestamp <= $timestamp";
 
 		$ret = (int)$this->executeProjectsQuery( $project, $sql, [
 			'actorId' => $user->getActorId( $project ),

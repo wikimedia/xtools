@@ -4,301 +4,301 @@
 
 {% block body %}
 <div class="panel panel-primary">
-    {{ layout.userHeading(user, project, 'Pages') }}
+	{{ layout.userHeading(user, project, 'Pages') }}
 
-    <div class="panel-body xt-panel-body">
-        {{ wiki.userLinks(user, project, 'Pages') }}
+	<div class="panel-body xt-panel-body">
+		{{ wiki.userLinks(user, project, 'Pages') }}
 
-        <h3 class="text-center">{{ msg('tool-pages') }}</h3>
+		<h3 class="text-center">{{ msg('tool-pages') }}</h3>
 
-        {% if pages.multiNamespace %}
-            {{ layout.nsToc(project, pages.counts|keys) }}
-        {% endif %}
+		{% if pages.multiNamespace %}
+			{{ layout.nsToc(project, pages.counts|keys) }}
+		{% endif %}
 
-        {################## SUMMARY SECTION ###################}
+		{################## SUMMARY SECTION ###################}
 
-        {% set content %}
-            <div class="col-lg-6 stat-list clearfix">
-                <table class="table"><tbody>
-                    <tr>
-                        <td>{{ msg('namespace') }}</td>
-                        <td>
-                            {{ nsName(pages.namespace, project.namespaces) }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>{{ msg('redirects') }}</td>
-                        <td>{{ msg('redirfilter-' ~ pages.redirects) }}</td>
-                    </tr>
-                    <tr>
-                        <td>{{ msg('deleted-pages') }}</td>
-                        <td>{{ msg('delpagesfilter-' ~ pages.deleted) }}</td>
-                    </tr>
-                    {% if pages.start is not empty %}
-                        <tr>
-                            <td>{{ msg('start') }}</td>
-                            <td>{{ pages.startDate }}</td>
-                        </tr>
-                    {% endif %}
-                    {% if pages.end is not empty %}
-                        <tr>
-                            <td>{{ msg('end') }}</td>
-                            <td>{{ pages.endDate }}</td>
-                        </tr>
-                    {% endif %}
-                </tbody></table>
-            </div>
-            <div style="clear:both"></div>
-            {% if pages.getNumPages == 0 %}
-                <div class="alert alert-info">
-                    {{ msg('no-result', [user.username]) }}
-                </div>
-            {% else %}
-                <table class="table table-bordered table-hover table-striped namespaces-table toggle-table">
-                    <thead><tr>
-                        {% for key in summaryColumns %}
-                            <th>
-                                <span class="sort-link sort-link--{{ key }}" data-column="{{ key }}">
-                                    {{ msg(key)|ucfirst }}
-                                    <span class="glyphicon glyphicon-sort"></span>
-                                </span>
-                            </th>
-                        {% endfor %}
-                    </tr></thead>
-                    <tbody>
-                        {% for key, value in pages.counts %}
-                        <tr>
-                            <td class="sort-entry--namespace linked" data-value="{{ nsName(key, project.namespaces) }}">
-                                {% if pages.multiNamespace %}
-                                <span class="namespace-toggle toggle-table--toggle" data-index="{{ loop.index0 }}" data-key="{{ key }}">
-                                    <span class="glyphicon glyphicon-remove"></span>
-                                {% endif %}
-                                    <span class="color-icon" style="background:{{ color(key) }}"></span>
-                                {% if pages.multiNamespace %}
-                                </span>
-                                {% endif %}
-                                <a href="#{{ key }}" >{{ nsName(key, project.namespaces) }}</a>
-                            </td>
-                            {% if pages.redirects != 'onlyredirects' and pages.deleted != 'deleted' %}
-                                <td class="sort-entry--pages" data-value="{{ value.count }}">
-                                    {{ value.count|num_format }}
-                                </td>
-                            {% endif %}
-                            {% if pages.redirects != 'noredirects' %}
-                                <td class="sort-entry--redirects" data-value="{{ value.redirects }}">
-                                    {% if pages.redirects == 'onlyredirects' %}
-                                        {{ value.redirects|num_format }}
-                                    {% else %}
-                                        <a href="{{ path('PagesResult', {project: project.domain, username: user.usernameIdent, namespace: key, start: pages.startDate, end: pages.endDate, redirects: 'onlyredirects', deleted: pages.deleted}) }}">{{ value.redirects|num_format }}</a>
-                                        ({{ value.redirects|percent_format(value.count) }})
-                                    {% endif %}
-                                </td>
-                            {% endif %}
-                            {% if pages.deleted == 'all' or pages.deleted == 'deleted' %}
-                                <td class="sort-entry--deleted" data-value="{{ value.deleted }}">
-                                    {% if pages.deleted == 'deleted' %}
-                                        {{ value.deleted|num_format }}
-                                    {% else %}
-                                        <a href="{{ path('PagesResult', {project: project.domain, username: user.usernameIdent, namespace: key, start: pages.startDate, end: pages.endDate, redirects: pages.redirects, deleted: 'deleted'}) }}">{{ value.deleted|num_format }}</a>
-                                        ({{ value.deleted|percent_format(value.count) }})
-                                    {% endif %}
-                                </td>
-                            {% endif %}
-                            {% if pages.deleted == 'all' %}
-                                <td class="sort-entry--live" data-value="{{ value.count - value.deleted }}">
-                                    <a href="{{ path('PagesResult', {project: project.domain, username: user.usernameIdent, namespace: key, start: pages.startDate, end: pages.endDate, redirects: pages.redirects, deleted: 'live'}) }}">{{ (value.count - value.deleted)|num_format }}</a>
-                                    ({{ (value.count - value.deleted)|percent_format(value.count) }})
-                                </td>
-                            {% endif %}
-                            <td class="sort-entry--total-page-size" data-value="{{ value.total_length }}">
-                                {{ value.total_length|size_format }}
-                            </td>
-                            <td class="sort-entry--average-page-size" data-value="{{ value.avg_length }}">
-                                {{ value.avg_length|size_format }}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                    {# Show totals if reporting more than one namespace. #}
-                    {% if pages.numNamespaces > 1 %}
-                        <tfoot>
-                            <th class="namespaces--namespaces">
-                                {{ pages.numNamespaces|num_format }}
-                                {{ msg('num-namespaces', [pages.numNamespaces]) }}
-                            </th>
-                            <th class="namespaces--pages">
-                                {{ pages.getNumPages|num_format }}
-                            </th>
-                            {% if 'redirects' in summaryColumns and 'pages' in summaryColumns %}
-                                <th class="namespaces--redirects">
-                                    {{ pages.numRedirects|num_format }}
-                                    ({{ pages.numRedirects|percent_format(pages.getNumPages) }})
-                                </th>
-                            {% endif %}
-                            {% if pages.deleted == 'all' %}
-                                <th class="namespaces--deleted">
-                                    <a href="{{ path('PagesResult', {project: project.domain, username: user.usernameIdent, namespace: pages.namespace, start: pages.startDate, end: pages.endDate, redirects: '', deleted: 'deleted'}) }}">{{ pages.numDeleted|num_format }}</a>
-                                    ({{ pages.numDeleted|percent_format(pages.getNumPages) }})
-                                </th>
-                            {% endif %}
-                            {% if pages.deleted == 'all' %}
-                                <th class="namespaces--live">
-                                    <a href="{{ path('PagesResult', {project: project.domain, username: user.usernameIdent, namespace: pages.namespace, start: pages.startDate, end: pages.endDate, redirects: pages.redirects, deleted: 'live'}) }}">{{ (pages.getNumPages - pages.numDeleted)|num_format }}</a>
-                                    ({{ (pages.getNumPages - pages.numDeleted)|percent_format(pages.getNumPages) }})
-                                </th>
-                            {% endif %}
-                            <th class="namespaces--total-page-size">
-                                {{ pages.totalPageSize|size_format }}
-                            </th>
-                            <th class="namespaces--average-page-size">
-                                {{ pages.averagePageSize|size_format }}
-                            </th>
-                        </tfoot>
-                    {% endif %}
-                </table>
-                {% if pages.namespace == 'all' %}
-                    <div class="chart-wrapper toggle-table--chart">
-                        <canvas id="pie_chart" width="400" height="400"></canvas>
-                    </div>
-                {% endif %}
-                {% if project.hasPageAssessments(pages.namespace) and pages.deleted != 'deleted' %}
-                    {% set totals = pages.wikiprojectCounts %}
-                    <div class="side-to-side">
-                        {% if totals|length > 0 %}
-                        <div><table class="table table-bordered table-hover table-striped">
-                            <caption class="text-center">{{ msg('top-wikiprojects') }}</caption>
-                            <thead><tr>
-                                <th>
-                                    <span class="sort-link sort-link--wikiproject" data-column="wikiproject">
-                                        {{ msg('wikiproject') }}
-                                        <span class="glyphicon glyphicon-sort"></span>
-                                    </span>
-                                </th>
-                                <th>
-                                    <span class="sort-link sort-link--count" data-column="count">
-                                        {{ msg('count') }}
-                                        <span class="glyphicon glyphicon-sort"></span>
-                                    </span>
-                                </th>
-                            </tr></thead>
-                            <tbody>
-                                {% for row in totals %}
-                                    <tr>
-                                        <td class="sort-entry--wikiproject" data-value="{{ row.pap_project_title }}">
-                                            {{ row.pap_project_title }}
-                                        </td>
-                                        <td class="sort-entry--count" data-value="{{ row.count }}">
-                                            {{ row.count|num_format }}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table></div>
-                        {% endif %}
-                        <div><table class="table table-bordered table-hover table-striped">
-                            <caption class="text-center">{{ msg('assessments') }}</caption>
-                            <thead><tr>
-                                <th>
-                                    <span class="sort-link sort-link--assessment" data-column="assessment">
-                                        {{ msg('assessment') }}
-                                        <span class="glyphicon glyphicon-sort"></span>
-                                    </span>
-                                </th>
-                                <th>
-                                    <span class="sort-link sort-link--count" data-column="count">
-                                        {{ msg('count') }}
-                                        <span class="glyphicon glyphicon-sort"></span>
-                                    </span>
-                                </th>
-                            </tr></thead>
-                            <tbody>
-                                {% for assessment, count in pages.assessmentCounts %}
-                                    <tr>
-                                        <td class="sort-entry--assessment" data-value="{{ assessment }}">
-                                            {% set badge = project.pageAssessments.badgeURL(assessment) %}
-                                            {% if badge is defined %}
-                                                <img alt="{{ assessment }}" src="{{ badge }}" class="assessment-badge" />
-                                            {% endif %}
-                                            {{ assessment ? assessment|ucfirst : msg('unknown') }}
-                                        </td>
-                                        <td class="sort-entry--count" data-value="{{ count }}">
-                                            {{ count|num_format }}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table></div>
-                    </div>
-                {% endif %}
-            {% endif %}
-        {% endset %}
-        {% set downloadLink %}
-            {{ layout.downloadLink('PagesResult', {'project': project.domain, 'username': user.usernameIdent, 'namespace': pages.namespace, 'redirects': pages.redirects, 'deleted': pages.deleted, 'start': pages.startDate, 'end': pages.endDate}, [], 'UserApiPagesCount') }}
-        {% endset %}
-        {{ layout.content_block('summary', content, downloadLink) }}
+		{% set content %}
+			<div class="col-lg-6 stat-list clearfix">
+				<table class="table"><tbody>
+					<tr>
+						<td>{{ msg('namespace') }}</td>
+						<td>
+							{{ nsName(pages.namespace, project.namespaces) }}
+						</td>
+					</tr>
+					<tr>
+						<td>{{ msg('redirects') }}</td>
+						<td>{{ msg('redirfilter-' ~ pages.redirects) }}</td>
+					</tr>
+					<tr>
+						<td>{{ msg('deleted-pages') }}</td>
+						<td>{{ msg('delpagesfilter-' ~ pages.deleted) }}</td>
+					</tr>
+					{% if pages.start is not empty %}
+						<tr>
+							<td>{{ msg('start') }}</td>
+							<td>{{ pages.startDate }}</td>
+						</tr>
+					{% endif %}
+					{% if pages.end is not empty %}
+						<tr>
+							<td>{{ msg('end') }}</td>
+							<td>{{ pages.endDate }}</td>
+						</tr>
+					{% endif %}
+				</tbody></table>
+			</div>
+			<div style="clear:both"></div>
+			{% if pages.getNumPages == 0 %}
+				<div class="alert alert-info">
+					{{ msg('no-result', [user.username]) }}
+				</div>
+			{% else %}
+				<table class="table table-bordered table-hover table-striped namespaces-table toggle-table">
+					<thead><tr>
+						{% for key in summaryColumns %}
+							<th>
+								<span class="sort-link sort-link--{{ key }}" data-column="{{ key }}">
+									{{ msg(key)|ucfirst }}
+									<span class="glyphicon glyphicon-sort"></span>
+								</span>
+							</th>
+						{% endfor %}
+					</tr></thead>
+					<tbody>
+						{% for key, value in pages.counts %}
+						<tr>
+							<td class="sort-entry--namespace linked" data-value="{{ nsName(key, project.namespaces) }}">
+								{% if pages.multiNamespace %}
+								<span class="namespace-toggle toggle-table--toggle" data-index="{{ loop.index0 }}" data-key="{{ key }}">
+									<span class="glyphicon glyphicon-remove"></span>
+								{% endif %}
+									<span class="color-icon" style="background:{{ color(key) }}"></span>
+								{% if pages.multiNamespace %}
+								</span>
+								{% endif %}
+								<a href="#{{ key }}" >{{ nsName(key, project.namespaces) }}</a>
+							</td>
+							{% if pages.redirects != 'onlyredirects' and pages.deleted != 'deleted' %}
+								<td class="sort-entry--pages" data-value="{{ value.count }}">
+									{{ value.count|num_format }}
+								</td>
+							{% endif %}
+							{% if pages.redirects != 'noredirects' %}
+								<td class="sort-entry--redirects" data-value="{{ value.redirects }}">
+									{% if pages.redirects == 'onlyredirects' %}
+										{{ value.redirects|num_format }}
+									{% else %}
+										<a href="{{ path('PagesResult', {project: project.domain, username: user.usernameIdent, namespace: key, start: pages.startDate, end: pages.endDate, redirects: 'onlyredirects', deleted: pages.deleted}) }}">{{ value.redirects|num_format }}</a>
+										({{ value.redirects|percent_format(value.count) }})
+									{% endif %}
+								</td>
+							{% endif %}
+							{% if pages.deleted == 'all' or pages.deleted == 'deleted' %}
+								<td class="sort-entry--deleted" data-value="{{ value.deleted }}">
+									{% if pages.deleted == 'deleted' %}
+										{{ value.deleted|num_format }}
+									{% else %}
+										<a href="{{ path('PagesResult', {project: project.domain, username: user.usernameIdent, namespace: key, start: pages.startDate, end: pages.endDate, redirects: pages.redirects, deleted: 'deleted'}) }}">{{ value.deleted|num_format }}</a>
+										({{ value.deleted|percent_format(value.count) }})
+									{% endif %}
+								</td>
+							{% endif %}
+							{% if pages.deleted == 'all' %}
+								<td class="sort-entry--live" data-value="{{ value.count - value.deleted }}">
+									<a href="{{ path('PagesResult', {project: project.domain, username: user.usernameIdent, namespace: key, start: pages.startDate, end: pages.endDate, redirects: pages.redirects, deleted: 'live'}) }}">{{ (value.count - value.deleted)|num_format }}</a>
+									({{ (value.count - value.deleted)|percent_format(value.count) }})
+								</td>
+							{% endif %}
+							<td class="sort-entry--total-page-size" data-value="{{ value.total_length }}">
+								{{ value.total_length|size_format }}
+							</td>
+							<td class="sort-entry--average-page-size" data-value="{{ value.avg_length }}">
+								{{ value.avg_length|size_format }}
+							</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+					{# Show totals if reporting more than one namespace. #}
+					{% if pages.numNamespaces > 1 %}
+						<tfoot>
+							<th class="namespaces--namespaces">
+								{{ pages.numNamespaces|num_format }}
+								{{ msg('num-namespaces', [pages.numNamespaces]) }}
+							</th>
+							<th class="namespaces--pages">
+								{{ pages.getNumPages|num_format }}
+							</th>
+							{% if 'redirects' in summaryColumns and 'pages' in summaryColumns %}
+								<th class="namespaces--redirects">
+									{{ pages.numRedirects|num_format }}
+									({{ pages.numRedirects|percent_format(pages.getNumPages) }})
+								</th>
+							{% endif %}
+							{% if pages.deleted == 'all' %}
+								<th class="namespaces--deleted">
+									<a href="{{ path('PagesResult', {project: project.domain, username: user.usernameIdent, namespace: pages.namespace, start: pages.startDate, end: pages.endDate, redirects: '', deleted: 'deleted'}) }}">{{ pages.numDeleted|num_format }}</a>
+									({{ pages.numDeleted|percent_format(pages.getNumPages) }})
+								</th>
+							{% endif %}
+							{% if pages.deleted == 'all' %}
+								<th class="namespaces--live">
+									<a href="{{ path('PagesResult', {project: project.domain, username: user.usernameIdent, namespace: pages.namespace, start: pages.startDate, end: pages.endDate, redirects: pages.redirects, deleted: 'live'}) }}">{{ (pages.getNumPages - pages.numDeleted)|num_format }}</a>
+									({{ (pages.getNumPages - pages.numDeleted)|percent_format(pages.getNumPages) }})
+								</th>
+							{% endif %}
+							<th class="namespaces--total-page-size">
+								{{ pages.totalPageSize|size_format }}
+							</th>
+							<th class="namespaces--average-page-size">
+								{{ pages.averagePageSize|size_format }}
+							</th>
+						</tfoot>
+					{% endif %}
+				</table>
+				{% if pages.namespace == 'all' %}
+					<div class="chart-wrapper toggle-table--chart">
+						<canvas id="pie_chart" width="400" height="400"></canvas>
+					</div>
+				{% endif %}
+				{% if project.hasPageAssessments(pages.namespace) and pages.deleted != 'deleted' %}
+					{% set totals = pages.wikiprojectCounts %}
+					<div class="side-to-side">
+						{% if totals|length > 0 %}
+						<div><table class="table table-bordered table-hover table-striped">
+							<caption class="text-center">{{ msg('top-wikiprojects') }}</caption>
+							<thead><tr>
+								<th>
+									<span class="sort-link sort-link--wikiproject" data-column="wikiproject">
+										{{ msg('wikiproject') }}
+										<span class="glyphicon glyphicon-sort"></span>
+									</span>
+								</th>
+								<th>
+									<span class="sort-link sort-link--count" data-column="count">
+										{{ msg('count') }}
+										<span class="glyphicon glyphicon-sort"></span>
+									</span>
+								</th>
+							</tr></thead>
+							<tbody>
+								{% for row in totals %}
+									<tr>
+										<td class="sort-entry--wikiproject" data-value="{{ row.pap_project_title }}">
+											{{ row.pap_project_title }}
+										</td>
+										<td class="sort-entry--count" data-value="{{ row.count }}">
+											{{ row.count|num_format }}
+										</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table></div>
+						{% endif %}
+						<div><table class="table table-bordered table-hover table-striped">
+							<caption class="text-center">{{ msg('assessments') }}</caption>
+							<thead><tr>
+								<th>
+									<span class="sort-link sort-link--assessment" data-column="assessment">
+										{{ msg('assessment') }}
+										<span class="glyphicon glyphicon-sort"></span>
+									</span>
+								</th>
+								<th>
+									<span class="sort-link sort-link--count" data-column="count">
+										{{ msg('count') }}
+										<span class="glyphicon glyphicon-sort"></span>
+									</span>
+								</th>
+							</tr></thead>
+							<tbody>
+								{% for assessment, count in pages.assessmentCounts %}
+									<tr>
+										<td class="sort-entry--assessment" data-value="{{ assessment }}">
+											{% set badge = project.pageAssessments.badgeURL(assessment) %}
+											{% if badge is defined %}
+												<img alt="{{ assessment }}" src="{{ badge }}" class="assessment-badge" />
+											{% endif %}
+											{{ assessment ? assessment|ucfirst : msg('unknown') }}
+										</td>
+										<td class="sort-entry--count" data-value="{{ count }}">
+											{{ count|num_format }}
+										</td>
+									</tr>
+								{% endfor %}
+							</tbody>
+						</table></div>
+					</div>
+				{% endif %}
+			{% endif %}
+		{% endset %}
+		{% set downloadLink %}
+			{{ layout.downloadLink('PagesResult', {'project': project.domain, 'username': user.usernameIdent, 'namespace': pages.namespace, 'redirects': pages.redirects, 'deleted': pages.deleted, 'start': pages.startDate, 'end': pages.endDate}, [], 'UserApiPagesCount') }}
+		{% endset %}
+		{{ layout.content_block('summary', content, downloadLink) }}
 
-        {################## LIST OF PAGES ###################}
-        {% if not pages.countsOnly %}
-            {% include 'pages/_pages_list.html.twig' with {'pages': pages} %}
+		{################## LIST OF PAGES ###################}
+		{% if not pages.countsOnly %}
+			{% include 'pages/_pages_list.html.twig' with {'pages': pages} %}
 
-            <div class="text-muted times-in-utc" style="clear:both">
-                {{ msg('times-in-utc') }}
-        {% endif %}
-        </div>
-    </div>
+			<div class="text-muted times-in-utc" style="clear:both">
+				{{ msg('times-in-utc') }}
+		{% endif %}
+		</div>
+	</div>
 
-    {% if pages.namespace == 'all' %}
-        {% set nsIds = pages.counts|keys %}
-        <script>
-            $(function () {
-                var ctx = document.getElementById("pie_chart");
-                window.pieChart = new Chart(ctx, {
-                    type: 'pie',
-                    data: {
-                        labels: [
-                            {% for ns in nsIds %}
-                            "{{ nsName(ns, project.namespaces) }}"{% if not loop.last %},{% endif %}
-                            {% endfor %}
-                        ],
-                        datasets: [{
-                            data: [
-                                {% for value in pages.counts %}
-                                {% if value.count is defined %}{{ value.count }}{% else %}0{% endif %}{% if not loop.last %},{% endif %}
-                                {% endfor %}
-                            ],
-                            backgroundColor: [
-                                {% for ns in nsIds %}
-                                '{{ color(ns) }}'{% if not loop.last %},{% endif %}
-                                {% endfor %}
-                            ],
-                            borderColor: [
-                                {% for ns in nsIds %}
-                                '{{ color(ns) }}'{% if not loop.last %},{% endif %}
-                                {% endfor %}
-                            ],
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        aspectRatio: 1,
-                        legend: {
-                            display: false
-                        },
-                        tooltips: {
-                            callbacks: {
-                                label: function(tooltipItem, chartData) {
-                                    var label = chartData.labels[tooltipItem.index],
-                                        value = chartData.datasets[0].data[tooltipItem.index];
-                                    return label + ': ' + value.toLocaleString(i18nLang);
-                                }
-                            }
-                        }
-                    }
-                });
-                window.countsByNamespace = {{ pages.counts|json_encode()|raw }};
-            });
-        </script>
-    {% endif %}
+	{% if pages.namespace == 'all' %}
+		{% set nsIds = pages.counts|keys %}
+		<script>
+			$(function () {
+				var ctx = document.getElementById("pie_chart");
+				window.pieChart = new Chart(ctx, {
+					type: 'pie',
+					data: {
+						labels: [
+							{% for ns in nsIds %}
+							"{{ nsName(ns, project.namespaces) }}"{% if not loop.last %},{% endif %}
+							{% endfor %}
+						],
+						datasets: [{
+							data: [
+								{% for value in pages.counts %}
+								{% if value.count is defined %}{{ value.count }}{% else %}0{% endif %}{% if not loop.last %},{% endif %}
+								{% endfor %}
+							],
+							backgroundColor: [
+								{% for ns in nsIds %}
+								'{{ color(ns) }}'{% if not loop.last %},{% endif %}
+								{% endfor %}
+							],
+							borderColor: [
+								{% for ns in nsIds %}
+								'{{ color(ns) }}'{% if not loop.last %},{% endif %}
+								{% endfor %}
+							],
+							borderWidth: 1
+						}]
+					},
+					options: {
+						aspectRatio: 1,
+						legend: {
+							display: false
+						},
+						tooltips: {
+							callbacks: {
+								label: function(tooltipItem, chartData) {
+									var label = chartData.labels[tooltipItem.index],
+										value = chartData.datasets[0].data[tooltipItem.index];
+									return label + ': ' + value.toLocaleString(i18nLang);
+								}
+							}
+						}
+					}
+				});
+				window.countsByNamespace = {{ pages.counts|json_encode()|raw }};
+			});
+		</script>
+	{% endif %}
 </div>
 {% endblock %}
 

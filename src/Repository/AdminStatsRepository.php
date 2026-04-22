@@ -46,15 +46,15 @@ class AdminStatsRepository extends Repository {
 		}
 
 		$sql = "SELECT actor_name AS `username`,
-                    $countSql
-                    SUM(IF(log_type != '' AND log_action != '', 1, 0)) AS `total`
-                FROM $loggingTable
-                JOIN $actorTable ON log_actor = actor_id
-                WHERE log_type IN ($types)
-                    AND log_action IN ($actions)
-                    $dateConditions
-                GROUP BY actor_name
-                HAVING `total` > 0";
+					$countSql
+					SUM(IF(log_type != '' AND log_action != '', 1, 0)) AS `total`
+				FROM $loggingTable
+				JOIN $actorTable ON log_actor = actor_id
+				WHERE log_type IN ($types)
+					AND log_action IN ($actions)
+					$dateConditions
+				GROUP BY actor_name
+				HAVING `total` > 0";
 
 		$results = $this->executeProjectsQuery( $project, $sql )->fetchAllAssociative();
 

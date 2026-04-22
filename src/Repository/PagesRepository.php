@@ -55,13 +55,13 @@ class PagesRepository extends UserRepository {
 		$summation = Pages::DEL_NONE !== $deleted ? 'redirect OR was_redirect' : 'redirect';
 
 		$sql = "SELECT `namespace`,
-                    COUNT(page_title) AS `count`,
-                    SUM(IF(type = 'arc', 1, 0)) AS `deleted`,
-                    SUM($summation) AS `redirects`,
-                    SUM(rev_length) AS `total_length`
-                FROM (" .
+					COUNT(page_title) AS `count`,
+					SUM(IF(type = 'arc', 1, 0)) AS `deleted`,
+					SUM($summation) AS `redirects`,
+					SUM(rev_length) AS `total_length`
+				FROM (" .
 			$this->getPagesCreatedInnerSql( $project, $conditions, $deleted, $start, $end, false, true ) . "
-                ) a " .
+				) a " .
 				$wasRedirect .
 				"GROUP BY `namespace`";
 
@@ -119,18 +119,18 @@ class PagesRepository extends UserRepository {
 			$pageAssessmentsTable = $project->getTableName( 'page_assessments' );
 			$paProjectsTable = $project->getTableName( 'page_assessments_projects' );
 			$conditions['paSelects'] = ",
-                (SELECT pa_class
-                    FROM $pageAssessmentsTable
-                    WHERE rev_page = pa_page_id
-                    AND pa_class != ''
-                    LIMIT 1
-                ) AS pa_class,
-                (SELECT JSON_ARRAYAGG(pap_project_title)
-                    FROM $pageAssessmentsTable
-                    JOIN $paProjectsTable
-                    ON pa_project_id = pap_project_id
-                    WHERE pa_page_id = page_id
-                ) AS pap_project_title";
+				(SELECT pa_class
+					FROM $pageAssessmentsTable
+					WHERE rev_page = pa_page_id
+					AND pa_class != ''
+					LIMIT 1
+				) AS pa_class,
+				(SELECT JSON_ARRAYAGG(pap_project_title)
+					FROM $pageAssessmentsTable
+					JOIN $paProjectsTable
+					ON pa_project_id = pap_project_id
+					WHERE pa_page_id = page_id
+				) AS pap_project_title";
 			$conditions['paSelectsArchive'] = ', NULL AS pa_class, NULL as pap_project_title';
 			$conditions['revPageGroupBy'] = 'GROUP BY rev_page';
 		}
@@ -139,10 +139,10 @@ class PagesRepository extends UserRepository {
 
 		$sql = "SELECT * FROM (" .
 			$this->getPagesCreatedInnerSql( $project, $conditions, $deleted, $start, $end, $offset ) . "
-                ) a " .
+				) a " .
 				$wasRedirect .
 				"ORDER BY `timestamp` DESC
-                " . ( !empty( $limit ) ? "LIMIT $limit" : '' );
+				" . ( !empty( $limit ) ? "LIMIT $limit" : '' );
 
 		$result = $this->executeQuery( $sql, $project, $user, $namespace )
 			->fetchAllAssociative();
@@ -232,12 +232,12 @@ class PagesRepository extends UserRepository {
 		$tagDefTable = $project->getTableName( 'change_tag_def' );
 
 		$revisionsSelect = "
-            SELECT $revSelects " . $conditions['paSelects'] . ",
-                NULL AS was_redirect
-            FROM $pageTable
-            JOIN $revisionTable ON page_id = rev_page
-            WHERE " . $conditions['whereRev'] . "
-                AND rev_parent_id = '0'" .
+			SELECT $revSelects " . $conditions['paSelects'] . ",
+				NULL AS was_redirect
+			FROM $pageTable
+			JOIN $revisionTable ON page_id = rev_page
+			WHERE " . $conditions['whereRev'] . "
+				AND rev_parent_id = '0'" .
 				$conditions['namespaceRev'] .
 				$conditions['redirects'] .
 				$revDateConditions .
@@ -249,35 +249,35 @@ class PagesRepository extends UserRepository {
 		if ( !$count ) {
 			$arSelects .= ", NULL AS `length`, MIN(ar_timestamp) AS `timestamp`, " .
 				"ar_rev_id AS `rev_id`, EXISTS(
-                    SELECT 1 FROM $pageTable
-                    WHERE page_namespace = ar_namespace
-                    AND page_title = ar_title
-                ) AS `recreated`";
+					SELECT 1 FROM $pageTable
+					WHERE page_namespace = ar_namespace
+					AND page_title = ar_title
+				) AS `recreated`";
 		}
 
 		$archiveSelect = "
-            SELECT $arSelects " . $conditions['paSelectsArchive'] . ",
-                (
-                    SELECT 1
-                    FROM $tagTable
-                    WHERE ct_rev_id = ar_rev_id
-                    AND ct_tag_id = (
-                        SELECT ctd_id
-                        FROM $tagDefTable
-                        WHERE ctd_name = 'mw-new-redirect'
-                    )
-                    LIMIT 1
-                ) AS `was_redirect`
-            FROM $archiveTable
-            LEFT JOIN $logTable ON log_namespace = ar_namespace AND log_title = ar_title
-                AND log_actor = ar_actor AND (log_action = 'move' OR log_action = 'move_redir')
-                AND log_type = 'move'
-            WHERE " . $conditions['whereArc'] . "
-                AND ar_parent_id = '0' " .
+			SELECT $arSelects " . $conditions['paSelectsArchive'] . ",
+				(
+					SELECT 1
+					FROM $tagTable
+					WHERE ct_rev_id = ar_rev_id
+					AND ct_tag_id = (
+						SELECT ctd_id
+						FROM $tagDefTable
+						WHERE ctd_name = 'mw-new-redirect'
+					)
+					LIMIT 1
+				) AS `was_redirect`
+			FROM $archiveTable
+			LEFT JOIN $logTable ON log_namespace = ar_namespace AND log_title = ar_title
+				AND log_actor = ar_actor AND (log_action = 'move' OR log_action = 'move_redir')
+				AND log_type = 'move'
+			WHERE " . $conditions['whereArc'] . "
+				AND ar_parent_id = '0' " .
 				$conditions['namespaceArc'] . "
-                AND log_action IS NULL
-                $arDateConditions
-            GROUP BY ar_namespace, ar_title";
+				AND log_action IS NULL
+				$arDateConditions
+			GROUP BY ar_namespace, ar_title";
 
 		if ( $deleted === 'live' ) {
 			return $revisionsSelect;
@@ -325,24 +325,24 @@ class PagesRepository extends UserRepository {
 		$paNamespaces = '(' . implode( ',', array_map( 'strval', $paNamespaces ) ) . ')';
 
 		$sql = "SELECT pa_class AS `class`, COUNT(page_id) AS `count` FROM (
-                    SELECT page_id,
-                    (SELECT pa_class
-                        FROM $pageAssessmentsTable
-                        WHERE rev_page = pa_page_id
-                        AND pa_class != ''
-                        LIMIT 1
-                    ) AS pa_class
-                    FROM $pageTable
-                    JOIN $revisionTable ON page_id = rev_page
-                    WHERE " . $conditions['whereRev'] . "
-                    AND rev_parent_id = '0'
-                    AND (page_namespace in $paNamespaces)" .
+					SELECT page_id,
+					(SELECT pa_class
+						FROM $pageAssessmentsTable
+						WHERE rev_page = pa_page_id
+						AND pa_class != ''
+						LIMIT 1
+					) AS pa_class
+					FROM $pageTable
+					JOIN $revisionTable ON page_id = rev_page
+					WHERE " . $conditions['whereRev'] . "
+					AND rev_parent_id = '0'
+					AND (page_namespace in $paNamespaces)" .
 					$conditions['namespaceRev'] .
 					$conditions['redirects'] .
 					$revDateConditions . "
-                    GROUP BY page_id
-                ) a
-                GROUP BY pa_class";
+					GROUP BY page_id
+				) a
+				GROUP BY pa_class";
 
 		$resultQuery = $this->executeQuery( $sql, $project, $user, $namespace );
 
@@ -393,18 +393,18 @@ class PagesRepository extends UserRepository {
 		$revDateConditions = $this->getDateConditions( $start, $end );
 
 		$sql = "SELECT pap_project_title, count(pap_project_title) as `count`
-                FROM $pageTable
-                LEFT JOIN $revisionTable ON page_id = rev_page
-                JOIN $pageAssessmentsTable ON page_id = pa_page_id
-                JOIN $paProjectsTable ON pa_project_id = pap_project_id
-                WHERE " . $conditions['whereRev'] . "
-                    AND rev_parent_id = '0'" .
+				FROM $pageTable
+				LEFT JOIN $revisionTable ON page_id = rev_page
+				JOIN $pageAssessmentsTable ON page_id = pa_page_id
+				JOIN $paProjectsTable ON pa_project_id = pap_project_id
+				WHERE " . $conditions['whereRev'] . "
+					AND rev_parent_id = '0'" .
 					$conditions['namespaceRev'] .
 					$conditions['redirects'] .
 					$revDateConditions . "
-                GROUP BY pap_project_title
-                ORDER BY `count` DESC
-                LIMIT 10";
+				GROUP BY pap_project_title
+				ORDER BY `count` DESC
+				LIMIT 10";
 
 		$totals = $this->executeQuery( $sql, $project, $user, $namespace )
 			->fetchAllAssociative();
@@ -427,15 +427,15 @@ class PagesRepository extends UserRepository {
 		$commentTable = $project->getTableName( 'comment' );
 		$loggingTable = $project->getTableName( 'logging', 'logindex' );
 		$sql = "SELECT actor_name, comment_text, log_timestamp
-                FROM $loggingTable
-                JOIN $actorTable ON actor_id = log_actor
-                JOIN $commentTable ON comment_id = log_comment_id
-                WHERE log_namespace = $namespace
-                AND log_title = :pageTitle
-                AND log_timestamp >= $offset
-                AND log_type = 'delete'
-                AND log_action IN ('delete', 'delete_redir', 'delete_redir2')
-                LIMIT 1";
+				FROM $loggingTable
+				JOIN $actorTable ON actor_id = log_actor
+				JOIN $commentTable ON comment_id = log_comment_id
+				WHERE log_namespace = $namespace
+				AND log_title = :pageTitle
+				AND log_timestamp >= $offset
+				AND log_type = 'delete'
+				AND log_action IN ('delete', 'delete_redir', 'delete_redir2')
+				LIMIT 1";
 		$ret = $this->executeProjectsQuery( $project, $sql, [
 			'pageTitle' => str_replace( ' ', '_', $pageTitle ),
 		] )->fetchAssociative();

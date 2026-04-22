@@ -3,13 +3,13 @@
 {% if data.error is defined or data.revisions is not defined %}
 {{ msg('error-pageinfo-api') }}
 {% else -%}
-    {% if data.created_at is empty %}{#-
-        -#}{{ data.revisions|num_format }} {{ msg('num-revisions', [data.revisions]) }}{{ msg('comma-character') }}
-    {% else %}{#-
-        -#}{{ msg('num-revisions-since', [data.revisions|num_format, data.revisions, "<bdi><a target='_blank' href='" ~ wiki.pageUrlRaw('Special:PermaLink/' ~ data.created_rev_id, project) ~ "'>" ~ data.created_at|date_format('yyyy-MM-dd') ~ "</a></bdi>"]) }}
-        <span style="color: var(--color-subtle, #54595d);">(<a href="{{ wiki.pageUrlRaw('Special:Diff/' ~ data.modified_rev_id, project) }}" style="color: inherit;">+{{ formatDuration(data.secs_since_last_edit) }}</a>)</span>{{ msg('comma-character') }}
-        {{ data.editors|num_format }} {{ msg('num-editors', [data.editors]) }}{{ msg('comma-character') }}
-    {% endif %}
+	{% if data.created_at is empty %}{#-
+		-#}{{ data.revisions|num_format }} {{ msg('num-revisions', [data.revisions]) }}{{ msg('comma-character') }}
+	{% else %}{#-
+		-#}{{ msg('num-revisions-since', [data.revisions|num_format, data.revisions, "<bdi><a target='_blank' href='" ~ wiki.pageUrlRaw('Special:PermaLink/' ~ data.created_rev_id, project) ~ "'>" ~ data.created_at|date_format('yyyy-MM-dd') ~ "</a></bdi>"]) }}
+		<span style="color: var(--color-subtle, #54595d);">(<a href="{{ wiki.pageUrlRaw('Special:Diff/' ~ data.modified_rev_id, project) }}" style="color: inherit;">+{{ formatDuration(data.secs_since_last_edit) }}</a>)</span>{{ msg('comma-character') }}
+		{{ data.editors|num_format }} {{ msg('num-editors', [data.editors]) }}{{ msg('comma-character') }}
+	{% endif %}
 {% endif %}
 {% if data.watchers is defined and data.watchers > 0 -%}
 {{ data.watchers|num_format }} {{ msg('num-watchers', [data.watchers]) }}{{ msg('comma-character') }}
@@ -17,10 +17,10 @@
 {%- if data.pageviews is defined -%}
 <a target="_blank" href="https://pageviews.wmcloud.org/?project={{ project.domain }}&amp;pages={{ page.title|e('url') }}&amp;range=latest-30">{{ data.pageviews|num_format }} {{ msg('num-pageviews', [data.pageviews]) }}</a> ({{ data.pageviews_offset|num_format }} {{ msg('num-days', [data.pageviews_offset]) }}){% endif -%}
 {% if data.error is not defined and data.creator is not empty -%}
-    {{ msg('comma-character') }}
-    {{ msg('created-by')|lower }}: {{ wiki.userLink(data.creator, project) }}
-    {# Anons have an edit count of null for performance reasons, so we simply don't show anything #}{% if data.creator_editcount != null %}
-    (<a target="_blank" title="{{ msg('approximate') }}" href="{{ url('EditCounterResult', { 'project': project.domain, 'username': data.creator }) }}">{{ data.creator_editcount|num_format }}</a>){% endif %}
+	{{ msg('comma-character') }}
+	{{ msg('created-by')|lower }}: {{ wiki.userLink(data.creator, project) }}
+	{# Anons have an edit count of null for performance reasons, so we simply don't show anything #}{% if data.creator_editcount != null %}
+	(<a target="_blank" title="{{ msg('approximate') }}" href="{{ url('EditCounterResult', { 'project': project.domain, 'username': data.creator }) }}">{{ data.creator_editcount|num_format }}</a>){% endif %}
 {% endif %}
  &middot;
 <a target="_blank" href="{{ url('PageInfoResult', { 'project': project.domain, 'page': page.title }) }}">{{ msg('see-full-page-stats') }}</a>

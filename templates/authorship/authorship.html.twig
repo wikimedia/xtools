@@ -5,226 +5,226 @@
 {% block body %}
 
 {% if not is_sub_request %}
-    {% set descriptionLink %}
-        {% set wikiwhoLink %}
-            <a target='_blank' href='https://www.mediawiki.org/wiki/Special:MyLanguage/WikiWho'>WikiWho</a>
-        {% endset %}
-        {{ msg('powered-by', [wikiwhoLink]) }}
-    {% endset %}
-    {% set downloadLink %}
-        {{ layout.downloadLink('AuthorshipResult', {project:project.domain, page:page.title, target:authorship.target}, ['wikitext']) }}
-    {% endset %}
+	{% set descriptionLink %}
+		{% set wikiwhoLink %}
+			<a target='_blank' href='https://www.mediawiki.org/wiki/Special:MyLanguage/WikiWho'>WikiWho</a>
+		{% endset %}
+		{{ msg('powered-by', [wikiwhoLink]) }}
+	{% endset %}
+	{% set downloadLink %}
+		{{ layout.downloadLink('AuthorshipResult', {project:project.domain, page:page.title, target:authorship.target}, ['wikitext']) }}
+	{% endset %}
 
-    <div class="panel panel-primary">
-        <header class="panel-heading">
-            <div class="text-center xt-heading-top">
-                <a target="_blank" href="https://www.mediawiki.org/wiki/Special:MyLanguage/XTools/Authorship" class="pull-right glyphicon glyphicon-question-sign plainlink help-icon"></a>
-                <a class="back-to-search" href="{{ path('AuthorshipProject', {project: project.domain}) }}">
-                    <span class="glyphicon glyphicon-chevron-left"></span>
-                    {{ msg('back') }}
-                </a>
-                {{ wiki.pageLink(page) }}
-                <small>
-                    &bull;
-                    {{ project.domain }}
-                </small>
-            </div>
-        </header>
-        <div class="panel-body xt-panel-body">
-            {{ wiki.pageLinks(page) }}
+	<div class="panel panel-primary">
+		<header class="panel-heading">
+			<div class="text-center xt-heading-top">
+				<a target="_blank" href="https://www.mediawiki.org/wiki/Special:MyLanguage/XTools/Authorship" class="pull-right glyphicon glyphicon-question-sign plainlink help-icon"></a>
+				<a class="back-to-search" href="{{ path('AuthorshipProject', {project: project.domain}) }}">
+					<span class="glyphicon glyphicon-chevron-left"></span>
+					{{ msg('back') }}
+				</a>
+				{{ wiki.pageLink(page) }}
+				<small>
+					&bull;
+					{{ project.domain }}
+				</small>
+			</div>
+		</header>
+		<div class="panel-body xt-panel-body">
+			{{ wiki.pageLinks(page) }}
 
-            <h3 class="text-center">{{ msg('tool-authorship') }}</h3>
-            <div class="text-center text-muted">{{ msg('tool-authorship-desc') }}</div>
+			<h3 class="text-center">{{ msg('tool-authorship') }}</h3>
+			<div class="text-center text-muted">{{ msg('tool-authorship-desc') }}</div>
 
-            {% if authorship.error is null %}
-                {% set content %}
-                    <div class="col-lg-6 stat-list clearfix">
-                        <table class="table"><tbody>
-                            <tr>
-                                <td>{{ msg('article') }}</td>
-                                <td>
-                                    {{ wiki.pageLink(page) }}
-                                    (<a href="{{ path('PageInfoResult', {project:project.domain, page:page.title}) }}">{{ msg('tool-pageinfo') }}</a>)
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>{{ msg('revision') }}</td>
-                                <td>
-                                    {{ wiki.permaLinkRaw(authorship.revision.id, project, authorship.revision.timestamp|date_format) }}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>{{ msg('total-authors') }}</td>
-                                <td>{{ authorship.totalAuthors|num_format }}</td>
-                            </tr>
-                            <tr>
-                                <td>{{ msg('characters') }}</td>
-                                <td>{{ authorship.totalCount|num_format }}</td>
-                            </tr>
-                        </tbody></table>
-                    </div>
-                    <div class="text-muted times-in-utc" style="clear: both">
-                        {{ msg('times-in-utc') }}
-                    </div>
-                {% endset %}
-                {{ layout.content_block('summary', content) }}
-            {% endif %}
+			{% if authorship.error is null %}
+				{% set content %}
+					<div class="col-lg-6 stat-list clearfix">
+						<table class="table"><tbody>
+							<tr>
+								<td>{{ msg('article') }}</td>
+								<td>
+									{{ wiki.pageLink(page) }}
+									(<a href="{{ path('PageInfoResult', {project:project.domain, page:page.title}) }}">{{ msg('tool-pageinfo') }}</a>)
+								</td>
+							</tr>
+							<tr>
+								<td>{{ msg('revision') }}</td>
+								<td>
+									{{ wiki.permaLinkRaw(authorship.revision.id, project, authorship.revision.timestamp|date_format) }}
+								</td>
+							</tr>
+							<tr>
+								<td>{{ msg('total-authors') }}</td>
+								<td>{{ authorship.totalAuthors|num_format }}</td>
+							</tr>
+							<tr>
+								<td>{{ msg('characters') }}</td>
+								<td>{{ authorship.totalCount|num_format }}</td>
+							</tr>
+						</tbody></table>
+					</div>
+					<div class="text-muted times-in-utc" style="clear: both">
+						{{ msg('times-in-utc') }}
+					</div>
+				{% endset %}
+				{{ layout.content_block('summary', content) }}
+			{% endif %}
 
-            <section class="panel panel-default clearfix">
-                <header class="panel-heading col-lg-12">
-                    <h4>
-                        {{ msg('tool-authorship') }}
-                        <span class='pull-right text-muted xt-panel-description'>{{ downloadLink }}</span>
-                        <span class='pull-right text-muted xt-panel-description'>{{ descriptionLink }}</span>
-                    </h4>
-                </header>
-                <div class="panel-body col-lg-12">
+			<section class="panel panel-default clearfix">
+				<header class="panel-heading col-lg-12">
+					<h4>
+						{{ msg('tool-authorship') }}
+						<span class='pull-right text-muted xt-panel-description'>{{ downloadLink }}</span>
+						<span class='pull-right text-muted xt-panel-description'>{{ descriptionLink }}</span>
+					</h4>
+				</header>
+				<div class="panel-body col-lg-12">
 {% endif %}
 
 {% if authorship.error is not null %}
-    <div class="alert alert-danger">
-        <p>
-            {{ msg('api-error', ['Wikiwho API'] ) }}:
-            <code>{{ msgIfExists(authorship.error) }}</code>
-        </p>
-    </div>
+	<div class="alert alert-danger">
+		<p>
+			{{ msg('api-error', ['Wikiwho API'] ) }}:
+			<code>{{ msgIfExists(authorship.error) }}</code>
+		</p>
+	</div>
 {% else %}
-    {% if is_sub_request %}
-        <p>{{ msg('tool-authorship-desc') }}</p>
-    {% endif %}
-    <table class="table table-bordered table-hover table-striped authorship-table pull-left">
-        <thead>
-        {% for key in ['rank', 'username', 'links', 'characters', 'percentage'] %}
-            <th>
-                <span{% if key != 'links' %} class="sort-link sort-link--{{ key }}" data-column="{{ key }}"{% endif %}>
-                    {{ msg(key)|ucfirst }}
-                    {% if key != "links" %}<span class="glyphicon glyphicon-sort"></span>{% endif %}
-                </span>
-            </th>
-        {% endfor %}
-        </thead>
-        <tbody>
-            {## Computed #}
-            {% set totalPercentage = 0 %}
-            {% set totalCount = 0 %}
-            {% for username, values in authorship.list %}
-                {% set totalPercentage = totalPercentage + values.percentage %}
-                {% set totalCount = totalCount + values.count %}
-                <tr>
-                    <td class="sort-entry--rank" data-value="{{ loop.index }}">{{ loop.index|num_format }}</td>
-                    <td class="sort-entry--username" data-value="{{ username }}">
-                        <span class="authorship-toggle toggle-table--toggle" data-index="{{ loop.index0 }}" data-key="{{ username }}">
-                            <span class="color-icon" style="background:{{ chartColor(min(10, loop.index0)) }}"></span>
-                        </span>
-                        {{ wiki.userLink(username, project) }}
-                    </td>
-                    <td>
-                        {% if enabled('TopEdits') %}
-                            <a href="{{ path('TopEditsResultPage', { 'project': project.domain, 'username': username, 'namespace': page.namespace, 'page': page.titleWithoutNamespace }) }}">{{ msg('tool-topedits') }}</a>
-                        {% endif %}
-                        &middot;
-                        {% if enabled('EditCounter') %}
-                            <a href="{{ path('EditCounterResult', { 'project': project.domain, 'username': username }) }}">{{ msg('tool-editcounter') }}</a>
-                        {% endif %}
-                    </td>
-                    <td class="sort-entry--characters" data-value="{{ values.count }}">
-                        {{ values.count|num_format }}
-                    </td>
-                    <td class="sort-entry--percentage" data-value="{{ values.percentage }}">
-                        {{ values.percentage|percent_format }}
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-        {% if authorship.others is not null and is_sub_request %}
-            <tfoot><tr class="show-more-row">
-                <td></td>
-                <td>
-                    <span class="authorship-toggle toggle-table--toggle" data-index="{{ authorship.list|length }}" data-key="others">
-                        <span class="color-icon" style="background:{{ chartColor(authorship.list|length) }}"></span>
-                    </span>
-                    <a href="{{ path('AuthorshipResult', {project:project.domain, page:page.title})}}">
-                        {{ authorship.others.numEditors|num_format }}
-                        {{ msg('num-others', [authorship.others.numEditors]) }}
-                    </a>
-                </td>
-                <td></td>
-                <td>
-                    {{ authorship.others.count|num_format }}
-                </td>
-                <td>
-                    {{ authorship.others.percentage|percent_format }}
-                </td>
-            </tr></tfoot>
-        {% endif %}
-    </table>
+	{% if is_sub_request %}
+		<p>{{ msg('tool-authorship-desc') }}</p>
+	{% endif %}
+	<table class="table table-bordered table-hover table-striped authorship-table pull-left">
+		<thead>
+		{% for key in ['rank', 'username', 'links', 'characters', 'percentage'] %}
+			<th>
+				<span{% if key != 'links' %} class="sort-link sort-link--{{ key }}" data-column="{{ key }}"{% endif %}>
+					{{ msg(key)|ucfirst }}
+					{% if key != "links" %}<span class="glyphicon glyphicon-sort"></span>{% endif %}
+				</span>
+			</th>
+		{% endfor %}
+		</thead>
+		<tbody>
+			{## Computed #}
+			{% set totalPercentage = 0 %}
+			{% set totalCount = 0 %}
+			{% for username, values in authorship.list %}
+				{% set totalPercentage = totalPercentage + values.percentage %}
+				{% set totalCount = totalCount + values.count %}
+				<tr>
+					<td class="sort-entry--rank" data-value="{{ loop.index }}">{{ loop.index|num_format }}</td>
+					<td class="sort-entry--username" data-value="{{ username }}">
+						<span class="authorship-toggle toggle-table--toggle" data-index="{{ loop.index0 }}" data-key="{{ username }}">
+							<span class="color-icon" style="background:{{ chartColor(min(10, loop.index0)) }}"></span>
+						</span>
+						{{ wiki.userLink(username, project) }}
+					</td>
+					<td>
+						{% if enabled('TopEdits') %}
+							<a href="{{ path('TopEditsResultPage', { 'project': project.domain, 'username': username, 'namespace': page.namespace, 'page': page.titleWithoutNamespace }) }}">{{ msg('tool-topedits') }}</a>
+						{% endif %}
+						&middot;
+						{% if enabled('EditCounter') %}
+							<a href="{{ path('EditCounterResult', { 'project': project.domain, 'username': username }) }}">{{ msg('tool-editcounter') }}</a>
+						{% endif %}
+					</td>
+					<td class="sort-entry--characters" data-value="{{ values.count }}">
+						{{ values.count|num_format }}
+					</td>
+					<td class="sort-entry--percentage" data-value="{{ values.percentage }}">
+						{{ values.percentage|percent_format }}
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+		{% if authorship.others is not null and is_sub_request %}
+			<tfoot><tr class="show-more-row">
+				<td></td>
+				<td>
+					<span class="authorship-toggle toggle-table--toggle" data-index="{{ authorship.list|length }}" data-key="others">
+						<span class="color-icon" style="background:{{ chartColor(authorship.list|length) }}"></span>
+					</span>
+					<a href="{{ path('AuthorshipResult', {project:project.domain, page:page.title})}}">
+						{{ authorship.others.numEditors|num_format }}
+						{{ msg('num-others', [authorship.others.numEditors]) }}
+					</a>
+				</td>
+				<td></td>
+				<td>
+					{{ authorship.others.count|num_format }}
+				</td>
+				<td>
+					{{ authorship.others.percentage|percent_format }}
+				</td>
+			</tr></tfoot>
+		{% endif %}
+	</table>
 
-    {##
-     # Set the size of the chart to be relative to the number of tools.
-     # Otherwise it may get too big and hog up the real estate.
-     # 37 is the heigh of one row.
-     #}
-    {% set maxHeight = min(400, (authorship.list|length + 2) * 37) %}
-    {% set height = max(150, maxHeight) %}
-    <div class="chart-wrapper authorship-chart-wrapper toggle-table--chart">
-        <canvas id="authorship_chart" width="{{ height }}" height="{{ height }}"></canvas>
-    </div>
+	{##
+	 # Set the size of the chart to be relative to the number of tools.
+	 # Otherwise it may get too big and hog up the real estate.
+	 # 37 is the heigh of one row.
+	 #}
+	{% set maxHeight = min(400, (authorship.list|length + 2) * 37) %}
+	{% set height = max(150, maxHeight) %}
+	<div class="chart-wrapper authorship-chart-wrapper toggle-table--chart">
+		<canvas id="authorship_chart" width="{{ height }}" height="{{ height }}"></canvas>
+	</div>
 
-    {## Get all 11 colours, though we might not use all of them. #}
-    {% set colors = [] %}
-    {% for i in 0..10 %}
-        {% set colors = colors|merge([chartColor(i)]) %}
-    {% endfor %}
+	{## Get all 11 colours, though we might not use all of them. #}
+	{% set colors = [] %}
+	{% for i in 0..10 %}
+		{% set colors = colors|merge([chartColor(i)]) %}
+	{% endfor %}
 
-    {% set labels = authorship.list|keys|slice(0, 10) %}
-    {% if authorship.others is not null %}
-        {% set labels = labels|merge([authorship.others.numEditors ~ ' ' ~ msg('num-others', [authorship.others.numEditors])]) %}
-    {% endif %}
+	{% set labels = authorship.list|keys|slice(0, 10) %}
+	{% if authorship.others is not null %}
+		{% set labels = labels|merge([authorship.others.numEditors ~ ' ' ~ msg('num-others', [authorship.others.numEditors])]) %}
+	{% endif %}
 
-    <script>
-        $(function () {
-            window.authorshipChart = new Chart($('#authorship_chart'), {
-                type: 'pie',
-                data: {
-                    labels: {{ labels|json_encode()|raw }},
-                    datasets: [{
-                        data: [
-                            {% for username, values in authorship.list|slice(0, 10) %}
-                            {{ values.percentage }}{% if not loop.last %},{% endif %}
-                            {% endfor %}
-                            {% if authorship.others is not null %},{{ authorship.others.percentage }}{% endif %}
-                        ],
-                        backgroundColor: {{ colors|json_encode()|raw }},
-                        borderColor: {{ colors|json_encode()|raw }},
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    aspectRatio: 1,
-                    legend: {
-                        display: false
-                    },
-                    tooltips: {
-                        callbacks: {
-                            label: function(tooltipItem, chartData) {
-                                var label = chartData.labels[tooltipItem.index],
-                                    value = chartData.datasets[0].data[tooltipItem.index] / 100;
-                                return label + ': ' + value.toLocaleString(i18nLang, {
-                                    style: 'percent',
-                                    maximumFractionDigits: 1
-                                });
-                            }
-                        }
-                    }
-                }
-            });
-            window.authorship = {{ authorship.list|json_encode()|raw }};
-        });
-    </script>
+	<script>
+		$(function () {
+			window.authorshipChart = new Chart($('#authorship_chart'), {
+				type: 'pie',
+				data: {
+					labels: {{ labels|json_encode()|raw }},
+					datasets: [{
+						data: [
+							{% for username, values in authorship.list|slice(0, 10) %}
+							{{ values.percentage }}{% if not loop.last %},{% endif %}
+							{% endfor %}
+							{% if authorship.others is not null %},{{ authorship.others.percentage }}{% endif %}
+						],
+						backgroundColor: {{ colors|json_encode()|raw }},
+						borderColor: {{ colors|json_encode()|raw }},
+						borderWidth: 1
+					}]
+				},
+				options: {
+					aspectRatio: 1,
+					legend: {
+						display: false
+					},
+					tooltips: {
+						callbacks: {
+							label: function(tooltipItem, chartData) {
+								var label = chartData.labels[tooltipItem.index],
+									value = chartData.datasets[0].data[tooltipItem.index] / 100;
+								return label + ': ' + value.toLocaleString(i18nLang, {
+									style: 'percent',
+									maximumFractionDigits: 1
+								});
+							}
+						}
+					}
+				}
+			});
+			window.authorship = {{ authorship.list|json_encode()|raw }};
+		});
+	</script>
 {% endif %}
 
 {% if not is_sub_request %}
-    </div></section></div></div>
+	</div></section></div></div>
 {% endif %}
 
 {% endblock %}

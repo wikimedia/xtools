@@ -51,14 +51,14 @@ class EditSummaryRepository extends UserRepository {
 		}
 
 		$sql = "SELECT comment_text AS `comment`, rev_timestamp, rev_minor_edit
-                FROM $revisionTable
-                $ipcJoin
-                $pageJoin
-                LEFT OUTER JOIN $commentTable ON comment_id = rev_comment_id
-                WHERE $whereClause
-                $condNamespace
-                $revDateConditions
-                ORDER BY rev_timestamp DESC";
+				FROM $revisionTable
+				$ipcJoin
+				$pageJoin
+				LEFT OUTER JOIN $commentTable ON comment_id = rev_comment_id
+				WHERE $whereClause
+				$condNamespace
+				$revDateConditions
+				ORDER BY rev_timestamp DESC";
 
 		return $this->executeQuery( $sql, $project, $user, $namespace, $params );
 	}

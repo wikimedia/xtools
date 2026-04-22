@@ -93,11 +93,11 @@ class LargestPagesRepository extends Repository {
 		}
 
 		$sql = "SELECT page_namespace AS `namespace`, page_title, page_len AS `length`
-                FROM $pageTable
-                $where $namespaceCond
-                $likeCond
-                ORDER BY page_len DESC
-                LIMIT " . self::MAX_ROWS;
+				FROM $pageTable
+				$where $namespaceCond
+				$likeCond
+				ORDER BY page_len DESC
+				LIMIT " . self::MAX_ROWS;
 
 		$rows = $this->executeProjectsQuery( $project, $sql, [
 			'namespace' => $namespace,

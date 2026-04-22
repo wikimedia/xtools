@@ -2,28 +2,28 @@
 {% import 'macros/forms.html.twig' as forms %}
 
 {% block body %}
-    <form class="col-lg-8 col-lg-offset-2" action="{{ path('CategoryEdits') }}" method="get" accept-charset="utf-8" >
-        <fieldset class="form-fieldset">
-            {{ forms.wiki_input(project) }}
-            {{ forms.user_input(true, false, project, false, username) }}
+	<form class="col-lg-8 col-lg-offset-2" action="{{ path('CategoryEdits') }}" method="get" accept-charset="utf-8" >
+		<fieldset class="form-fieldset">
+			{{ forms.wiki_input(project) }}
+			{{ forms.user_input(true, false, project, false, username) }}
 
-            <div class="input-group form-row">
-                <label class="input-group-addon form-label" for="category_selector">
-                    {{ msg('categories') }}
-                </label>
-                <input type="hidden" name="categories" id="category_input" value="{{ categories }}" />
-                <select class="form-control"
-                    id="category_selector"
-                    data-api="{{ project.apiUrl }}"
-                    data-ns="{{ nsName(14, project.namespaces) }}"
-                    multiple="multiple"
-                    required>
-                </select>
-            </div>
+			<div class="input-group form-row">
+				<label class="input-group-addon form-label" for="category_selector">
+					{{ msg('categories') }}
+				</label>
+				<input type="hidden" name="categories" id="category_input" value="{{ categories }}" />
+				<select class="form-control"
+					id="category_selector"
+					data-api="{{ project.apiUrl }}"
+					data-ns="{{ nsName(14, project.namespaces) }}"
+					multiple="multiple"
+					required>
+				</select>
+			</div>
 
-            {{ forms.date_input('start', false, start) }}
-            {{ forms.date_input('end', false, end) }}
-        </fieldset>
-        {{ forms.submit_btn() }}
-    </form>
+			{{ forms.date_input('start', false, start) }}
+			{{ forms.date_input('end', false, end) }}
+		</fieldset>
+		{{ forms.submit_btn() }}
+	</form>
 {% endblock %}

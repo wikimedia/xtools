@@ -6,275 +6,275 @@
 
 {% block body %}
 <div class="panel panel-primary">
-    {{ layout.userHeading(user, project, 'AutoEdits') }}
+	{{ layout.userHeading(user, project, 'AutoEdits') }}
 
-    <div class="panel-body xt-panel-body">
-        {{ wiki.userLinks(user, project, 'AutoEdits') }}
+	<div class="panel-body xt-panel-body">
+		{{ wiki.userLinks(user, project, 'AutoEdits') }}
 
-        <h3 class="text-center">{{ msg('tool-autoedits') }}</h3>
+		<h3 class="text-center">{{ msg('tool-autoedits') }}</h3>
 
-        {# Show TOC when the user has a ton of automated tools, making the page hard to navigate #}
-        {% if ae.toolCounts|length > 2 %}
-            <div class="text-center xt-toc">
-                {% set sections = ['summary', 'auto-edits', 'non-auto-contribs'] %}
-                {% for section in sections %}
-                    <span>
-                        <a href="#{{ section }}" data-section="{{ section }}">{{ msg(section) }}</a>
-                    </span>
-                {% endfor %}
-            </div>
-        {% endif %}
+		{# Show TOC when the user has a ton of automated tools, making the page hard to navigate #}
+		{% if ae.toolCounts|length > 2 %}
+			<div class="text-center xt-toc">
+				{% set sections = ['summary', 'auto-edits', 'non-auto-contribs'] %}
+				{% for section in sections %}
+					<span>
+						<a href="#{{ section }}" data-section="{{ section }}">{{ msg(section) }}</a>
+					</span>
+				{% endfor %}
+			</div>
+		{% endif %}
 
-        {% set content %}
-            <div class="panel-body stat-list autoedits-stat-list clearfix" id="summary">
-                <table class="table autoedits-table pull-left">
-                    <tr>
-                        <td>{{ msg('namespace') }}</td>
-                        <td>{{ nsName(ae.namespace, project.namespaces) }}</td>
-                    </tr>
-                    {% if ae.start is not empty %}
-                        <tr>
-                            <td>{{ msg('start') }}</td>
-                            <td>{{ ae.startDate }}</td>
-                        </tr>
-                    {% endif %}
-                    {% if ae.end is not empty %}
-                        <tr>
-                            <td>{{ msg('end') }}</td>
-                            <td>{{ ae.endDate }}</td>
-                        </tr>
-                    {% endif %}
-                    <tr>
-                        <td>{{ msg('total-edits') }}</td>
-                        <td>{{ ae.editCount|num_format }}</td>
-                    </tr>
-                    <tr>
-                        <td>{{ msg('auto-edits') }}</td>
-                        <td>
-                            {{ ae.automatedCount|num_format }}
-                            ({{ ae.automatedPercentage|percent_format }})
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>{{ msg('non-auto-contribs') }}</td>
-                        <td>
-                            {{ (ae.editCount - ae.automatedCount)|num_format }}
-                            ({{ (100 - ae.automatedPercentage)|percent_format }})
-                        </td>
-                    </tr>
-                </table>
-                {% if ae.editCount > 0 %}
-                    <div class="pull-left">
-                        {{
-                            chart.pie_chart('auto_edits',
-                                [{
-                                    label: msg('non-auto-contribs'),
-                                    value: ae.editCount - ae.automatedCount,
-                                    percentage: 100 - ae.automatedPercentage
-                                },
-                                {
-                                    label: msg('auto-edits'),
-                                    value: ae.automatedCount,
-                                    percentage: ae.automatedPercentage
-                                }],
-                                false,
-                                'autoedits-summary-chart',
-                                140
-                            )
-                        }}
-                    </div>
-                {% endif %}
-            </div>
+		{% set content %}
+			<div class="panel-body stat-list autoedits-stat-list clearfix" id="summary">
+				<table class="table autoedits-table pull-left">
+					<tr>
+						<td>{{ msg('namespace') }}</td>
+						<td>{{ nsName(ae.namespace, project.namespaces) }}</td>
+					</tr>
+					{% if ae.start is not empty %}
+						<tr>
+							<td>{{ msg('start') }}</td>
+							<td>{{ ae.startDate }}</td>
+						</tr>
+					{% endif %}
+					{% if ae.end is not empty %}
+						<tr>
+							<td>{{ msg('end') }}</td>
+							<td>{{ ae.endDate }}</td>
+						</tr>
+					{% endif %}
+					<tr>
+						<td>{{ msg('total-edits') }}</td>
+						<td>{{ ae.editCount|num_format }}</td>
+					</tr>
+					<tr>
+						<td>{{ msg('auto-edits') }}</td>
+						<td>
+							{{ ae.automatedCount|num_format }}
+							({{ ae.automatedPercentage|percent_format }})
+						</td>
+					</tr>
+					<tr>
+						<td>{{ msg('non-auto-contribs') }}</td>
+						<td>
+							{{ (ae.editCount - ae.automatedCount)|num_format }}
+							({{ (100 - ae.automatedPercentage)|percent_format }})
+						</td>
+					</tr>
+				</table>
+				{% if ae.editCount > 0 %}
+					<div class="pull-left">
+						{{
+							chart.pie_chart('auto_edits',
+								[{
+									label: msg('non-auto-contribs'),
+									value: ae.editCount - ae.automatedCount,
+									percentage: 100 - ae.automatedPercentage
+								},
+								{
+									label: msg('auto-edits'),
+									value: ae.automatedCount,
+									percentage: ae.automatedPercentage
+								}],
+								false,
+								'autoedits-summary-chart',
+								140
+							)
+						}}
+					</div>
+				{% endif %}
+			</div>
 
-            <div class="footnotes text-muted">
-                {{ msg('all-approximate') }}
-            </div>
-        {% endset %}
-        {% set downloadLink %}
-            {{ layout.downloadLink('UserApiNonAutoEdits', {'project': project.domain, 'username': user.usernameIdent, 'namespace': ae.namespace, 'start': ae.startDate, 'end': ae.endDate}, [], 'UserApiAutoEditsCount') }}
-        {% endset %}
-        {{ layout.content_block('summary', content, downloadLink) }}
+			<div class="footnotes text-muted">
+				{{ msg('all-approximate') }}
+			</div>
+		{% endset %}
+		{% set downloadLink %}
+			{{ layout.downloadLink('UserApiNonAutoEdits', {'project': project.domain, 'username': user.usernameIdent, 'namespace': ae.namespace, 'start': ae.startDate, 'end': ae.endDate}, [], 'UserApiAutoEditsCount') }}
+		{% endset %}
+		{{ layout.content_block('summary', content, downloadLink) }}
 
-        {% if ae.editCount == 0 %}
-            {% set content %}
-                <div class="alert alert-info">
-                    {{ msg('no-contribs') }}
-                </div>
-            {% endset %}
-        {% else %}
-            {% set content %}
-                {% if ae.toolCounts|length > 0 %}
-                    <table class="table table-bordered table-hover table-striped tools-table toggle-table">
-                        <thead>
-                        {% for key in ['tool', 'count', 'percent-of-tools', 'percent-of-edit-count'] %}
-                            <th>
-                                <span class="sort-link sort-link--{{ key }}" data-column="{{ key }}">
-                                    {{ msg(key)|ucfirst }}
-                                    <span class="glyphicon glyphicon-sort"></span>
-                                </span>
-                            </th>
-                        {% endfor %}
-                        </thead>
-                        <tbody>
-                        {% for tool, values in ae.toolCounts %}
-                            <tr>
-                                <td class="sort-entry--tool linked" data-value="{{ tool }}">
-                                    <span class="tools-toggle toggle-table--toggle" data-index="{{ loop.index0 }}" data-key="{{ tool }}">
-                                        <span class="glyphicon glyphicon-remove"></span>
-                                        <span class="color-icon" style="background:{{ chartColor(loop.index0) }}"></span>
-                                    </span>
-                                    {{ wiki.pageLinkRaw(values.link, project, values.label) }}
-                                </td>
-                                <td class="sort-entry--count" data-value="{{ values.count }}">
-                                    {% set params = {project:project.domain, username:user.usernameIdent, start: ae.startDate, end: ae.endDate, namespace: ae.namespace, tool: tool} %}
-                                    {% if ae.useSandbox %}
-                                        {% set params = params|merge({usesandbox: 1}) %}
-                                    {% endif %}
-                                    <a href="{{ path('AutoEditsContributionsResult', params) }}">
-                                        {{ values.count|num_format }}
-                                    </a>
-                                </td>
-                                <td class="sort-entry--percent-of-tools" data-value="{{ values.count }}">
-                                    {{ values.count|percent_format(ae.toolsTotal) }}
-                                </td>
-                                <td class="sort-entry--percent-of-edit-count" data-value="{{ values.count }}">
-                                    {{ values.count|percent_format(ae.editCount) }}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                        <tfoot>
-                            <th class="tools--tools">
-                                {{ ae.toolCounts|length|num_format }}
-                                {{ msg('num-tools', [ae.toolCounts|length]) }}
-                            </th>
-                            <th class="tools--count">
-                                {% set params = {project:project.domain, username:user.usernameIdent, start: ae.startDate, end: ae.endDate, namespace: ae.namespace} %}
-                                {% if ae.useSandbox %}
-                                    {% set params = params|merge({usesandbox: 1}) %}
-                                {% endif %}
-                                <a href="{{ path('AutoEditsContributionsResult', params) }}">{{ ae.toolsTotal|num_format }}</a>
-                                {% apply spaceless %}
-                                    <div class="glyphicon glyphicon-info-sign tooltipcss tooltipcss--tool-counts" role="dialog" aria-labelledby="auto-edits-tools-desc">
-                                        <div id="auto-edits-tools-desc" class="tooltip-body">
-                                            {% set summaryLink = "<a href='#summary'>" ~ msg('auto-edits-counts-desc-grand-total') ~ "</a>" %}
-                                            {{ msg('auto-edits-counts-desc', [summaryLink]) }}
-                                        </div>
-                                    </div>
-                                {% endapply %}
-                            </th>
-                            <th colspan=2></th>
-                        </tfoot>
-                    </table>
+		{% if ae.editCount == 0 %}
+			{% set content %}
+				<div class="alert alert-info">
+					{{ msg('no-contribs') }}
+				</div>
+			{% endset %}
+		{% else %}
+			{% set content %}
+				{% if ae.toolCounts|length > 0 %}
+					<table class="table table-bordered table-hover table-striped tools-table toggle-table">
+						<thead>
+						{% for key in ['tool', 'count', 'percent-of-tools', 'percent-of-edit-count'] %}
+							<th>
+								<span class="sort-link sort-link--{{ key }}" data-column="{{ key }}">
+									{{ msg(key)|ucfirst }}
+									<span class="glyphicon glyphicon-sort"></span>
+								</span>
+							</th>
+						{% endfor %}
+						</thead>
+						<tbody>
+						{% for tool, values in ae.toolCounts %}
+							<tr>
+								<td class="sort-entry--tool linked" data-value="{{ tool }}">
+									<span class="tools-toggle toggle-table--toggle" data-index="{{ loop.index0 }}" data-key="{{ tool }}">
+										<span class="glyphicon glyphicon-remove"></span>
+										<span class="color-icon" style="background:{{ chartColor(loop.index0) }}"></span>
+									</span>
+									{{ wiki.pageLinkRaw(values.link, project, values.label) }}
+								</td>
+								<td class="sort-entry--count" data-value="{{ values.count }}">
+									{% set params = {project:project.domain, username:user.usernameIdent, start: ae.startDate, end: ae.endDate, namespace: ae.namespace, tool: tool} %}
+									{% if ae.useSandbox %}
+										{% set params = params|merge({usesandbox: 1}) %}
+									{% endif %}
+									<a href="{{ path('AutoEditsContributionsResult', params) }}">
+										{{ values.count|num_format }}
+									</a>
+								</td>
+								<td class="sort-entry--percent-of-tools" data-value="{{ values.count }}">
+									{{ values.count|percent_format(ae.toolsTotal) }}
+								</td>
+								<td class="sort-entry--percent-of-edit-count" data-value="{{ values.count }}">
+									{{ values.count|percent_format(ae.editCount) }}
+								</td>
+							</tr>
+						{% endfor %}
+						</tbody>
+						<tfoot>
+							<th class="tools--tools">
+								{{ ae.toolCounts|length|num_format }}
+								{{ msg('num-tools', [ae.toolCounts|length]) }}
+							</th>
+							<th class="tools--count">
+								{% set params = {project:project.domain, username:user.usernameIdent, start: ae.startDate, end: ae.endDate, namespace: ae.namespace} %}
+								{% if ae.useSandbox %}
+									{% set params = params|merge({usesandbox: 1}) %}
+								{% endif %}
+								<a href="{{ path('AutoEditsContributionsResult', params) }}">{{ ae.toolsTotal|num_format }}</a>
+								{% apply spaceless %}
+									<div class="glyphicon glyphicon-info-sign tooltipcss tooltipcss--tool-counts" role="dialog" aria-labelledby="auto-edits-tools-desc">
+										<div id="auto-edits-tools-desc" class="tooltip-body">
+											{% set summaryLink = "<a href='#summary'>" ~ msg('auto-edits-counts-desc-grand-total') ~ "</a>" %}
+											{{ msg('auto-edits-counts-desc', [summaryLink]) }}
+										</div>
+									</div>
+								{% endapply %}
+							</th>
+							<th colspan=2></th>
+						</tfoot>
+					</table>
 
-                    {% if ae.toolCounts|length > 1 %}
-                        {##
-                         # Set the size of the chart to be relative to the number of tools.
-                         # Otherwise it may get too big and hog up the real estate.
-                         # 37 is the heigh of one row.
-                         #}
-                        {% set maxHeight = min(400, (ae.toolCounts|length + 2) * 37) %}
-                        {% set height = max(150, maxHeight) %}
-                        <div class="chart-wrapper tools-chart-wrapper toggle-table--chart">
-                            <canvas id="tool_chart" width="{{ height }}" height="{{ height }}"></canvas>
-                        </div>
+					{% if ae.toolCounts|length > 1 %}
+						{##
+						 # Set the size of the chart to be relative to the number of tools.
+						 # Otherwise it may get too big and hog up the real estate.
+						 # 37 is the heigh of one row.
+						 #}
+						{% set maxHeight = min(400, (ae.toolCounts|length + 2) * 37) %}
+						{% set height = max(150, maxHeight) %}
+						<div class="chart-wrapper tools-chart-wrapper toggle-table--chart">
+							<canvas id="tool_chart" width="{{ height }}" height="{{ height }}"></canvas>
+						</div>
 
-                        {% set colors = [] %}
-                        {% for i in 0..(ae.toolCounts|length) %}
-                            {% set colors = colors|merge([chartColor(i)]) %}
-                        {% endfor %}
+						{% set colors = [] %}
+						{% for i in 0..(ae.toolCounts|length) %}
+							{% set colors = colors|merge([chartColor(i)]) %}
+						{% endfor %}
 
-                        <script>
-                            $(function () {
-                                window.toolsChart = new Chart($('#tool_chart'), {
-                                    type: 'pie',
-                                    data: {
-                                        labels: {{ ae.toolCounts|keys|json_encode()|raw }},
-                                        datasets: [{
-                                            data: [
-                                                {% for tool, values in ae.toolCounts %}
-                                                {{ values.count }}{% if not loop.last %},{% endif %}
-                                                {% endfor %}
-                                            ],
-                                            backgroundColor: {{ colors|json_encode()|raw }},
-                                            borderColor: {{ colors|json_encode()|raw }},
-                                            borderWidth: 1
-                                        }]
-                                    },
-                                    options: {
-                                        aspectRatio: 1,
-                                        legend: {
-                                            display: false
-                                        },
-                                        tooltips: {
-                                            callbacks: {
-                                                label: function(tooltipItem, chartData) {
-                                                    var label = chartData.labels[tooltipItem.index],
-                                                        value = chartData.datasets[0].data[tooltipItem.index];
-                                                    return label + ': ' + value.toLocaleString(i18nLang);
-                                                }
-                                            }
-                                        }
-                                    }
-                                });
-                                window.countsByTool = {{ ae.toolCounts|json_encode()|raw }};
-                            });
-                        </script>
-                    {% endif %}
-                {% else %}
-                    <div class="alert alert-info">
-                        {{ msg('no-contribs') }}
-                    </div>
-                {% endif %}
-                <p style="clear:both">
-                    <a target="_blank" href="https://meta.wikimedia.org/wiki/Special:MyLanguage/MediaWiki_talk:XTools-AutoEdits.json">
-                        {{ msg('auto-edits-request') }}
-                        <span class="glyphicon glyphicon-new-window"></span>
-                    </a>
-                </p>
-            {% endset %}
-        {% endif %}
-        {% set downloadLink %}
-            {{ layout.downloadLink('UserApiNonAutoEdits', {'project': project.domain, 'username': user.usernameIdent, 'namespace': ae.namespace, 'start': ae.startDate, 'end': ae.endDate, 'tools': '1'}, [], 'UserApiAutoEditsCount') }}
-        {% endset %}
-        {{ layout.content_block('auto-tool-counts', content, downloadLink) }}
+						<script>
+							$(function () {
+								window.toolsChart = new Chart($('#tool_chart'), {
+									type: 'pie',
+									data: {
+										labels: {{ ae.toolCounts|keys|json_encode()|raw }},
+										datasets: [{
+											data: [
+												{% for tool, values in ae.toolCounts %}
+												{{ values.count }}{% if not loop.last %},{% endif %}
+												{% endfor %}
+											],
+											backgroundColor: {{ colors|json_encode()|raw }},
+											borderColor: {{ colors|json_encode()|raw }},
+											borderWidth: 1
+										}]
+									},
+									options: {
+										aspectRatio: 1,
+										legend: {
+											display: false
+										},
+										tooltips: {
+											callbacks: {
+												label: function(tooltipItem, chartData) {
+													var label = chartData.labels[tooltipItem.index],
+														value = chartData.datasets[0].data[tooltipItem.index];
+													return label + ': ' + value.toLocaleString(i18nLang);
+												}
+											}
+										}
+									}
+								});
+								window.countsByTool = {{ ae.toolCounts|json_encode()|raw }};
+							});
+						</script>
+					{% endif %}
+				{% else %}
+					<div class="alert alert-info">
+						{{ msg('no-contribs') }}
+					</div>
+				{% endif %}
+				<p style="clear:both">
+					<a target="_blank" href="https://meta.wikimedia.org/wiki/Special:MyLanguage/MediaWiki_talk:XTools-AutoEdits.json">
+						{{ msg('auto-edits-request') }}
+						<span class="glyphicon glyphicon-new-window"></span>
+					</a>
+				</p>
+			{% endset %}
+		{% endif %}
+		{% set downloadLink %}
+			{{ layout.downloadLink('UserApiNonAutoEdits', {'project': project.domain, 'username': user.usernameIdent, 'namespace': ae.namespace, 'start': ae.startDate, 'end': ae.endDate, 'tools': '1'}, [], 'UserApiAutoEditsCount') }}
+		{% endset %}
+		{{ layout.content_block('auto-tool-counts', content, downloadLink) }}
 
-        {% if ae.editCount == 0 %}
-            {% set content %}
-                <div class="alert alert-info">
-                    {{ msg('no-contribs') }}
-                </div>
-            {% endset %}
-        {% else %}
-            {% set content %}
-                <div>
-                    <em class="contributions-loading text-muted">{{ msg('loading') }}...</em>
-                    <div class="contributions-container"
-                        data-project="{{ project.domain }}"
-                        data-username="{{ user.usernameIdent }}"
-                        data-start="{{ ae.startDate }}"
-                        data-end="{{ ae.endDate }}"
-                        data-namespace="{{ ae.namespace }}"
-                        data-offset="{{ ae.offsetISO }}"
-                        data-target="nonautoedits">
-                    </div>
-                </div>
-            {% endset %}
-        {% endif %}
-        {% set headerLink %}
-            <a href="{{ path('NonAutoEditsContributionsResult', {project:project.domain, username:user.usernameIdent, start: ae.startDate, end: ae.endDate, namespace: ae.namespace}) }}">{{ msg('non-auto-contribs') }}</a>
-        {% endset %}
-        {% set downloadLink %}
-            {{ layout.downloadLink('UserApiNonAutoEdits', {'project': project.domain, 'username': user.usernameIdent, 'namespace': ae.namespace, 'start': ae.startDate, 'end': ae.endDate}, [], 'UserApiNonAutoEdits') }}
-        {% endset %}
-        {% set limitControl %}
-            {{ forms.contributions_limit(ae.limit) }}
-        {% endset %}
-        {{ layout.content_block(headerLink, content, [limitControl, downloadLink], 'non-auto-contribs', true) }}
+		{% if ae.editCount == 0 %}
+			{% set content %}
+				<div class="alert alert-info">
+					{{ msg('no-contribs') }}
+				</div>
+			{% endset %}
+		{% else %}
+			{% set content %}
+				<div>
+					<em class="contributions-loading text-muted">{{ msg('loading') }}...</em>
+					<div class="contributions-container"
+						data-project="{{ project.domain }}"
+						data-username="{{ user.usernameIdent }}"
+						data-start="{{ ae.startDate }}"
+						data-end="{{ ae.endDate }}"
+						data-namespace="{{ ae.namespace }}"
+						data-offset="{{ ae.offsetISO }}"
+						data-target="nonautoedits">
+					</div>
+				</div>
+			{% endset %}
+		{% endif %}
+		{% set headerLink %}
+			<a href="{{ path('NonAutoEditsContributionsResult', {project:project.domain, username:user.usernameIdent, start: ae.startDate, end: ae.endDate, namespace: ae.namespace}) }}">{{ msg('non-auto-contribs') }}</a>
+		{% endset %}
+		{% set downloadLink %}
+			{{ layout.downloadLink('UserApiNonAutoEdits', {'project': project.domain, 'username': user.usernameIdent, 'namespace': ae.namespace, 'start': ae.startDate, 'end': ae.endDate}, [], 'UserApiNonAutoEdits') }}
+		{% endset %}
+		{% set limitControl %}
+			{{ forms.contributions_limit(ae.limit) }}
+		{% endset %}
+		{{ layout.content_block(headerLink, content, [limitControl, downloadLink], 'non-auto-contribs', true) }}
 
-        <div class="times-in-utc text-muted">
-            {{ msg('times-in-utc') }}
-        </div>
-    </div>
+		<div class="times-in-utc text-muted">
+			{{ msg('times-in-utc') }}
+		</div>
+	</div>
 </div>
 {% endblock %}

@@ -5,53 +5,53 @@
 {% block body %}
 
 {% if not is_sub_request %}
-    <div class="panel panel-primary">
-        <header class="panel-heading">
-            <div class="text-center xt-heading-top">
-                <a class="back-to-search" href="{{ path('AutoEditsResult', {project: project.domain, username:user.usernameIdent, start: ae.startDate, end: ae.endDate, namespace: ae.namespace}) }}">
-                    <span class="glyphicon glyphicon-chevron-left"></span>
-                    {{ msg('see-full-statistics') }}
-                </a>
-                {{ wiki.userLink(user, project) }}
-                <small> &bull; {{ project.title }} </small>
-            </div>
-        </header>
-        <div class="panel-body xt-panel-body">
-            {{ wiki.userLinks(user, project, xtPage) }}
+	<div class="panel panel-primary">
+		<header class="panel-heading">
+			<div class="text-center xt-heading-top">
+				<a class="back-to-search" href="{{ path('AutoEditsResult', {project: project.domain, username:user.usernameIdent, start: ae.startDate, end: ae.endDate, namespace: ae.namespace}) }}">
+					<span class="glyphicon glyphicon-chevron-left"></span>
+					{{ msg('see-full-statistics') }}
+				</a>
+				{{ wiki.userLink(user, project) }}
+				<small> &bull; {{ project.title }} </small>
+			</div>
+		</header>
+		<div class="panel-body xt-panel-body">
+			{{ wiki.userLinks(user, project, xtPage) }}
 
-            <section class="panel panel-default clearfix">
-                <header class="panel-heading col-lg-12">
-                    <h4>
-                        {{ msg('non-auto-contribs') }}
-                        <span class='pull-right text-muted xt-panel-description'>
-                            {{ layout.downloadLink('UserApiNonAutoEdits', {'project': project.domain, 'username': user.usernameIdent, 'namespace': ae.namespace, 'start': ae.startDate, 'end': ae.endDate}, [], 'UserApiNonAutoEdits') }}
-                        </span>
-                        <span class='pull-right text-muted xt-panel-description'>
-                            {{ msg('non-auto-contribs-desc') }}
-                        </span>
-                    </h4>
-                </header>
-                <div class="panel-body col-lg-12">
-                    <em class="contributions-loading text-muted" style="display:none">{{ msg('loading') }}...</em>
-                    <div class="contributions-container"
-                        data-project="{{ project.domain }}"
-                        data-username="{{ user.usernameIdent }}"
-                        data-start="{{ ae.startDate }}"
-                        data-end="{{ ae.endDate }}"
-                        data-namespace="{{ ae.namespace }}"
-                        data-offset="{{ ae.offsetISO(ae.nonAutomatedEdits) }}"
-                        data-limit="{{ ae.limit }}"
-                        data-target="nonautoedits">
+			<section class="panel panel-default clearfix">
+				<header class="panel-heading col-lg-12">
+					<h4>
+						{{ msg('non-auto-contribs') }}
+						<span class='pull-right text-muted xt-panel-description'>
+							{{ layout.downloadLink('UserApiNonAutoEdits', {'project': project.domain, 'username': user.usernameIdent, 'namespace': ae.namespace, 'start': ae.startDate, 'end': ae.endDate}, [], 'UserApiNonAutoEdits') }}
+						</span>
+						<span class='pull-right text-muted xt-panel-description'>
+							{{ msg('non-auto-contribs-desc') }}
+						</span>
+					</h4>
+				</header>
+				<div class="panel-body col-lg-12">
+					<em class="contributions-loading text-muted" style="display:none">{{ msg('loading') }}...</em>
+					<div class="contributions-container"
+						data-project="{{ project.domain }}"
+						data-username="{{ user.usernameIdent }}"
+						data-start="{{ ae.startDate }}"
+						data-end="{{ ae.endDate }}"
+						data-namespace="{{ ae.namespace }}"
+						data-offset="{{ ae.offsetISO(ae.nonAutomatedEdits) }}"
+						data-limit="{{ ae.limit }}"
+						data-target="nonautoedits">
 {% endif %}
 
 {{ layout.contributions(project, ae.nonAutomatedEdits(), ae.offset, ae.limit) }}
 
 {% if not is_sub_request %}
-    </div></div></section>
-    <div class="text-muted times-in-utc" style="clear:both">
-        {{ msg('times-in-utc') }}
-    </div>
-    </div></div>
+	</div></div></section>
+	<div class="text-muted times-in-utc" style="clear:both">
+		{{ msg('times-in-utc') }}
+	</div>
+	</div></div>
 {% endif %}
 
 {% endblock %}

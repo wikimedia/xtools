@@ -5,77 +5,77 @@
 {% block body %}
 
 {% if not is_sub_request %}
-    <div class="panel panel-primary">
-        <header class="panel-heading">
-            <div class="text-center xt-heading-top">
-                <a class="back-to-search" href="{{ path('AutoEditsResult', {project: project.domain, username:user.usernameIdent, start: ae.startDate, end: ae.endDate, namespace: ae.namespace}) }}">
-                    <span class="glyphicon glyphicon-chevron-left"></span>
-                    {{ msg('see-full-statistics') }}
-                </a>
-                {{ wiki.userLink(user, project) }}
-                <small> &bull; {{ project.title }} </small>
-            </div>
-        </header>
-        <div class="panel-body xt-panel-body">
-            {{ wiki.userLinks(user, project, xtPage) }}
+	<div class="panel panel-primary">
+		<header class="panel-heading">
+			<div class="text-center xt-heading-top">
+				<a class="back-to-search" href="{{ path('AutoEditsResult', {project: project.domain, username:user.usernameIdent, start: ae.startDate, end: ae.endDate, namespace: ae.namespace}) }}">
+					<span class="glyphicon glyphicon-chevron-left"></span>
+					{{ msg('see-full-statistics') }}
+				</a>
+				{{ wiki.userLink(user, project) }}
+				<small> &bull; {{ project.title }} </small>
+			</div>
+		</header>
+		<div class="panel-body xt-panel-body">
+			{{ wiki.userLinks(user, project, xtPage) }}
 
-            <section class="panel panel-default clearfix">
-                <header class="panel-heading col-lg-12">
-                    <h4>
-                        {% if ae.tool is empty %}
-                            {{ msg('tool-autoedits') }}
-                        {% else %}
-                            {% set toolData = ae.allTools()[ae.tool] %}
-                            {% set toolLink %}
-                                {{ wiki.pageLinkRaw(toolData.link, project, toolData.label) }}
-                            {% endset %}
-                            {{ msg('auto-tool-edits', [toolLink]) }}
-                        {% endif %}
-                        <span class='pull-right text-muted xt-panel-description'>
-                            {{ layout.downloadLink('UserApiAutoEdits', {'project': project.domain, 'username': user.usernameIdent, 'namespace': ae.namespace, 'start': ae.startDate, 'end': ae.endDate, 'tool': ae.tool}, [], 'UserApiAutoEdits') }}
-                        </span>
-                        <span class='pull-right text-muted xt-panel-description'>{{ msg('auto-contribs-desc') }}</span>
-                    </h4>
-                </header>
-                <div class="panel-body col-lg-12">
-                    <em class="contributions-loading text-muted" style="display:none">{{ msg('loading') }}...</em>
-                    <div class="contributions-container"
-                        data-project="{{ project.domain }}"
-                        data-username="{{ user.usernameIdent }}"
-                        data-start="{{ ae.startDate }}"
-                        data-end="{{ ae.endDate }}"
-                        data-namespace="{{ ae.namespace }}"
-                        data-offset="{{ ae.offsetISO(ae.automatedEdits) }}"
-                        data-limit="{{ ae.limit }}"
-                        data-target="autoedits">
+			<section class="panel panel-default clearfix">
+				<header class="panel-heading col-lg-12">
+					<h4>
+						{% if ae.tool is empty %}
+							{{ msg('tool-autoedits') }}
+						{% else %}
+							{% set toolData = ae.allTools()[ae.tool] %}
+							{% set toolLink %}
+								{{ wiki.pageLinkRaw(toolData.link, project, toolData.label) }}
+							{% endset %}
+							{{ msg('auto-tool-edits', [toolLink]) }}
+						{% endif %}
+						<span class='pull-right text-muted xt-panel-description'>
+							{{ layout.downloadLink('UserApiAutoEdits', {'project': project.domain, 'username': user.usernameIdent, 'namespace': ae.namespace, 'start': ae.startDate, 'end': ae.endDate, 'tool': ae.tool}, [], 'UserApiAutoEdits') }}
+						</span>
+						<span class='pull-right text-muted xt-panel-description'>{{ msg('auto-contribs-desc') }}</span>
+					</h4>
+				</header>
+				<div class="panel-body col-lg-12">
+					<em class="contributions-loading text-muted" style="display:none">{{ msg('loading') }}...</em>
+					<div class="contributions-container"
+						data-project="{{ project.domain }}"
+						data-username="{{ user.usernameIdent }}"
+						data-start="{{ ae.startDate }}"
+						data-end="{{ ae.endDate }}"
+						data-namespace="{{ ae.namespace }}"
+						data-offset="{{ ae.offsetISO(ae.automatedEdits) }}"
+						data-limit="{{ ae.limit }}"
+						data-target="autoedits">
 {% endif %}
 
 <div>
-    <form class="tool-selector-form form-inline" action="{{ path('AutoEditsContributionsResult', {project: project.domain, username:user.usernameIdent, start: ae.startDate, end: ae.endDate, namespace: ae.namespace}) }}" method="get" accept-charset="utf-8">
-        <label for="toolSelector">{{ msg('auto-contribs-use-tool') }}</label>
-        <select id="toolSelector" class="form-control" name="tool">
-            <option value="">{{ msg('all') }}</option>
-            {% for tool, attrs in ae.allTools() %}
-                <option value="{{ tool }}" {% if ae.tool == tool %}selected="selected"{% endif %}>
-                    {% if attrs.label is defined %}
-                        {{ attrs.label }}
-                    {% else %}
-                        {{ tool }}
-                    {% endif %}
-                </option>
-            {% endfor %}
-        </select>
-        <button type="submit" class="btn btn-primary form-submit">{{ msg('submit') }}</button>
-    </form>
+	<form class="tool-selector-form form-inline" action="{{ path('AutoEditsContributionsResult', {project: project.domain, username:user.usernameIdent, start: ae.startDate, end: ae.endDate, namespace: ae.namespace}) }}" method="get" accept-charset="utf-8">
+		<label for="toolSelector">{{ msg('auto-contribs-use-tool') }}</label>
+		<select id="toolSelector" class="form-control" name="tool">
+			<option value="">{{ msg('all') }}</option>
+			{% for tool, attrs in ae.allTools() %}
+				<option value="{{ tool }}" {% if ae.tool == tool %}selected="selected"{% endif %}>
+					{% if attrs.label is defined %}
+						{{ attrs.label }}
+					{% else %}
+						{{ tool }}
+					{% endif %}
+				</option>
+			{% endfor %}
+		</select>
+		<button type="submit" class="btn btn-primary form-submit">{{ msg('submit') }}</button>
+	</form>
 </div>
 {{ layout.contributions(project, ae.automatedEdits(), ae.offset) }}
 
 {% if not is_sub_request %}
-    </div></div></section>
-    <div class="text-muted times-in-utc" style="clear:both">
-        {{ msg('times-in-utc') }}
-    </div>
-    </div></div>
+	</div></div></section>
+	<div class="text-muted times-in-utc" style="clear:both">
+		{{ msg('times-in-utc') }}
+	</div>
+	</div></div>
 {% endif %}
 
 {% endblock %}

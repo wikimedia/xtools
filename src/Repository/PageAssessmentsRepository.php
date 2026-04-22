@@ -45,9 +45,9 @@ class PageAssessmentsRepository extends Repository {
 		$pageId = $page->getId();
 
 		$sql = "SELECT pap_project_title AS wikiproject, pa_class AS class, pa_importance AS importance
-                FROM $paTable
-                LEFT JOIN $papTable ON pa_project_id = pap_project_id
-                WHERE pa_page_id = $pageId";
+				FROM $paTable
+				LEFT JOIN $papTable ON pa_project_id = pap_project_id
+				WHERE pa_page_id = $pageId";
 
 		if ( $first ) {
 			$sql .= "\nAND pa_class != '' LIMIT 1";

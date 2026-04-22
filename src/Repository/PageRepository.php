@@ -160,35 +160,35 @@ class PageRepository extends Repository {
 		$dateConditions = $this->getDateConditions( $start, $end, false, 'revs.' );
 
 		$sql = "SELECT * FROM (
-                    SELECT
-                        revs.rev_id AS `id`,
-                        revs.rev_timestamp AS `timestamp`,
-                        revs.rev_minor_edit AS `minor`,
-                        revs.rev_len AS `length`,
-                        (CAST(revs.rev_len AS SIGNED) - IFNULL(parentrevs.rev_len, 0)) AS `length_change`,
-                        actor_user AS user_id,
-                        actor_name AS username,
-                        comment_text AS `comment`,
-                        content_sha1 AS `sha`,
-                        revs.rev_deleted AS `deleted`,
-                        (
-                            SELECT JSON_ARRAYAGG(ctd_name)
-                            FROM $ctTable
-                            JOIN $ctdTable
-                            ON ct_tag_id = ctd_id
-                            WHERE ct_rev_id = revs.rev_id
-                        ) as `tags`
-                    FROM $revTable AS revs
-                    JOIN $slotsTable ON slot_revision_id = revs.rev_id
-                    JOIN $contentTable ON slot_content_id = content_id
-                    LEFT JOIN $actorTable ON revs.rev_actor = actor_id
-                    LEFT JOIN $revTable AS parentrevs ON (revs.rev_parent_id = parentrevs.rev_id)
-                    LEFT OUTER JOIN $commentTable ON comment_id = revs.rev_comment_id
-                    WHERE $userClause revs.rev_page = :pageid $dateConditions
-                    ORDER BY revs.rev_timestamp DESC
-                    $limitClause
-                ) a
-                ORDER BY `timestamp` ASC";
+					SELECT
+						revs.rev_id AS `id`,
+						revs.rev_timestamp AS `timestamp`,
+						revs.rev_minor_edit AS `minor`,
+						revs.rev_len AS `length`,
+						(CAST(revs.rev_len AS SIGNED) - IFNULL(parentrevs.rev_len, 0)) AS `length_change`,
+						actor_user AS user_id,
+						actor_name AS username,
+						comment_text AS `comment`,
+						content_sha1 AS `sha`,
+						revs.rev_deleted AS `deleted`,
+						(
+							SELECT JSON_ARRAYAGG(ctd_name)
+							FROM $ctTable
+							JOIN $ctdTable
+							ON ct_tag_id = ctd_id
+							WHERE ct_rev_id = revs.rev_id
+						) as `tags`
+					FROM $revTable AS revs
+					JOIN $slotsTable ON slot_revision_id = revs.rev_id
+					JOIN $contentTable ON slot_content_id = content_id
+					LEFT JOIN $actorTable ON revs.rev_actor = actor_id
+					LEFT JOIN $revTable AS parentrevs ON (revs.rev_parent_id = parentrevs.rev_id)
+					LEFT OUTER JOIN $commentTable ON comment_id = revs.rev_comment_id
+					WHERE $userClause revs.rev_page = :pageid $dateConditions
+					ORDER BY revs.rev_timestamp DESC
+					$limitClause
+				) a
+				ORDER BY `timestamp` ASC";
 
 		$params = [ 'pageid' => $page->getId() ];
 		if ( $user ) {
@@ -227,8 +227,8 @@ class PageRepository extends Repository {
 		$dateConditions = $this->getDateConditions( $start, $end );
 
 		$sql = "SELECT COUNT(*)
-                FROM $revTable
-                WHERE $userClause rev_page = :pageid $dateConditions";
+				FROM $revTable
+				WHERE $userClause rev_page = :pageid $dateConditions";
 		$params = [ 'pageid' => $page->getId() ];
 		if ( $user ) {
 			$params['rev_actor'] = $user->getActorId( $page->getProject() );
@@ -252,13 +252,13 @@ class PageRepository extends Repository {
 		}
 
 		$sql = "SELECT error, notice, found, name_trans AS name, prio, text_trans AS explanation
-                FROM s51080__checkwiki_p.cw_error a
-                JOIN s51080__checkwiki_p.cw_overview_errors b
-                WHERE a.project = b.project
-                AND a.project = :dbName
-                AND a.title = :title
-                AND a.error = b.id
-                AND a.ok = 0";
+				FROM s51080__checkwiki_p.cw_error a
+				JOIN s51080__checkwiki_p.cw_overview_errors b
+				WHERE a.project = b.project
+				AND a.project = :dbName
+				AND a.title = :title
+				AND a.error = b.id
+				AND a.ok = 0";
 
 		// remove _p if present
 		$dbName = preg_replace( '/_p$/', '', $page->getProject()->getDatabaseName() );
@@ -286,8 +286,8 @@ class PageRepository extends Repository {
 		$wikidataId = ltrim( $page->getWikidataId(), 'Q' );
 
 		$sql = "SELECT " . ( $count ? 'COUNT(*) AS count' : '*' ) . "
-                FROM wikidatawiki_p.wb_items_per_site
-                WHERE ips_item_id = :wikidataId";
+				FROM wikidatawiki_p.wb_items_per_site
+				WHERE ips_item_id = :wikidataId";
 
 		$result = $this->executeProjectsQuery( 'wikidatawiki', $sql, [
 			'wikidataId' => $wikidataId,
@@ -309,18 +309,18 @@ class PageRepository extends Repository {
 		$redirectTable = $page->getProject()->getTableName( 'redirect' );
 
 		$sql = "SELECT 'links_ext_count' AS type, COUNT(*) AS value
-                FROM $externalLinksTable WHERE el_from = :id
-                UNION
-                SELECT 'links_out_count' AS type, COUNT(*) AS value
-                FROM $pageLinksTable WHERE pl_from = :id
-                UNION
-                SELECT 'links_in_count' AS type, COUNT(*) AS value
-                FROM $pageLinksTable
-                JOIN $linkTargetTable ON lt_id = pl_target_id
-                WHERE lt_namespace = :namespace AND lt_title = :title
-                UNION
-                SELECT 'redirects_count' AS type, COUNT(*) AS value
-                FROM $redirectTable WHERE rd_namespace = :namespace AND rd_title = :title";
+				FROM $externalLinksTable WHERE el_from = :id
+				UNION
+				SELECT 'links_out_count' AS type, COUNT(*) AS value
+				FROM $pageLinksTable WHERE pl_from = :id
+				UNION
+				SELECT 'links_in_count' AS type, COUNT(*) AS value
+				FROM $pageLinksTable
+				JOIN $linkTargetTable ON lt_id = pl_target_id
+				WHERE lt_namespace = :namespace AND lt_title = :title
+				UNION
+				SELECT 'redirects_count' AS type, COUNT(*) AS value
+				FROM $redirectTable WHERE rd_namespace = :namespace AND rd_title = :title";
 
 		$params = [
 			'id' => $page->getId(),
@@ -436,9 +436,9 @@ class PageRepository extends Repository {
 		$pageId = $page->getId();
 		$datestamp = $date->format( 'YmdHis' );
 		$sql = "SELECT MAX(rev_id)
-                FROM $revisionTable
-                WHERE rev_timestamp <= $datestamp
-                AND rev_page = $pageId LIMIT 1;";
+				FROM $revisionTable
+				WHERE rev_timestamp <= $datestamp
+				AND rev_page = $pageId LIMIT 1;";
 		$resultQuery = $this->getProjectsConnection( $page->getProject() )
 			->executeQuery( $sql );
 		return (int)$resultQuery->fetchOne();

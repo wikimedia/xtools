@@ -275,40 +275,40 @@ class GlobalContribsRepository extends Repository {
 
 				$slice = $this->getDbList()[$dbName];
 				$queriesBySlice[$slice][] = "
-                    SELECT
-                        '$dbName' AS dbName,
-                        revs.rev_id AS id,
-                        revs.rev_timestamp AS `timestamp`,
-                        UNIX_TIMESTAMP(revs.rev_timestamp) AS `unix_timestamp`,
-                        revs.rev_minor_edit AS `minor`,
-                        revs.rev_deleted AS `deleted`,
-                        revs.rev_len AS `length`,
-                        (CAST(revs.rev_len AS SIGNED) - IFNULL(parentrevs.rev_len, 0)) AS `length_change`,
-                        revs.rev_parent_id AS `parent_id`,
-                        $username AS `username`,
-                        page.page_title,
-                        page.page_namespace AS `namespace`,
-                        comment_text AS `comment`,
-                        (
-                            SELECT 1
-                            FROM $tagTable
-                            WHERE ct_rev_id = revs.rev_id
-                            AND ct_tag_id = (
-                                SELECT ctd_id
-                                FROM $tagDefTable
-                                WHERE ctd_name = 'mw-reverted'
-                            )
-                            LIMIT 1
-                        ) AS reverted
-                    FROM $revisionTable AS revs
-                        $ipcJoin
-                        JOIN $pageTable AS page ON (rev_page = page_id)
-                        JOIN $actorTable ON (actor_id = revs.rev_actor)
-                        LEFT JOIN $revisionTable AS parentrevs ON (revs.rev_parent_id = parentrevs.rev_id)
-                        LEFT OUTER JOIN $commentTable ON revs.rev_comment_id = comment_id
-                    WHERE $whereClause
-                        $namespaceCond
-                        $revDateConditions";
+					SELECT
+						'$dbName' AS dbName,
+						revs.rev_id AS id,
+						revs.rev_timestamp AS `timestamp`,
+						UNIX_TIMESTAMP(revs.rev_timestamp) AS `unix_timestamp`,
+						revs.rev_minor_edit AS `minor`,
+						revs.rev_deleted AS `deleted`,
+						revs.rev_len AS `length`,
+						(CAST(revs.rev_len AS SIGNED) - IFNULL(parentrevs.rev_len, 0)) AS `length_change`,
+						revs.rev_parent_id AS `parent_id`,
+						$username AS `username`,
+						page.page_title,
+						page.page_namespace AS `namespace`,
+						comment_text AS `comment`,
+						(
+							SELECT 1
+							FROM $tagTable
+							WHERE ct_rev_id = revs.rev_id
+							AND ct_tag_id = (
+								SELECT ctd_id
+								FROM $tagDefTable
+								WHERE ctd_name = 'mw-reverted'
+							)
+							LIMIT 1
+						) AS reverted
+					FROM $revisionTable AS revs
+						$ipcJoin
+						JOIN $pageTable AS page ON (rev_page = page_id)
+						JOIN $actorTable ON (actor_id = revs.rev_actor)
+						LEFT JOIN $revisionTable AS parentrevs ON (revs.rev_parent_id = parentrevs.rev_id)
+						LEFT OUTER JOIN $commentTable ON revs.rev_comment_id = comment_id
+					WHERE $whereClause
+						$namespaceCond
+						$revDateConditions";
 			}
 		}
 

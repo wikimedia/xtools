@@ -65,65 +65,65 @@ class EditCounterRepository extends Repository {
 			$whereClause = 'rev_actor = :actorId';
 			$params = [ 'actorId' => $user->getActorId( $project ) ];
 			$archiveQueries = "
-                SELECT 'deleted' AS `key`, COUNT(ar_id) AS val FROM $archiveTable
-                    WHERE ar_actor = :actorId
-                ) UNION (
-                SELECT 'edited-deleted' AS `key`, COUNT(DISTINCT ar_page_id) AS `val` FROM $archiveTable
-                    WHERE ar_actor = :actorId
-                ) UNION (
-                SELECT 'created-deleted' AS `key`, COUNT(DISTINCT ar_page_id) AS `val` FROM $archiveTable
-                    WHERE ar_actor = :actorId AND ar_parent_id = 0
-                ) UNION (";
+				SELECT 'deleted' AS `key`, COUNT(ar_id) AS val FROM $archiveTable
+					WHERE ar_actor = :actorId
+				) UNION (
+				SELECT 'edited-deleted' AS `key`, COUNT(DISTINCT ar_page_id) AS `val` FROM $archiveTable
+					WHERE ar_actor = :actorId
+				) UNION (
+				SELECT 'created-deleted' AS `key`, COUNT(DISTINCT ar_page_id) AS `val` FROM $archiveTable
+					WHERE ar_actor = :actorId AND ar_parent_id = 0
+				) UNION (";
 		}
 
 		$sql = "
-            ($archiveQueries
+			($archiveQueries
 
-            -- Revision counts.
-            SELECT 'live' AS `key`, COUNT(rev_id) AS val FROM $revisionTable
-                $pageJoin
-                $ipcJoin
-                WHERE $whereClause
-            ) UNION (
-            SELECT 'day' AS `key`, COUNT(rev_id) AS val FROM $revisionTable
-                $pageJoin
-                $ipcJoin
-                WHERE $whereClause AND rev_timestamp >= DATE_SUB(NOW(), INTERVAL 1 DAY)
-            ) UNION (
-            SELECT 'week' AS `key`, COUNT(rev_id) AS val FROM $revisionTable
-                $pageJoin
-                $ipcJoin
-                WHERE $whereClause AND rev_timestamp >= DATE_SUB(NOW(), INTERVAL 1 WEEK)
-            ) UNION (
-            SELECT 'month' AS `key`, COUNT(rev_id) AS val FROM $revisionTable
-                $pageJoin
-                $ipcJoin
-                WHERE $whereClause AND rev_timestamp >= DATE_SUB(NOW(), INTERVAL 1 MONTH)
-            ) UNION (
-            SELECT 'year' AS `key`, COUNT(rev_id) AS val FROM $revisionTable
-                $pageJoin
-                $ipcJoin
-                WHERE $whereClause AND rev_timestamp >= DATE_SUB(NOW(), INTERVAL 1 YEAR)
-            ) UNION (
-            SELECT 'minor' AS `key`, COUNT(rev_id) AS val FROM $revisionTable
-                $pageJoin
-                $ipcJoin
-                WHERE $whereClause AND rev_minor_edit = 1
+			-- Revision counts.
+			SELECT 'live' AS `key`, COUNT(rev_id) AS val FROM $revisionTable
+				$pageJoin
+				$ipcJoin
+				WHERE $whereClause
+			) UNION (
+			SELECT 'day' AS `key`, COUNT(rev_id) AS val FROM $revisionTable
+				$pageJoin
+				$ipcJoin
+				WHERE $whereClause AND rev_timestamp >= DATE_SUB(NOW(), INTERVAL 1 DAY)
+			) UNION (
+			SELECT 'week' AS `key`, COUNT(rev_id) AS val FROM $revisionTable
+				$pageJoin
+				$ipcJoin
+				WHERE $whereClause AND rev_timestamp >= DATE_SUB(NOW(), INTERVAL 1 WEEK)
+			) UNION (
+			SELECT 'month' AS `key`, COUNT(rev_id) AS val FROM $revisionTable
+				$pageJoin
+				$ipcJoin
+				WHERE $whereClause AND rev_timestamp >= DATE_SUB(NOW(), INTERVAL 1 MONTH)
+			) UNION (
+			SELECT 'year' AS `key`, COUNT(rev_id) AS val FROM $revisionTable
+				$pageJoin
+				$ipcJoin
+				WHERE $whereClause AND rev_timestamp >= DATE_SUB(NOW(), INTERVAL 1 YEAR)
+			) UNION (
+			SELECT 'minor' AS `key`, COUNT(rev_id) AS val FROM $revisionTable
+				$pageJoin
+				$ipcJoin
+				WHERE $whereClause AND rev_minor_edit = 1
 
-            -- Page counts.
-            ) UNION (
-            SELECT 'edited-live' AS `key`, COUNT(DISTINCT rev_page) AS `val`
-                FROM $revisionTable
-                $pageJoin
-                $ipcJoin
-                WHERE $whereClause
-            ) UNION (
-            SELECT 'created-live' AS `key`, COUNT(DISTINCT rev_page) AS `val`
-                FROM $revisionTable
-                $pageJoin
-                $ipcJoin
-                WHERE $whereClause AND rev_parent_id = 0
-            )";
+			-- Page counts.
+			) UNION (
+			SELECT 'edited-live' AS `key`, COUNT(DISTINCT rev_page) AS `val`
+				FROM $revisionTable
+				$pageJoin
+				$ipcJoin
+				WHERE $whereClause
+			) UNION (
+			SELECT 'created-live' AS `key`, COUNT(DISTINCT rev_page) AS `val`
+				FROM $revisionTable
+				$pageJoin
+				$ipcJoin
+				WHERE $whereClause AND rev_parent_id = 0
+			)";
 
 		$resultQuery = $this->executeProjectsQuery( $project, $sql, $params );
 
@@ -153,11 +153,11 @@ class EditCounterRepository extends Repository {
 		// Query.
 		$loggingTable = $project->getTableName( 'logging' );
 		$sql = "SELECT CONCAT(log_type, '-', log_action) AS source, COUNT(log_id) AS value
-                FROM $loggingTable
-                WHERE log_actor = :actorId
-                GROUP BY log_type, log_action
-                -- T363633
-                HAVING source IS NOT NULL";
+				FROM $loggingTable
+				WHERE log_actor = :actorId
+				GROUP BY log_type, log_action
+				-- T363633
+				HAVING source IS NOT NULL";
 		$results = $this->executeProjectsQuery( $project, $sql, [
 			'actorId' => $user->getActorId( $project ),
 		] )->fetchAllAssociative();
@@ -235,11 +235,11 @@ class EditCounterRepository extends Repository {
 		$loggingTable = $project->getTableName( 'logging' );
 
 		$sql = "SELECT 'files_moved' AS `key`, COUNT(log_id) AS `val`
-                FROM $loggingTable
-                WHERE log_actor = :actorId
-                    AND log_type = 'move'
-                    AND log_action = 'move'
-                    AND log_namespace = 6";
+				FROM $loggingTable
+				WHERE log_actor = :actorId
+					AND log_type = 'move'
+					AND log_action = 'move'
+					AND log_namespace = 6";
 		$results = $this->executeProjectsQuery( $project, $sql, [
 			'actorId' => $user->getActorId( $project ),
 		] )->fetchAllAssociative();
@@ -268,13 +268,13 @@ class EditCounterRepository extends Repository {
 		$commonsProject = $this->projectRepo->getProject( 'commonswiki' );
 		$loggingTableCommons = $commonsProject->getTableName( 'logging' );
 		$sql = "(SELECT 'files_moved_commons' AS `key`, COUNT(log_id) AS `val`
-                 FROM $loggingTableCommons
-                 WHERE log_actor = :actorId AND log_type = 'move'
-                 AND log_action = 'move' AND log_namespace = 6
-                ) UNION (
-                 SELECT 'files_uploaded_commons' AS `key`, COUNT(log_id) AS `val`
-                 FROM $loggingTableCommons
-                 WHERE log_actor = :actorId AND log_type = 'upload' AND log_action = 'upload')";
+				 FROM $loggingTableCommons
+				 WHERE log_actor = :actorId AND log_type = 'move'
+				 AND log_action = 'move' AND log_namespace = 6
+				) UNION (
+				 SELECT 'files_uploaded_commons' AS `key`, COUNT(log_id) AS `val`
+				 FROM $loggingTableCommons
+				 WHERE log_actor = :actorId AND log_type = 'upload' AND log_action = 'upload')";
 		return $this->executeProjectsQuery( $commonsProject, $sql, [
 			'actorId' => $user->getActorId( $commonsProject ),
 		] )->fetchAllAssociative();
@@ -308,28 +308,28 @@ class EditCounterRepository extends Repository {
 			$whereClause = 'rev_actor = :actorId';
 			$params = [ 'actorId' => $user->getActorId( $project ) ];
 			$logQuery = "
-                SELECT 'log_latest' AS `key`, log_id AS `id`,
-                        log_timestamp AS `timestamp`, log_type AS `type`
-                    FROM $loggingTable
-                    WHERE log_actor = :actorId
-                    ORDER BY -log_timestamp LIMIT 1
-                ) UNION (";
+				SELECT 'log_latest' AS `key`, log_id AS `id`,
+						log_timestamp AS `timestamp`, log_type AS `type`
+					FROM $loggingTable
+					WHERE log_actor = :actorId
+					ORDER BY -log_timestamp LIMIT 1
+				) UNION (";
 		}
 
 		$sql = "(
-                $logQuery
-                    SELECT 'rev_first' AS `key`, $idColumn AS `id`,
-                        $timestampColumn AS `timestamp`, NULL as `type`
-                    FROM $fromTable
-                    WHERE $whereClause
-                    ORDER BY $timestampColumn ASC LIMIT 1
-                ) UNION (
-                    SELECT 'rev_latest' AS `key`, $idColumn AS `id`,
-                        $timestampColumn AS `timestamp`, NULL as `type`
-                    FROM $fromTable
-                    WHERE $whereClause
-                    ORDER BY $timestampColumn DESC LIMIT 1
-                )";
+				$logQuery
+					SELECT 'rev_first' AS `key`, $idColumn AS `id`,
+						$timestampColumn AS `timestamp`, NULL as `type`
+					FROM $fromTable
+					WHERE $whereClause
+					ORDER BY $timestampColumn ASC LIMIT 1
+				) UNION (
+					SELECT 'rev_latest' AS `key`, $idColumn AS `id`,
+						$timestampColumn AS `timestamp`, NULL as `type`
+					FROM $fromTable
+					WHERE $whereClause
+					ORDER BY $timestampColumn DESC LIMIT 1
+				)";
 
 		$resultQuery = $this->executeProjectsQuery( $project, $sql, $params );
 
@@ -352,12 +352,12 @@ class EditCounterRepository extends Repository {
 	public function getBlocksReceived( Project $project, User $user ): array {
 		$loggingTable = $this->getTableName( $project->getDatabaseName(), 'logging', 'logindex' );
 		$sql = "SELECT log_action, log_timestamp, log_params FROM $loggingTable
-                WHERE log_type = 'block'
-                AND log_action IN ('block', 'reblock', 'unblock')
-                AND log_timestamp > 0
-                AND log_title = :username
-                AND log_namespace = 2
-                ORDER BY log_timestamp ASC";
+				WHERE log_type = 'block'
+				AND log_action IN ('block', 'reblock', 'unblock')
+				AND log_timestamp > 0
+				AND log_title = :username
+				AND log_namespace = 2
+				ORDER BY log_timestamp ASC";
 		$username = str_replace( ' ', '_', $user->getUsername() );
 
 		return $this->executeProjectsQuery( $project, $sql, [
@@ -376,10 +376,10 @@ class EditCounterRepository extends Repository {
 
 		$loggingTable = $project->getTableName( 'logging', 'logindex' );
 		$sql = "SELECT COUNT(log_id)
-                FROM $loggingTable
-                WHERE log_type = 'thanks'
-                AND log_title = :username
-                AND log_namespace = 2";
+				FROM $loggingTable
+				WHERE log_type = 'thanks'
+				AND log_title = :username
+				AND log_namespace = 2";
 		$username = str_replace( ' ', '_', $user->getUsername() );
 
 		return $this->setCache( $cacheKey, (int)$this->executeProjectsQuery( $project, $sql, [
@@ -415,10 +415,10 @@ class EditCounterRepository extends Repository {
 		}
 
 		$sql = "SELECT page_namespace, COUNT(rev_id)
-            FROM $pageTable p JOIN $revisionTable r ON (r.rev_page = p.page_id)
-            $ipcJoin
-            WHERE $whereClause
-            GROUP BY page_namespace";
+			FROM $pageTable p JOIN $revisionTable r ON (r.rev_page = p.page_id)
+			$ipcJoin
+			WHERE $whereClause
+			GROUP BY page_namespace";
 
 		$results = $this->executeProjectsQuery( $project, $sql, $params )->fetchAllKeyValue();
 
@@ -460,14 +460,14 @@ class EditCounterRepository extends Repository {
 		}
 
 		$sql = "
-            SELECT YEAR(rev_timestamp) AS `year`,
-                MONTH(rev_timestamp) AS `month`,
-                page_namespace AS `namespace`,
-                COUNT(rev_id) AS `count`
-            FROM $revisionTable JOIN $pageTable ON (rev_page = page_id)
-            $ipcJoin
-            WHERE $whereClause
-            GROUP BY YEAR(rev_timestamp), MONTH(rev_timestamp), `namespace`";
+			SELECT YEAR(rev_timestamp) AS `year`,
+				MONTH(rev_timestamp) AS `month`,
+				page_namespace AS `namespace`,
+				COUNT(rev_id) AS `count`
+			FROM $revisionTable JOIN $pageTable ON (rev_page = page_id)
+			$ipcJoin
+			WHERE $whereClause
+			GROUP BY YEAR(rev_timestamp), MONTH(rev_timestamp), `namespace`";
 
 		$totals = $this->executeProjectsQuery( $project, $sql, $params )->fetchAllAssociative();
 
@@ -495,7 +495,7 @@ class EditCounterRepository extends Repository {
 			[ $params['startIp'], $params['endIp'] ] = IPUtils::parseRange( $user->getUsername() );
 			$whereClause = 'ipc_hex BETWEEN :startIp AND :endIp';
 			$joinClause = "JOIN $revisionTable ON rev_id = ipc_rev_id
-                JOIN $pageTable ON rev_page = page_id";
+				JOIN $pageTable ON rev_page = page_id";
 		} else {
 			$column = 'rev_timestamp';
 			$table = $revisionTable;
@@ -507,13 +507,13 @@ class EditCounterRepository extends Repository {
 		$xCalc = "ROUND(HOUR($column)/$hourInterval) * $hourInterval";
 
 		$sql = "
-            SELECT DAYOFWEEK($column) AS `day_of_week`,
-                $xCalc AS `hour`,
-                COUNT($column) AS `value`
-            FROM $table
-            $joinClause
-            WHERE $whereClause
-            GROUP BY DAYOFWEEK($column), $xCalc";
+			SELECT DAYOFWEEK($column) AS `day_of_week`,
+				$xCalc AS `hour`,
+				COUNT($column) AS `value`
+			FROM $table
+			$joinClause
+			WHERE $whereClause
+			GROUP BY DAYOFWEEK($column), $xCalc";
 
 		$totals = $this->executeProjectsQuery( $project, $sql, $params )->fetchAllAssociative();
 
@@ -552,24 +552,24 @@ class EditCounterRepository extends Repository {
 		}
 
 		$sql = "SELECT JSON_ARRAYAGG(data.size) as sizes,
-                JSON_ARRAYAGG(data.tags) as tag_lists
-                FROM (
-                    SELECT CAST(revs.rev_len AS SIGNED) - IFNULL(parentrevs.rev_len, 0) AS size,
-                    (
-                        SELECT JSON_ARRAYAGG(ctd_name)
-                        FROM $ctTable
-                        JOIN $ctdTable
-                        ON ct_tag_id = ctd_id
-                        WHERE ct_rev_id = revs.rev_id
-                    ) as tags
-                    FROM $revisionTable AS revs
-                    JOIN $pageTable ON revs.rev_page = page_id
-                    $ipcJoin
-                    LEFT JOIN $revisionTable AS parentrevs ON (revs.rev_parent_id = parentrevs.rev_id)
-                    WHERE $whereClause
-                    ORDER BY revs.rev_timestamp DESC
-                    LIMIT 5000
-                ) data";
+				JSON_ARRAYAGG(data.tags) as tag_lists
+				FROM (
+					SELECT CAST(revs.rev_len AS SIGNED) - IFNULL(parentrevs.rev_len, 0) AS size,
+					(
+						SELECT JSON_ARRAYAGG(ctd_name)
+						FROM $ctTable
+						JOIN $ctdTable
+						ON ct_tag_id = ctd_id
+						WHERE ct_rev_id = revs.rev_id
+					) as tags
+					FROM $revisionTable AS revs
+					JOIN $pageTable ON revs.rev_page = page_id
+					$ipcJoin
+					LEFT JOIN $revisionTable AS parentrevs ON (revs.rev_parent_id = parentrevs.rev_id)
+					WHERE $whereClause
+					ORDER BY revs.rev_timestamp DESC
+					LIMIT 5000
+				) data";
 		$results = $this->executeProjectsQuery( $project, $sql, $params )->fetchAssociative();
 		$results['sizes'] = json_decode( $results['sizes'] ?? '[]' );
 		$results['average_size'] = count( $results['sizes'] ) > 0

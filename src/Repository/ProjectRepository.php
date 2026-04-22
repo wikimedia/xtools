@@ -201,12 +201,12 @@ class ProjectRepository extends Repository {
 
 		// Otherwise, fetch the project's metadata from the meta.wiki table.
 		$sql = "SELECT dbname AS dbName, url, lang
-                FROM $table
-                WHERE dbname = :project
-                    OR url LIKE :projectUrl
-                    OR url LIKE :projectUrl2
-                    OR url LIKE :projectUrl3
-                    OR url LIKE :projectUrl4";
+				FROM $table
+				WHERE dbname = :project
+					OR url LIKE :projectUrl
+					OR url LIKE :projectUrl2
+					OR url LIKE :projectUrl3
+					OR url LIKE :projectUrl4";
 		$basicInfo = $this->executeProjectsQuery( 'meta', $sql, [
 			'project' => $project,
 			'projectUrl' => "https://$project",
@@ -386,20 +386,20 @@ class ProjectRepository extends Repository {
 		$userGroupsTable = $project->getTableName( 'user_groups' );
 
 		$sql = "SELECT user_name, ug_group AS user_group
-                FROM $userTable
-                JOIN $userGroupsTable ON ug_user = user_id
-                WHERE ug_group IN (?)
-                GROUP BY user_name, ug_group";
+				FROM $userTable
+				JOIN $userGroupsTable ON ug_user = user_id
+				WHERE ug_group IN (?)
+				GROUP BY user_name, ug_group";
 		$users = $this->getProjectsConnection( $project )
 			->executeQuery( $sql, [ $groups ], [ ArrayParameterType::STRING ] )
 			->fetchAllAssociative();
 
 		if ( count( $globalGroups ) > 0 && $this->isWMF ) {
 			$sql = "SELECT gu_name AS user_name, gug_group AS user_group
-                    FROM centralauth_p.global_user_groups
-                    JOIN centralauth_p.globaluser ON gug_user = gu_id
-                    WHERE gug_group IN (?)
-                    GROUP BY user_name, user_group";
+					FROM centralauth_p.global_user_groups
+					JOIN centralauth_p.globaluser ON gug_user = gu_id
+					WHERE gug_group IN (?)
+					GROUP BY user_name, user_group";
 			$globalUsers = $this->getProjectsConnection( 'centralauth' )
 				->executeQuery( $sql, [ $globalGroups ], [ ArrayParameterType::STRING ] )
 				->fetchAllAssociative();

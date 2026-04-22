@@ -5,1073 +5,1073 @@
 
 {% block body %}
 <div class="panel panel-primary">
-    <header class="panel-heading">
-        <div class="text-center xt-heading-top">
-            <a target="_blank" href="https://www.mediawiki.org/wiki/Special:MyLanguage/XTools/Page_History" class="pull-right glyphicon glyphicon-question-sign plainlink help-icon"></a>
-            <a class="back-to-search" href="{{ path('PageInfo') }}">
-                <span class="glyphicon glyphicon-chevron-left"></span>
-                {{ msg('back') }}
-            </a>
-            {% if ai.hasDateRange %}
-                {{ wiki.pageLinkRaw('Special:PermaLink/' ~ ai.lastEdit.id, project, page.title) }}
-            {% else %}
-                {{ wiki.pageLink(page) }}
-            {% endif %}
-            <small>
-                &bull;
-                {{ project.domain }}
-            </small>
-            {% if ai.hasDateRange %}
-                <span class="date-range">
-                    {% if ai.end == false %}
-                        {{ msg('date-from', [ai.startDate]) }}
-                    {% elseif ai.start == false %}
-                        {{ msg('date-to', [ai.endDate]) }}
-                    {% else %}
-                        {{ msg('date-range', [ai.startDate, ai.endDate]) }}
-                    {% endif %}
-                </span>
-            {% endif %}
-        </div>
-    </header>
+	<header class="panel-heading">
+		<div class="text-center xt-heading-top">
+			<a target="_blank" href="https://www.mediawiki.org/wiki/Special:MyLanguage/XTools/Page_History" class="pull-right glyphicon glyphicon-question-sign plainlink help-icon"></a>
+			<a class="back-to-search" href="{{ path('PageInfo') }}">
+				<span class="glyphicon glyphicon-chevron-left"></span>
+				{{ msg('back') }}
+			</a>
+			{% if ai.hasDateRange %}
+				{{ wiki.pageLinkRaw('Special:PermaLink/' ~ ai.lastEdit.id, project, page.title) }}
+			{% else %}
+				{{ wiki.pageLink(page) }}
+			{% endif %}
+			<small>
+				&bull;
+				{{ project.domain }}
+			</small>
+			{% if ai.hasDateRange %}
+				<span class="date-range">
+					{% if ai.end == false %}
+						{{ msg('date-from', [ai.startDate]) }}
+					{% elseif ai.start == false %}
+						{{ msg('date-to', [ai.endDate]) }}
+					{% else %}
+						{{ msg('date-range', [ai.startDate, ai.endDate]) }}
+					{% endif %}
+				</span>
+			{% endif %}
+		</div>
+	</header>
 
-    <div class="panel-body xt-panel-body">
-        <p class="text-center xt-heading-subtitle">
-            {{ wiki.pageHistLink(page) }}
-            &middot;
-            {{ wiki.pageLogLink(page) }}
-            {% if isWMF() %}
-                &middot;
-                {{ wiki.pageviewsLinks(page, ai.dateParams) }}
-                {% if page.wikidataId is not empty %}
-                    &middot;
-                    {{ wiki.extLink('https://reasonator.toolforge.org/?q=' ~ page.wikidataId, 'Reasonator (Wikidata)') }}
-                {% endif %}
-            {% endif %}
-        </p>
+	<div class="panel-body xt-panel-body">
+		<p class="text-center xt-heading-subtitle">
+			{{ wiki.pageHistLink(page) }}
+			&middot;
+			{{ wiki.pageLogLink(page) }}
+			{% if isWMF() %}
+				&middot;
+				{{ wiki.pageviewsLinks(page, ai.dateParams) }}
+				{% if page.wikidataId is not empty %}
+					&middot;
+					{{ wiki.extLink('https://reasonator.toolforge.org/?q=' ~ page.wikidataId, 'Reasonator (Wikidata)') }}
+				{% endif %}
+			{% endif %}
+		</p>
 
-        <div class="text-center xt-toc">
-            {% set sections = ['general-stats'] %}
-            {% if showAuthorship %}
-                {% set sections = sections|merge(['tool-authorship']) %}
-            {% endif %}
-            {% if ai.numEditors > 0 %}
-                {% set sections = sections|merge(['top-editors']) %}
-            {% endif %}
-            {% set sections = sections|merge(['year-counts', 'month-counts']) %}
-            {% if ai.automatedCount > 0 %}
-                {% set sections = sections|merge(['auto-edits']) %}
-            {% endif %}
-            {% if not (ai.hasDateRange) and ai.assessments and not (page.isMainPage) %}
-                {% set sections = sections|merge(['assessments']) %}
-            {% endif %}
-            {% if not (ai.hasDateRange) and ai.numBugs > 0 %}
-                {% set sections = sections|merge(['bugs']) %}
-            {% endif %}
+		<div class="text-center xt-toc">
+			{% set sections = ['general-stats'] %}
+			{% if showAuthorship %}
+				{% set sections = sections|merge(['tool-authorship']) %}
+			{% endif %}
+			{% if ai.numEditors > 0 %}
+				{% set sections = sections|merge(['top-editors']) %}
+			{% endif %}
+			{% set sections = sections|merge(['year-counts', 'month-counts']) %}
+			{% if ai.automatedCount > 0 %}
+				{% set sections = sections|merge(['auto-edits']) %}
+			{% endif %}
+			{% if not (ai.hasDateRange) and ai.assessments and not (page.isMainPage) %}
+				{% set sections = sections|merge(['assessments']) %}
+			{% endif %}
+			{% if not (ai.hasDateRange) and ai.numBugs > 0 %}
+				{% set sections = sections|merge(['bugs']) %}
+			{% endif %}
 
-            {% for section in sections %}
-                <span>
-                    <a href="#{{ section }}" data-section="{{ section }}">{{ msg(section) }}</a>
-                </span>
-            {% endfor %}
-        </div>
+			{% for section in sections %}
+				<span>
+					<a href="#{{ section }}" data-section="{{ section }}">{{ msg(section) }}</a>
+				</span>
+			{% endfor %}
+		</div>
 
-        {# ======================== GENERAL STATS ======================== #}
-        {% set content %}
-            <div class="col-lg-5 col-lg-offset-1 stat-list clearfix">
-                <table class="table"><tbody>
-                    <tr>
-                        <td>ID</td>
-                        <td>
-                            {{ wiki.pageInfoLink(page, page.id) }}
-                        </td>
-                    </tr>
-                    {% if page.wikidataId is not empty %}
-                    <tr>
-                        <td>Wikidata ID</td>
-                        <td>
-                            {{ wiki.extLink('https://www.wikidata.org/wiki/' ~ page.wikidataId, page.wikidataId) }}
-                            &middot;
-                            {{ page.countWikidataItems|num_format }} {{ msg('num-sitelinks', [page.countWikidataItems]) }}
-                        </td>
-                    </tr>
-                    {% endif %}
-                    <tr>
-                        <td>{{ msg('page-size') }}</td>
-                        <td>{{ ai.length|num_format }} {{ msg('num-bytes', [ai.length]) }}</td>
-                    </tr>
-                    <tr>
-                        <td>{{ msg('total-edits') }}</td>
-                        <td>
-                            {{ ai.numRevisions|num_format }}
-                            {% if ai.tooManyRevisions %}
-                                ({{ msg('num-revisions-processed', [ai.numRevisionsProcessed|num_format]) }})
-                            {% endif %}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <a class="rm-inline-margin" href="#top-editors">{{ msg('editors') }}</a>
-                        </td>
-                        <td>{{ ai.numEditors|num_format }}</td>
-                    </tr>
-                    {% if not (ai.hasDateRange) and ai.assessments and not(page.isMainPage) %}
-                        <tr>
-                            <td>
-                                <a class="rm-inline-margin" href="#assessments">{{ msg('assessment') }}</a>
-                            </td>
-                            <td>
-                                {% set assessment_value %}
-                                    {% if ai.assessments.assessment.badge is defined %}
-                                        <img alt="{{ ai.assessments.assessment.class }}" src="{{ ai.assessments.assessment.badge }}" class="assessment-badge" />
-                                    {% endif %}
-                                    {{ ai.assessments.assessment.class|ucfirst }}
-                                {% endset %}
-                                {{ wiki.pageLinkRaw(ai.assessments.assessment.category, project, assessment_value) }}
-                            </td>
-                        </tr>
-                    {% endif %}
-                    {% if not (ai.hasDateRange) and ai.numBugs > 0 %}
-                        <tr>
-                            <td><a href='#bugs'>{{ msg('bugs') }}</a></td>
-                            <td>{{ ai.numBugs|num_format }}</td>
-                        </tr>
-                    {% endif %}
-                    {% if not (ai.hasDateRange) %}
-                        <tr>
-                            <td>{{ msg('page-watchers') }}</td>
-                            <td>
-                            {% if page.watchers is not empty %}
-                                {{ page.watchers|num_format }}
-                            {% else %}
-                                {{ msg('less-than', [ai.UNWATCHED_PAGE_THRESHOLD]) }}
-                            {% endif %}
-                            </td>
-                        </tr>
-                    {% endif %}
-                    {% if isWMF() %}
-                        <tr>
-                            <td>{{ msg('pageviews') }}{% if not (ai.hasDateRange) %} ({{ ai.pageviewsOffset|num_format }} {{ msg('num-days', [ai.pageviewsOffset]) }}){% endif %}</td>
-                            <td>
-                                {{
-                                    wiki.pageviewsLink(
-                                        page,
-                                        ai.pageviews(pageviewsOffset).formatted,
-                                        ai.hasDateRange ? ai.dateParams : {'range': 'latest-' ~ pageviewsOffset},
-                                        ai.pageviews(pageviewsOffset).tooltip
-                                    )
-                                }}
-                            </td>
-                        </tr>
-                    {% endif %}
-                </tbody></table>
-            </div>
+		{# ======================== GENERAL STATS ======================== #}
+		{% set content %}
+			<div class="col-lg-5 col-lg-offset-1 stat-list clearfix">
+				<table class="table"><tbody>
+					<tr>
+						<td>ID</td>
+						<td>
+							{{ wiki.pageInfoLink(page, page.id) }}
+						</td>
+					</tr>
+					{% if page.wikidataId is not empty %}
+					<tr>
+						<td>Wikidata ID</td>
+						<td>
+							{{ wiki.extLink('https://www.wikidata.org/wiki/' ~ page.wikidataId, page.wikidataId) }}
+							&middot;
+							{{ page.countWikidataItems|num_format }} {{ msg('num-sitelinks', [page.countWikidataItems]) }}
+						</td>
+					</tr>
+					{% endif %}
+					<tr>
+						<td>{{ msg('page-size') }}</td>
+						<td>{{ ai.length|num_format }} {{ msg('num-bytes', [ai.length]) }}</td>
+					</tr>
+					<tr>
+						<td>{{ msg('total-edits') }}</td>
+						<td>
+							{{ ai.numRevisions|num_format }}
+							{% if ai.tooManyRevisions %}
+								({{ msg('num-revisions-processed', [ai.numRevisionsProcessed|num_format]) }})
+							{% endif %}
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<a class="rm-inline-margin" href="#top-editors">{{ msg('editors') }}</a>
+						</td>
+						<td>{{ ai.numEditors|num_format }}</td>
+					</tr>
+					{% if not (ai.hasDateRange) and ai.assessments and not(page.isMainPage) %}
+						<tr>
+							<td>
+								<a class="rm-inline-margin" href="#assessments">{{ msg('assessment') }}</a>
+							</td>
+							<td>
+								{% set assessment_value %}
+									{% if ai.assessments.assessment.badge is defined %}
+										<img alt="{{ ai.assessments.assessment.class }}" src="{{ ai.assessments.assessment.badge }}" class="assessment-badge" />
+									{% endif %}
+									{{ ai.assessments.assessment.class|ucfirst }}
+								{% endset %}
+								{{ wiki.pageLinkRaw(ai.assessments.assessment.category, project, assessment_value) }}
+							</td>
+						</tr>
+					{% endif %}
+					{% if not (ai.hasDateRange) and ai.numBugs > 0 %}
+						<tr>
+							<td><a href='#bugs'>{{ msg('bugs') }}</a></td>
+							<td>{{ ai.numBugs|num_format }}</td>
+						</tr>
+					{% endif %}
+					{% if not (ai.hasDateRange) %}
+						<tr>
+							<td>{{ msg('page-watchers') }}</td>
+							<td>
+							{% if page.watchers is not empty %}
+								{{ page.watchers|num_format }}
+							{% else %}
+								{{ msg('less-than', [ai.UNWATCHED_PAGE_THRESHOLD]) }}
+							{% endif %}
+							</td>
+						</tr>
+					{% endif %}
+					{% if isWMF() %}
+						<tr>
+							<td>{{ msg('pageviews') }}{% if not (ai.hasDateRange) %} ({{ ai.pageviewsOffset|num_format }} {{ msg('num-days', [ai.pageviewsOffset]) }}){% endif %}</td>
+							<td>
+								{{
+									wiki.pageviewsLink(
+										page,
+										ai.pageviews(pageviewsOffset).formatted,
+										ai.hasDateRange ? ai.dateParams : {'range': 'latest-' ~ pageviewsOffset},
+										ai.pageviews(pageviewsOffset).tooltip
+									)
+								}}
+							</td>
+						</tr>
+					{% endif %}
+				</tbody></table>
+			</div>
 
-            <div class="col-lg-6 stat-list clearfix">
-                <table class="table"><tbody>
-                    <tr>
-                        {% apply spaceless %}
-                            <td>
-                                <span class="help-text" title="{{ msg('minor-edits-tooltip') }}">{{ msg('minor-edits') }}</span>
-                            </td>
-                        {% endapply %}
-                        <td>
-                            {{ ai.minorCount|num_format }}
-                            &middot;
-                            ({{ ai.minorCount|percent_format(ai.numRevisionsProcessed) }})
-                        </td>
-                    </tr>
-                    <tr>
-                        {% apply spaceless %}
-                            <td>
-                                <span class="help-text" title="{{ msg('unregistered-edits-tooltip') }}">{{ msg('unregistered-edits') }}</span>
-                            </td>
-                        {% endapply %}
-                        <td>
-                            {{ ai.anonCount|num_format }}
-                            &middot;
-                            ({{ ai.anonCount|percent_format(ai.numRevisionsProcessed) }})
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>{{ msg('bot-edits') }}</td>
-                        <td>
-                            {{ ai.botRevisionCount|num_format }}
-                            &middot;
-                            ({{ ai.botRevisionCount|percent_format(ai.numRevisionsProcessed) }})
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            {%- if ai.automatedCount > 0 -%}
-                                <a class="rm-inline-margin" href="#auto-edits">{{ msg('auto-edits') }}</a>
-                            {%- else -%}
-                                {{ msg('auto-edits') }}
-                            {%- endif -%}
-                        </td>
-                        <td>{{ ai.automatedCount|num_format }}</td>
-                    </tr>
-                    <tr>
-                        <td>{{ msg('reverted-edits') }}</td>
-                        <td>{{ ai.revertCount|num_format }}</td>
-                    </tr>
+			<div class="col-lg-6 stat-list clearfix">
+				<table class="table"><tbody>
+					<tr>
+						{% apply spaceless %}
+							<td>
+								<span class="help-text" title="{{ msg('minor-edits-tooltip') }}">{{ msg('minor-edits') }}</span>
+							</td>
+						{% endapply %}
+						<td>
+							{{ ai.minorCount|num_format }}
+							&middot;
+							({{ ai.minorCount|percent_format(ai.numRevisionsProcessed) }})
+						</td>
+					</tr>
+					<tr>
+						{% apply spaceless %}
+							<td>
+								<span class="help-text" title="{{ msg('unregistered-edits-tooltip') }}">{{ msg('unregistered-edits') }}</span>
+							</td>
+						{% endapply %}
+						<td>
+							{{ ai.anonCount|num_format }}
+							&middot;
+							({{ ai.anonCount|percent_format(ai.numRevisionsProcessed) }})
+						</td>
+					</tr>
+					<tr>
+						<td>{{ msg('bot-edits') }}</td>
+						<td>
+							{{ ai.botRevisionCount|num_format }}
+							&middot;
+							({{ ai.botRevisionCount|percent_format(ai.numRevisionsProcessed) }})
+						</td>
+					</tr>
+					<tr>
+						<td>
+							{%- if ai.automatedCount > 0 -%}
+								<a class="rm-inline-margin" href="#auto-edits">{{ msg('auto-edits') }}</a>
+							{%- else -%}
+								{{ msg('auto-edits') }}
+							{%- endif -%}
+						</td>
+						<td>{{ ai.automatedCount|num_format }}</td>
+					</tr>
+					<tr>
+						<td>{{ msg('reverted-edits') }}</td>
+						<td>{{ ai.revertCount|num_format }}</td>
+					</tr>
 
-                    <tr>
-                        <td class="stat-list--new-group">{{ msg('first-edit') }}</td>
-                        <td class="stat-list--new-group">
-                            {{ wiki.diffLink(ai.firstEdit, ai.firstEdit.timestamp) }}
-                            &bull;
-                            {{ wiki.userLink(ai.firstEdit.user, project) }}
-                            &bull;
-                            {{ ai.firstEdit.size|diff_format }}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>{{ msg('latest-edit') }}</td>
-                        <td>
-                            {{ wiki.diffLink(ai.lastEdit, ai.lastEdit.timestamp) }}
-                            &bull;
-                            {{ wiki.userLink(ai.lastEdit.user, project) }}
-                            &bull;
-                            {{ ai.lastEdit.size|diff_format }}
-                        </td>
-                    </tr>
-                    {% if ai.maxAddition is not null %}
-                        <tr>
-                            <td>{{ msg('max-text-added') }}</td>
-                            <td>
-                                {{ wiki.diffLink(ai.maxAddition, ai.maxAddition.timestamp) }}
-                                &bull;
-                                {{ wiki.userLink(ai.maxAddition.user, project) }}
-                                &bull;
-                                {{ ai.maxAddition.size|diff_format }}
-                            </td>
-                        </tr>
-                    {% endif %}
-                    {% if ai.maxDeletion is not null %}
-                        <tr>
-                            <td>{{ msg('max-text-deleted') }}</td>
-                            <td>
-                                {{ wiki.diffLink(ai.maxDeletion, ai.maxDeletion.timestamp) }}
-                                &bull;
-                                {{ wiki.userLink(ai.maxDeletion.user, project) }}
-                                &bull;
-                                {{ ai.maxDeletion.size|diff_format }}
-                            </td>
-                        </tr>
-                    {% endif %}
-                </tbody></table>
-            </div>
+					<tr>
+						<td class="stat-list--new-group">{{ msg('first-edit') }}</td>
+						<td class="stat-list--new-group">
+							{{ wiki.diffLink(ai.firstEdit, ai.firstEdit.timestamp) }}
+							&bull;
+							{{ wiki.userLink(ai.firstEdit.user, project) }}
+							&bull;
+							{{ ai.firstEdit.size|diff_format }}
+						</td>
+					</tr>
+					<tr>
+						<td>{{ msg('latest-edit') }}</td>
+						<td>
+							{{ wiki.diffLink(ai.lastEdit, ai.lastEdit.timestamp) }}
+							&bull;
+							{{ wiki.userLink(ai.lastEdit.user, project) }}
+							&bull;
+							{{ ai.lastEdit.size|diff_format }}
+						</td>
+					</tr>
+					{% if ai.maxAddition is not null %}
+						<tr>
+							<td>{{ msg('max-text-added') }}</td>
+							<td>
+								{{ wiki.diffLink(ai.maxAddition, ai.maxAddition.timestamp) }}
+								&bull;
+								{{ wiki.userLink(ai.maxAddition.user, project) }}
+								&bull;
+								{{ ai.maxAddition.size|diff_format }}
+							</td>
+						</tr>
+					{% endif %}
+					{% if ai.maxDeletion is not null %}
+						<tr>
+							<td>{{ msg('max-text-deleted') }}</td>
+							<td>
+								{{ wiki.diffLink(ai.maxDeletion, ai.maxDeletion.timestamp) }}
+								&bull;
+								{{ wiki.userLink(ai.maxDeletion.user, project) }}
+								&bull;
+								{{ ai.maxDeletion.size|diff_format }}
+							</td>
+						</tr>
+					{% endif %}
+				</tbody></table>
+			</div>
 
-            {# -------------- EDITS -------------- #}
-            <div class="col-lg-4 stat-list clearfix">
-                <table class="table">
-                    <tbody class="stat-list--group">
-                        <tr>
-                            <td colspan="2" class="text-muted">{{ msg('edits') }}</td>
-                        </tr>
-                        <tr>
-                            <td>{{ msg('average-time-bw-edits') }}</td>
-                            <td>{{ ai.averageDaysPerEdit|num_format(1) }} {{ msg('num-days', [ai.averageDaysPerEdit]) }}</td>
-                        </tr>
-                        <tr>
-                            <td>{{ msg('average-edits-per-user') }}</td>
-                            <td>{{ ai.editsPerEditor|num_format(1) }}</td>
-                        </tr>
-                        <tr>
-                            <td>{{ msg('average-edits-per-day') }}</td>
-                            <td>{{ ai.editsPerDay|num_format(1) }}</td>
-                        </tr>
-                        <tr>
-                            <td>{{ msg('average-edits-per-month') }}</td>
-                            <td>{{ ai.editsPerMonth|num_format(1) }}</td>
-                        </tr>
-                        <tr>
-                            <td>{{ msg('average-edits-per-year') }}</td>
-                            <td>{{ ai.editsPerYear|num_format(1) }}</td>
-                        </tr>
-                        {% if not (ai.hasDateRange) %}
-                            <tr>
-                                <td class="stat-list--new-group">{{ msg('edits-last-day') }}</td>
-                                <td class="stat-list--new-group">{{ ai.countHistory.day|num_format }}</td>
-                            </tr>
-                            <tr>
-                                <td>{{ msg('edits-last-week') }}</td>
-                                <td>{{ ai.countHistory.week|num_format }}</td>
-                            </tr>
-                            <tr>
-                                <td>{{ msg('edits-last-month') }}</td>
-                                <td>{{ ai.countHistory.month|num_format }}</td>
-                            </tr>
-                            <tr>
-                                <td>{{ msg('edits-last-year') }}</td>
-                                <td>{{ ai.countHistory.year|num_format }}</td>
-                            </tr>
-                        {% endif %}
-                        <tr>
-                            <td class="stat-list--new-group">{{ msg('top-ten-count') }}</td>
-                            <td class="stat-list--new-group">
-                                {{ ai.topTenCount|num_format }}
-                                &middot;
-                                ({{ ai.topTenCount|percent_format(ai.numRevisionsProcessed) }})
-                            </td>
-                        </tr>
-                        <tr>
-                            {% apply spaceless %}
-                                <td class="stat-list--new-group">
-                                    <span class="help-text" title="{{ msg('mobile-edits-tooltip') }}">{{ msg('mobile-edits') }}</span>
-                                </td>
-                            {% endapply %}
-                            <td class="stat-list--new-group">
-                                {{ wiki.pageLinkRaw( page.title, project, ai.mobileCount|num_format, 'action=history&tagfilter=mobile+edit' ) }}
-                                &middot;
-                                ({{ ai.mobileCount|percent_format(ai.numRevisionsProcessed) }})
-                            </td>
-                        </tr>
-                        {% if project.hasVisualEditor %}
-                            <tr>
-                                <td>{{ msg('visual-edits') }}</td>
-                                <td>
-                                    {{ wiki.pageLinkRaw( page.title, project, ai.visualCount|num_format, 'action=history&tagfilter=visualeditor' ) }}
-                                    &middot;
-                                    ({{ ai.visualCount|percent_format(ai.numRevisionsProcessed) }})
-                                </td>
-                            </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
-            </div>
-            {# -------------- LINKS -------------- #}
-            <div class="col-lg-4 col-lg-offset-1 stat-list clearfix">
-                <table class="table">
-                    <tbody class="stat-list--group">
-                        <tr>
-                            <td colspan="2" class="text-muted">{{ msg('links') }}</td>
-                        </tr>
-                        <tr>
-                            <td>{{ msg('links-in') }}</td>
-                            <td>
-                                {{ wiki.pageLinksInLink(page, ai.linksInCount|num_format) }}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>{{ msg('redirects') }}</td>
-                            <td>
-                                {{ wiki.pageRedirectsLink(page, ai.redirectsCount|num_format) }}
-                            </td>
-                        </tr>
-                        {% if not (ai.hasDateRange) %}
-                            <tr>
-                                <td>{{ msg('links-out') }}</td>
-                                <td>{{ ai.linksOutCount|num_format }}</td>
-                            </tr>
-                            <tr>
-                                <td>{{ msg('links-external') }}</td>
-                                <td>{{ ai.linksExtCount|num_format }}</td>
-                            </tr>
-                            <tr>
-                                <td class="stat-list--new-group">{{ msg('categories') }}</td>
-                                <td class="stat-list--new-group">{{ ai.numCategories|num_format }}</td>
-                            </tr>
-                            <tr>
-                                <td>{{ msg('files') }}</td>
-                                <td>{{ ai.numFiles|num_format }}</td>
-                            </tr>
-                            <tr>
-                                <td>{{ msg('templates') }}</td>
-                                <td>
-                                    {{ wiki.pageInfoLink(page, ai.numTemplates|num_format, 'mw-pageinfo-templates') }}
-                                </td>
-                            </tr>
-                            {% if ai.subpageCount > 0 %}
-                                <tr>
-                                    <td class="stat-list--new-group">{{ msg('subpages') }}</td>
-                                    <td class="stat-list--new-group">
-                                        {{
-                                            wiki.pageLinkRaw("Special:PrefixIndex/" ~ page.title, project, ai.subpageCount|num_format)
-                                        }}
-                                    </td>
-                                </tr>
-                            {% endif %}
-                        {% endif %}
-                    </tbody>
-                </table>
-            </div>
-            {# -------------- PROSE -------------- #}
-            <div class="col-lg-3 stat-list clearfix">
-                <table class="table">
-                    <tbody class="stat-list--group">
-                        <tr>
-                            <td colspan="2" class="text-muted">{{ msg('prose') }}</td>
-                        </tr>
-                        {% if ai.proseStats == null %}
-                            <tr>
-                                <td colspan="2" class="text-muted non-label">{{ msg('data-unavailable') }}</td>
-                            </tr>
-                        {% else %}
-                            <tr>
-                                <td>{{ msg('bytes') }}</td>
-                                <td>{{ ai.proseStats.bytes|num_format }}</td>
-                            </tr>
-                            <tr>
-                                <td>{{ msg('characters') }}</td>
-                                <td>{{ ai.proseStats.characters|num_format }}</td>
-                            </tr>
-                            <tr>
-                                <td>{{ msg('words') }}</td>
-                                <td>{{ ai.proseStats.words|num_format }}</td>
-                            </tr>
-                            <tr>
-                                <td>{{ msg('sections') }}</td>
-                                <td>{{ ai.proseStats.sections|num_format }}</td>
-                            </tr>
-                            <tr>
-                                <td>{{ msg('references') }}</td>
-                                <td>{{ ai.proseStats.references|num_format }}</td>
-                            </tr>
-                            <tr>
-                                <td>{{ msg('unique-references') }}</td>
-                                <td>{{ ai.proseStats.unique_references|num_format }}</td>
-                            </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
-            </div>
+			{# -------------- EDITS -------------- #}
+			<div class="col-lg-4 stat-list clearfix">
+				<table class="table">
+					<tbody class="stat-list--group">
+						<tr>
+							<td colspan="2" class="text-muted">{{ msg('edits') }}</td>
+						</tr>
+						<tr>
+							<td>{{ msg('average-time-bw-edits') }}</td>
+							<td>{{ ai.averageDaysPerEdit|num_format(1) }} {{ msg('num-days', [ai.averageDaysPerEdit]) }}</td>
+						</tr>
+						<tr>
+							<td>{{ msg('average-edits-per-user') }}</td>
+							<td>{{ ai.editsPerEditor|num_format(1) }}</td>
+						</tr>
+						<tr>
+							<td>{{ msg('average-edits-per-day') }}</td>
+							<td>{{ ai.editsPerDay|num_format(1) }}</td>
+						</tr>
+						<tr>
+							<td>{{ msg('average-edits-per-month') }}</td>
+							<td>{{ ai.editsPerMonth|num_format(1) }}</td>
+						</tr>
+						<tr>
+							<td>{{ msg('average-edits-per-year') }}</td>
+							<td>{{ ai.editsPerYear|num_format(1) }}</td>
+						</tr>
+						{% if not (ai.hasDateRange) %}
+							<tr>
+								<td class="stat-list--new-group">{{ msg('edits-last-day') }}</td>
+								<td class="stat-list--new-group">{{ ai.countHistory.day|num_format }}</td>
+							</tr>
+							<tr>
+								<td>{{ msg('edits-last-week') }}</td>
+								<td>{{ ai.countHistory.week|num_format }}</td>
+							</tr>
+							<tr>
+								<td>{{ msg('edits-last-month') }}</td>
+								<td>{{ ai.countHistory.month|num_format }}</td>
+							</tr>
+							<tr>
+								<td>{{ msg('edits-last-year') }}</td>
+								<td>{{ ai.countHistory.year|num_format }}</td>
+							</tr>
+						{% endif %}
+						<tr>
+							<td class="stat-list--new-group">{{ msg('top-ten-count') }}</td>
+							<td class="stat-list--new-group">
+								{{ ai.topTenCount|num_format }}
+								&middot;
+								({{ ai.topTenCount|percent_format(ai.numRevisionsProcessed) }})
+							</td>
+						</tr>
+						<tr>
+							{% apply spaceless %}
+								<td class="stat-list--new-group">
+									<span class="help-text" title="{{ msg('mobile-edits-tooltip') }}">{{ msg('mobile-edits') }}</span>
+								</td>
+							{% endapply %}
+							<td class="stat-list--new-group">
+								{{ wiki.pageLinkRaw( page.title, project, ai.mobileCount|num_format, 'action=history&tagfilter=mobile+edit' ) }}
+								&middot;
+								({{ ai.mobileCount|percent_format(ai.numRevisionsProcessed) }})
+							</td>
+						</tr>
+						{% if project.hasVisualEditor %}
+							<tr>
+								<td>{{ msg('visual-edits') }}</td>
+								<td>
+									{{ wiki.pageLinkRaw( page.title, project, ai.visualCount|num_format, 'action=history&tagfilter=visualeditor' ) }}
+									&middot;
+									({{ ai.visualCount|percent_format(ai.numRevisionsProcessed) }})
+								</td>
+							</tr>
+						{% endif %}
+					</tbody>
+				</table>
+			</div>
+			{# -------------- LINKS -------------- #}
+			<div class="col-lg-4 col-lg-offset-1 stat-list clearfix">
+				<table class="table">
+					<tbody class="stat-list--group">
+						<tr>
+							<td colspan="2" class="text-muted">{{ msg('links') }}</td>
+						</tr>
+						<tr>
+							<td>{{ msg('links-in') }}</td>
+							<td>
+								{{ wiki.pageLinksInLink(page, ai.linksInCount|num_format) }}
+							</td>
+						</tr>
+						<tr>
+							<td>{{ msg('redirects') }}</td>
+							<td>
+								{{ wiki.pageRedirectsLink(page, ai.redirectsCount|num_format) }}
+							</td>
+						</tr>
+						{% if not (ai.hasDateRange) %}
+							<tr>
+								<td>{{ msg('links-out') }}</td>
+								<td>{{ ai.linksOutCount|num_format }}</td>
+							</tr>
+							<tr>
+								<td>{{ msg('links-external') }}</td>
+								<td>{{ ai.linksExtCount|num_format }}</td>
+							</tr>
+							<tr>
+								<td class="stat-list--new-group">{{ msg('categories') }}</td>
+								<td class="stat-list--new-group">{{ ai.numCategories|num_format }}</td>
+							</tr>
+							<tr>
+								<td>{{ msg('files') }}</td>
+								<td>{{ ai.numFiles|num_format }}</td>
+							</tr>
+							<tr>
+								<td>{{ msg('templates') }}</td>
+								<td>
+									{{ wiki.pageInfoLink(page, ai.numTemplates|num_format, 'mw-pageinfo-templates') }}
+								</td>
+							</tr>
+							{% if ai.subpageCount > 0 %}
+								<tr>
+									<td class="stat-list--new-group">{{ msg('subpages') }}</td>
+									<td class="stat-list--new-group">
+										{{
+											wiki.pageLinkRaw("Special:PrefixIndex/" ~ page.title, project, ai.subpageCount|num_format)
+										}}
+									</td>
+								</tr>
+							{% endif %}
+						{% endif %}
+					</tbody>
+				</table>
+			</div>
+			{# -------------- PROSE -------------- #}
+			<div class="col-lg-3 stat-list clearfix">
+				<table class="table">
+					<tbody class="stat-list--group">
+						<tr>
+							<td colspan="2" class="text-muted">{{ msg('prose') }}</td>
+						</tr>
+						{% if ai.proseStats == null %}
+							<tr>
+								<td colspan="2" class="text-muted non-label">{{ msg('data-unavailable') }}</td>
+							</tr>
+						{% else %}
+							<tr>
+								<td>{{ msg('bytes') }}</td>
+								<td>{{ ai.proseStats.bytes|num_format }}</td>
+							</tr>
+							<tr>
+								<td>{{ msg('characters') }}</td>
+								<td>{{ ai.proseStats.characters|num_format }}</td>
+							</tr>
+							<tr>
+								<td>{{ msg('words') }}</td>
+								<td>{{ ai.proseStats.words|num_format }}</td>
+							</tr>
+							<tr>
+								<td>{{ msg('sections') }}</td>
+								<td>{{ ai.proseStats.sections|num_format }}</td>
+							</tr>
+							<tr>
+								<td>{{ msg('references') }}</td>
+								<td>{{ ai.proseStats.references|num_format }}</td>
+							</tr>
+							<tr>
+								<td>{{ msg('unique-references') }}</td>
+								<td>{{ ai.proseStats.unique_references|num_format }}</td>
+							</tr>
+						{% endif %}
+					</tbody>
+				</table>
+			</div>
 
-            {# -------------- CHARTS -------------- #}
-            <div class="basic-info-charts clearfix">
-                {{
-                    chart.pie_chart('users_anons',
-                        [{
-                            label: msg('registered-edits'),
-                            value: ai.numRevisionsProcessed - ai.anonCount,
-                            percentage: 100 - ai.anonPercentage
-                        },
-                        {
-                            label: msg('unregistered-edits'),
-                            tooltip: msg('unregistered-edits-tooltip'),
-                            value: ai.anonCount,
-                            percentage: ai.anonPercentage
-                        }]
-                    )
-                }}
-                {{
-                    chart.pie_chart('minor_major',
-                        [{
-                            label: msg('major-edits'),
-                            tooltip: msg('major-edits-tooltip'),
-                            value: ai.numRevisionsProcessed - ai.minorCount,
-                            percentage: 100 - ai.minorPercentage,
-                        },
-                        {
-                            label: msg('minor-edits'),
-                            value: ai.minorCount,
-                            percentage: ai.minorPercentage,
-                        }]
-                    )
-                }}
-                {{
-                    chart.pie_chart('top_bottom',
-                        [{
-                            label: msg('top-ten-count'),
-                            value: ai.topTenCount,
-                            percentage: ai.topTenPercentage,
-                        },
-                        {
-                            label: msg('top-ten-other-editors'),
-                            value: ai.numRevisionsProcessed - ai.topTenCount,
-                            percentage: 100 - ai.topTenPercentage,
-                        }]
-                    )
-                }}
-            </div>
-        {% endset %}
-        {{ layout.content_block('general-stats', content) }}
+			{# -------------- CHARTS -------------- #}
+			<div class="basic-info-charts clearfix">
+				{{
+					chart.pie_chart('users_anons',
+						[{
+							label: msg('registered-edits'),
+							value: ai.numRevisionsProcessed - ai.anonCount,
+							percentage: 100 - ai.anonPercentage
+						},
+						{
+							label: msg('unregistered-edits'),
+							tooltip: msg('unregistered-edits-tooltip'),
+							value: ai.anonCount,
+							percentage: ai.anonPercentage
+						}]
+					)
+				}}
+				{{
+					chart.pie_chart('minor_major',
+						[{
+							label: msg('major-edits'),
+							tooltip: msg('major-edits-tooltip'),
+							value: ai.numRevisionsProcessed - ai.minorCount,
+							percentage: 100 - ai.minorPercentage,
+						},
+						{
+							label: msg('minor-edits'),
+							value: ai.minorCount,
+							percentage: ai.minorPercentage,
+						}]
+					)
+				}}
+				{{
+					chart.pie_chart('top_bottom',
+						[{
+							label: msg('top-ten-count'),
+							value: ai.topTenCount,
+							percentage: ai.topTenPercentage,
+						},
+						{
+							label: msg('top-ten-other-editors'),
+							value: ai.numRevisionsProcessed - ai.topTenCount,
+							percentage: 100 - ai.topTenPercentage,
+						}]
+					)
+				}}
+			</div>
+		{% endset %}
+		{{ layout.content_block('general-stats', content) }}
 
-        <div style="clear:both"></div>
+		<div style="clear:both"></div>
 
-        {# ======================== AUTHORSHIP ======================== #}
-        {% if showAuthorship %}
-            <script>
-                $(function() {
-                    xtools.pageinfo.endDate = {% if ai.end %}"{{ ai.endDate }}"{% else %}null{% endif %};
-                });
-            </script>
-            {% set content %}
-                <div class="textshares-container" data-project="{{ project.domain }}" data-page="{{ page.title }}">
-                    <em class="text-muted">{{ msg('loading') }}...</em>
-                </div>
-            {% endset %}
-            {% set headerLink %}
-                <a href="{{ path('AuthorshipResult', {project:project.domain, page:page.title, target:ai.endDate})}}">{{ msg('tool-authorship') }}</a>
-            {% endset %}
-            {% set description_link %}
-                {% set wikiwhoLink %}
-                    <a target='_blank' href='https://www.mediawiki.org/wiki/Special:MyLanguage/WikiWho'>WikiWho</a>
-                {% endset %}
-                {{ msg('powered-by', [wikiwhoLink]) }}
-            {% endset %}
-            {% set downloadLink %}
-                {{ layout.downloadLink('AuthorshipResult', {project:project.domain, page:page.title, target:ai.endDate}, ['wikitext']) }}
-            {% endset %}
-            {{ layout.content_block(headerLink, content, [description_link, downloadLink], 'tool-authorship', true) }}
-        {% endif %}
+		{# ======================== AUTHORSHIP ======================== #}
+		{% if showAuthorship %}
+			<script>
+				$(function() {
+					xtools.pageinfo.endDate = {% if ai.end %}"{{ ai.endDate }}"{% else %}null{% endif %};
+				});
+			</script>
+			{% set content %}
+				<div class="textshares-container" data-project="{{ project.domain }}" data-page="{{ page.title }}">
+					<em class="text-muted">{{ msg('loading') }}...</em>
+				</div>
+			{% endset %}
+			{% set headerLink %}
+				<a href="{{ path('AuthorshipResult', {project:project.domain, page:page.title, target:ai.endDate})}}">{{ msg('tool-authorship') }}</a>
+			{% endset %}
+			{% set description_link %}
+				{% set wikiwhoLink %}
+					<a target='_blank' href='https://www.mediawiki.org/wiki/Special:MyLanguage/WikiWho'>WikiWho</a>
+				{% endset %}
+				{{ msg('powered-by', [wikiwhoLink]) }}
+			{% endset %}
+			{% set downloadLink %}
+				{{ layout.downloadLink('AuthorshipResult', {project:project.domain, page:page.title, target:ai.endDate}, ['wikitext']) }}
+			{% endset %}
+			{{ layout.content_block(headerLink, content, [description_link, downloadLink], 'tool-authorship', true) }}
+		{% endif %}
 
-        {# ======================== TOP EDITORS ======================== #}
-        {% if ai.numEditors > 0 %}
-            {% set content %}
-                <div class="top-editors-charts clearfix">
-                    <div class="pull-left">
-                        <div class="chart-title">{{ msg('top-ten-by-edits')|ucfirst }}</div>
-                        {{ chart.pie_chart('top_by_edits', ai.topTenEditorsByEdits) }}
-                    </div>
-                    {% if ai.maxAddition is not null %}
-                        <div class="pull-left">
-                            <div class="chart-title">
-                                {{ msg('top-ten-by-text')|ucfirst }}
-                                <span class="text-muted">({{ msg('approximate')|lower }})</span>
-                            </div>
-                            {{ chart.pie_chart('top_by_added', ai.topTenEditorsByAdded) }}
-                        </div>
-                    {% endif %}
-                </div>
-                <table class="table table-bordered table-hover table-striped top-editors-table">
-                    <thead><tr>
-                        {% for key in ['rank', 'username', 'links', 'edits', 'minor-edits', 'minor-edits-percentage', 'first-edit', 'latest-edit', 'average-time-bw-edits', 'added-bytes'] %}
-                            <th>
-                                <span{% if key != "links" %} class="sort-link sort-link--{{ key }}" data-column="{{ key }}"{% endif %}>
-                                    {% if key == 'average-time-bw-edits' %}
-                                        atbe<sup>1</sup>
-                                    {% else %}
-                                        {{ msg(key)|ucfirst }}
-                                    {% endif %}
-                                    {% if key == 'added-bytes' %}
-                                        <sup class="rm-inline-margin-left">2</sup>
-                                    {% endif %}
-                                    {% if key != "links" %}<span class="glyphicon glyphicon-sort"></span>{% endif %}
-                                </span>
-                            </th>
-                        {% endfor %}
-                    </tr></thead>
-                    <tbody>
-                    {% set counter = 0 %}
-                    {% set editSum = 0 %}
-                    {% for editor in ai.humans(editorlimit) %}
-                        {% set stats = ai.editors[editor] %}
-                        {% set counter = counter + 1 %}
-                        {% set editSum = editSum + stats.all %}
-                        <tr>
-                            <td class="sort-entry--rank" data-value="{{ counter }}">{{ counter|num_format }}</td>
-                            <td class="sort-entry--username" data-value="{{ editor }}">
-                                {{ wiki.userLink(editor, project) }}
-                            </td>
-                            <td>
-                                {% if enabled('TopEdits') %}
-                                    <a href="{{ path('TopEditsResultPage', { 'project': project.domain, 'username': editor, 'namespace': page.namespace, 'page': page.titleWithoutNamespace }) }}">{{ msg('tool-topedits') }}</a>
-                                {% endif %}
-                                &middot;
-                                {% if enabled('EditCounter') %}
-                                    <a href="{{ path('EditCounterResult', { 'project': project.domain, 'username': editor }) }}">{{ msg('tool-editcounter') }}</a>
-                                {% endif %}
-                            </td>
-                            <td class="sort-entry--edits" data-value="{{ stats.all }}">
-                                {{ stats.all|num_format }}
-                            </td>
-                            <td class="sort-entry--minor-edits" data-value="{{ stats.minor }}">{{ stats.minor|num_format }}</td>
-                            {% set userMinorPercent = stats.minor|percent_format(stats.all) %}
-                            <td class="sort-entry--minor-edits-percentage" data-value="{{ userMinorPercent|trim('%') }}">{{ userMinorPercent }}</td>
-                            <td class="sort-entry--first-edit" data-value="{{ stats.firstId }}">
-                                {{ wiki.pageLinkRaw('Special:Diff/' ~ stats.firstId, project, stats.first|date_format) }}
-                            </td>
-                            <td class="sort-entry--latest-edit" data-value="{{ stats.lastId }}">
-                                {{ wiki.pageLinkRaw('Special:Diff/' ~ stats.lastId, project, stats.last|date_format) }}
-                            </td>
-                            <td class="sort-entry--average-time-bw-edits" data-value="{{ stats.atbe }}">
-                                {{ stats.atbe|num_format() }}
-                            </td>
-                            <td class="sort-entry--added-bytes" data-value="{{ stats.added }}">
-                                {{ stats.added|num_format }}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                    {% set otherEditors = ai.numEditors - ai.numBots - counter %}
-                    {% if otherEditors > 0 %}
-                        <tfoot><tr class="show-more-row">
-                            <td></td>
-                            <td>
-                                {% set expandUrl = path(app.request.attributes.get('_route'), app.request.get('_route_params')|merge({'editorlimit': editorlimit * 10})) %}
-                                <a href="{{ expandUrl }}">
-                                    {{ otherEditors|num_format }} {{ msg('num-others', [otherEditors]) }}
-                                </a>
-                            </td>
-                            <td></td>
-                            <td>{{ (ai.numRevisionsProcessed - editSum)|num_format }}</td>
-                            <td colspan=6></td>
-                        </tr></tfoot>
-                    {% endif %}
-                </table>
-                <div class="footnotes">
-                    <sup>1</sup> {{ msg('average-time-bw-edits') }}
-                    <br/><sup>2</sup> {{ msg('text-added-description') }}
-                </div>
+		{# ======================== TOP EDITORS ======================== #}
+		{% if ai.numEditors > 0 %}
+			{% set content %}
+				<div class="top-editors-charts clearfix">
+					<div class="pull-left">
+						<div class="chart-title">{{ msg('top-ten-by-edits')|ucfirst }}</div>
+						{{ chart.pie_chart('top_by_edits', ai.topTenEditorsByEdits) }}
+					</div>
+					{% if ai.maxAddition is not null %}
+						<div class="pull-left">
+							<div class="chart-title">
+								{{ msg('top-ten-by-text')|ucfirst }}
+								<span class="text-muted">({{ msg('approximate')|lower }})</span>
+							</div>
+							{{ chart.pie_chart('top_by_added', ai.topTenEditorsByAdded) }}
+						</div>
+					{% endif %}
+				</div>
+				<table class="table table-bordered table-hover table-striped top-editors-table">
+					<thead><tr>
+						{% for key in ['rank', 'username', 'links', 'edits', 'minor-edits', 'minor-edits-percentage', 'first-edit', 'latest-edit', 'average-time-bw-edits', 'added-bytes'] %}
+							<th>
+								<span{% if key != "links" %} class="sort-link sort-link--{{ key }}" data-column="{{ key }}"{% endif %}>
+									{% if key == 'average-time-bw-edits' %}
+										atbe<sup>1</sup>
+									{% else %}
+										{{ msg(key)|ucfirst }}
+									{% endif %}
+									{% if key == 'added-bytes' %}
+										<sup class="rm-inline-margin-left">2</sup>
+									{% endif %}
+									{% if key != "links" %}<span class="glyphicon glyphicon-sort"></span>{% endif %}
+								</span>
+							</th>
+						{% endfor %}
+					</tr></thead>
+					<tbody>
+					{% set counter = 0 %}
+					{% set editSum = 0 %}
+					{% for editor in ai.humans(editorlimit) %}
+						{% set stats = ai.editors[editor] %}
+						{% set counter = counter + 1 %}
+						{% set editSum = editSum + stats.all %}
+						<tr>
+							<td class="sort-entry--rank" data-value="{{ counter }}">{{ counter|num_format }}</td>
+							<td class="sort-entry--username" data-value="{{ editor }}">
+								{{ wiki.userLink(editor, project) }}
+							</td>
+							<td>
+								{% if enabled('TopEdits') %}
+									<a href="{{ path('TopEditsResultPage', { 'project': project.domain, 'username': editor, 'namespace': page.namespace, 'page': page.titleWithoutNamespace }) }}">{{ msg('tool-topedits') }}</a>
+								{% endif %}
+								&middot;
+								{% if enabled('EditCounter') %}
+									<a href="{{ path('EditCounterResult', { 'project': project.domain, 'username': editor }) }}">{{ msg('tool-editcounter') }}</a>
+								{% endif %}
+							</td>
+							<td class="sort-entry--edits" data-value="{{ stats.all }}">
+								{{ stats.all|num_format }}
+							</td>
+							<td class="sort-entry--minor-edits" data-value="{{ stats.minor }}">{{ stats.minor|num_format }}</td>
+							{% set userMinorPercent = stats.minor|percent_format(stats.all) %}
+							<td class="sort-entry--minor-edits-percentage" data-value="{{ userMinorPercent|trim('%') }}">{{ userMinorPercent }}</td>
+							<td class="sort-entry--first-edit" data-value="{{ stats.firstId }}">
+								{{ wiki.pageLinkRaw('Special:Diff/' ~ stats.firstId, project, stats.first|date_format) }}
+							</td>
+							<td class="sort-entry--latest-edit" data-value="{{ stats.lastId }}">
+								{{ wiki.pageLinkRaw('Special:Diff/' ~ stats.lastId, project, stats.last|date_format) }}
+							</td>
+							<td class="sort-entry--average-time-bw-edits" data-value="{{ stats.atbe }}">
+								{{ stats.atbe|num_format() }}
+							</td>
+							<td class="sort-entry--added-bytes" data-value="{{ stats.added }}">
+								{{ stats.added|num_format }}
+							</td>
+						</tr>
+					{% endfor %}
+					</tbody>
+					{% set otherEditors = ai.numEditors - ai.numBots - counter %}
+					{% if otherEditors > 0 %}
+						<tfoot><tr class="show-more-row">
+							<td></td>
+							<td>
+								{% set expandUrl = path(app.request.attributes.get('_route'), app.request.get('_route_params')|merge({'editorlimit': editorlimit * 10})) %}
+								<a href="{{ expandUrl }}">
+									{{ otherEditors|num_format }} {{ msg('num-others', [otherEditors]) }}
+								</a>
+							</td>
+							<td></td>
+							<td>{{ (ai.numRevisionsProcessed - editSum)|num_format }}</td>
+							<td colspan=6></td>
+						</tr></tfoot>
+					{% endif %}
+				</table>
+				<div class="footnotes">
+					<sup>1</sup> {{ msg('average-time-bw-edits') }}
+					<br/><sup>2</sup> {{ msg('text-added-description') }}
+				</div>
 
-                {% if ai.bots is not empty %}
-                    <h4>{{ msg('bot-list') }}</h4>
-                    <table class="table table-bordered table-hover table-striped">
-                        <thead><tr>
-                            {% for key in ['rank', 'bot', 'links', 'edits'] %}
-                                <th>
-                                    <span{% if key != "links" %} class="sort-link sort-link--{{ key }}" data-column="{{ key }}"{% endif %}>
-                                        {{ msg(key)|ucfirst }}
-                                        {% if key != "links" %}<span class="glyphicon glyphicon-sort"></span>{% endif %}
-                                    </span>
-                                </th>
-                            {% endfor %}
-                        </tr></thead>
-                        <tbody>
-                        {% set counter = 0 %}
-                        {% for bot, botData in ai.bots|slice(0, botlimit) %}
-                            {% set counter = counter + 1 %}
-                            <tr>
-                                <td class="sort-entry--rank" data-value="{{ counter }}">{{ counter|num_format }}</td>
-                                <td class="sort-entry--bot" data-value="{{ bot }}">
-                                    {{ wiki.userLink(bot, project) }}
-                                    {% if not botData.current %}
-                                        <i>
-                                            (<a href="{{ path('EditCounterRightsChanges', {project: project.domain, username: bot}) }}">{{ msg('former-bot') }}</a>)
-                                        </i>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if enabled('TopEdits') %}
-                                        <a href="{{ path('TopEditsResultPage', { 'project': project.domain, 'username': bot, 'namespace': page.namespace, 'page': page.titleWithoutNamespace }) }}">{{ msg('tool-topedits') }}</a>
-                                    {% endif %}
-                                    &middot;
-                                    {% if enabled('EditCounter') %}
-                                        <a href="{{ path('EditCounterResult', { 'project': project.domain, 'username': bot }) }}">{{ msg('tool-editcounter') }}</a>
-                                    {% endif %}
-                                </td>
-                                <td class="sort-entry--edits" data-value="{{ botData.count }}">{{ botData.count|num_format }}</td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                        {% if counter < ai.numBots %}
-                            <tfoot><tr class="show-more-row">
-                                <td></td>
-                                <td>
-                                    {% set expandUrl = path(app.request.attributes.get('_route'), app.request.get('_route_params')|merge({'botlimit': botlimit * 10})) %}
-                                    {% set otherBots = ai.numBots - counter %}
-                                    <a href="{{ expandUrl }}">
-                                        {{ otherBots|num_format }} {{ msg('num-others', [otherBots]) }}
-                                    </a>
-                                </td>
-                                <td colspan=8></td>
-                            </tr></tfoot>
-                        {% endif %}
-                    </table>
-                {% endif %}
+				{% if ai.bots is not empty %}
+					<h4>{{ msg('bot-list') }}</h4>
+					<table class="table table-bordered table-hover table-striped">
+						<thead><tr>
+							{% for key in ['rank', 'bot', 'links', 'edits'] %}
+								<th>
+									<span{% if key != "links" %} class="sort-link sort-link--{{ key }}" data-column="{{ key }}"{% endif %}>
+										{{ msg(key)|ucfirst }}
+										{% if key != "links" %}<span class="glyphicon glyphicon-sort"></span>{% endif %}
+									</span>
+								</th>
+							{% endfor %}
+						</tr></thead>
+						<tbody>
+						{% set counter = 0 %}
+						{% for bot, botData in ai.bots|slice(0, botlimit) %}
+							{% set counter = counter + 1 %}
+							<tr>
+								<td class="sort-entry--rank" data-value="{{ counter }}">{{ counter|num_format }}</td>
+								<td class="sort-entry--bot" data-value="{{ bot }}">
+									{{ wiki.userLink(bot, project) }}
+									{% if not botData.current %}
+										<i>
+											(<a href="{{ path('EditCounterRightsChanges', {project: project.domain, username: bot}) }}">{{ msg('former-bot') }}</a>)
+										</i>
+									{% endif %}
+								</td>
+								<td>
+									{% if enabled('TopEdits') %}
+										<a href="{{ path('TopEditsResultPage', { 'project': project.domain, 'username': bot, 'namespace': page.namespace, 'page': page.titleWithoutNamespace }) }}">{{ msg('tool-topedits') }}</a>
+									{% endif %}
+									&middot;
+									{% if enabled('EditCounter') %}
+										<a href="{{ path('EditCounterResult', { 'project': project.domain, 'username': bot }) }}">{{ msg('tool-editcounter') }}</a>
+									{% endif %}
+								</td>
+								<td class="sort-entry--edits" data-value="{{ botData.count }}">{{ botData.count|num_format }}</td>
+							</tr>
+						{% endfor %}
+						</tbody>
+						{% if counter < ai.numBots %}
+							<tfoot><tr class="show-more-row">
+								<td></td>
+								<td>
+									{% set expandUrl = path(app.request.attributes.get('_route'), app.request.get('_route_params')|merge({'botlimit': botlimit * 10})) %}
+									{% set otherBots = ai.numBots - counter %}
+									<a href="{{ expandUrl }}">
+										{{ otherBots|num_format }} {{ msg('num-others', [otherBots]) }}
+									</a>
+								</td>
+								<td colspan=8></td>
+							</tr></tfoot>
+						{% endif %}
+					</table>
+				{% endif %}
 
-                <div class="text-muted">
-                    {{ msg('all-approximate') }}
-                </div>
-            {% endset %}
-            {% set downloadLink %}
-                {{ layout.downloadLink('PageInfoResult', {project:project.domain, page:page.title, start:ai.startDate, end:ai.endDate}, ['wikitext'], 'PageApiTopEditors') }}
-            {% endset %}
-            {{ layout.content_block('top-editors', content, ['top-editors-desc', downloadLink]) }}
-        {% endif %}
+				<div class="text-muted">
+					{{ msg('all-approximate') }}
+				</div>
+			{% endset %}
+			{% set downloadLink %}
+				{{ layout.downloadLink('PageInfoResult', {project:project.domain, page:page.title, start:ai.startDate, end:ai.endDate}, ['wikitext'], 'PageApiTopEditors') }}
+			{% endset %}
+			{{ layout.content_block('top-editors', content, ['top-editors-desc', downloadLink]) }}
+		{% endif %}
 
-        {# ======================== YEAR COUNTS ======================== #}
-        {% set content %}
-            <script>
-                $(function() {
-                    var yearDatasets = [{
-                        type: 'bar',
-                        label: "{{ msg('all-edits') }}",
-                        backgroundColor: "{{ chartColor(0) }}",
-                        data: [],
-                        yAxisID: 'edits'
-                    },
-                    {
-                        type: 'bar',
-                        label: "{{ msg('minor-edits') }}",
-                        backgroundColor: "{{ chartColor(1) }}",
-                        data: [],
-                        yAxisID: 'edits'
-                    },
-                    {
-                        type: 'bar',
-                        label: "{{ msg('unregistered-edits') }}",
-                        backgroundColor: "{{ chartColor(2) }}",
-                        data: [],
-                        yAxisID: 'edits'
-                    },
-                    {
-                        type: 'line',
-                        label: "{{ msg('size') }}",
-                        borderColor: "{{ chartColor(3) }}",
-                        backgroundColor: "{{ chartColor(3) }}",
-                        fill: false,
-                        data: [],
-                        yAxisID: 'size'
-                    }];
+		{# ======================== YEAR COUNTS ======================== #}
+		{% set content %}
+			<script>
+				$(function() {
+					var yearDatasets = [{
+						type: 'bar',
+						label: "{{ msg('all-edits') }}",
+						backgroundColor: "{{ chartColor(0) }}",
+						data: [],
+						yAxisID: 'edits'
+					},
+					{
+						type: 'bar',
+						label: "{{ msg('minor-edits') }}",
+						backgroundColor: "{{ chartColor(1) }}",
+						data: [],
+						yAxisID: 'edits'
+					},
+					{
+						type: 'bar',
+						label: "{{ msg('unregistered-edits') }}",
+						backgroundColor: "{{ chartColor(2) }}",
+						data: [],
+						yAxisID: 'edits'
+					},
+					{
+						type: 'line',
+						label: "{{ msg('size') }}",
+						borderColor: "{{ chartColor(3) }}",
+						backgroundColor: "{{ chartColor(3) }}",
+						fill: false,
+						data: [],
+						yAxisID: 'size'
+					}];
 
-                    // restructure data the way Chart.js wants it
-                    {% for year in ai.yearMonthCounts|keys %}
-                        yearDatasets[0].data.push({{ ai.yearMonthCounts[year].all }});
-                        yearDatasets[1].data.push({{ ai.yearMonthCounts[year].minor }});
-                        yearDatasets[2].data.push({{ ai.yearMonthCounts[year].anon }});
-                        yearDatasets[3].data.push({{ ai.yearMonthCounts[year].size }});
-                    {% endfor %}
+					// restructure data the way Chart.js wants it
+					{% for year in ai.yearMonthCounts|keys %}
+						yearDatasets[0].data.push({{ ai.yearMonthCounts[year].all }});
+						yearDatasets[1].data.push({{ ai.yearMonthCounts[year].minor }});
+						yearDatasets[2].data.push({{ ai.yearMonthCounts[year].anon }});
+						yearDatasets[3].data.push({{ ai.yearMonthCounts[year].size }});
+					{% endfor %}
 
-                    new Chart($("#year_count"), {
-                        type: 'bar',
-                        data: {
-                            labels: {{ ai.yearLabels|json_encode()|raw }},
-                            datasets: yearDatasets,
-                        },
-                        options: {
-                            responsive: true,
-                            legend: {
-                                display: false,
-                            },
-                            tooltips: {
-                                mode: 'label',
-                                callbacks: {
-                                    label: function(tooltipItem) {
-                                        return yearDatasets[tooltipItem.datasetIndex].label + ': '
-                                            + (new Number(tooltipItem.yLabel)).toLocaleString(i18nLang);
-                                    }
-                                }
-                            },
-                            barValueSpacing: 20,
-                            scales: {
-                                yAxes: [{
-                                    id: 'edits',
-                                    type: 'linear',
-                                    position: 'left',
-                                    gridLines:{
-                                        display: false
-                                    },
-                                    scaleLabel: {
-                                        display: true,
-                                        labelString: "{{ msg('edits') }}"
-                                    },
-                                    ticks: {
-                                        beginAtZero: true,
-                                        callback: function (value) {
-                                            if (Math.floor(value) === value) {
-                                                return value.toLocaleString(i18nLang);
-                                            }
-                                        }
-                                    },
-                                    gridLines: {
-                                        color: xtools.application.chartGridColor
-                                    }
-                                }, {
-                                    id: 'size',
-                                    type: 'linear',
-                                    position: 'right',
-                                    gridLines:{
-                                        display: false
-                                    },
-                                    scaleLabel: {
-                                        display: true,
-                                        labelString: "{{ msg('size') }}"
-                                    },
-                                    ticks: {
-                                        beginAtZero: true,
-                                        callback: function (value) {
-                                            if (Math.floor(value) === value) {
-                                                return value.toLocaleString(i18nLang);
-                                            }
-                                        }
-                                    },
-                                    gridLines: {
-                                        color: xtools.application.chartGridColor
-                                    }
-                                }],
-                                xAxes: [{
-                                    gridLines: {
-                                        color: xtools.application.chartGridColor
-                                    }
-                                }]
-                            },
-                        },
-                    });
-                });
-            </script>
-            <div class="year-count-charts clearfix">
-                <div class="chart-wrapper">
-                    <div class="canvas-wrapper">
-                        <canvas id="year_count" height="400" width="800"></canvas>
-                    </div>
-                    <div class="chart-legend" id="year_count_legend">
-                        <div class="legend-body">
-                            <div>
-                                <span class="color-icon" style="background:{{ chartColor(0) }}"></span>
-                                <span class="legend-label">{{ msg('all-edits') }}</span>
-                            </div>
-                            <div>
-                                <span class="color-icon" style="background:{{ chartColor(1) }}"></span>
-                                <span class="legend-label">{{ msg('minor-edits') }}</span>
-                            </div>
-                            <div>
-                                <span class="color-icon" style="background:{{ chartColor(2) }}"></span>
-                                <span class="legend-label help-text" title="{{ msg('unregistered-edits-tooltip') }}">{{ msg('unregistered-edits') }}</span>
-                            </div>
-                            <div>
-                                <span class="color-icon" style="background:{{ chartColor(3) }}"></span>
-                                <span class="legend-label">{{ msg('size') }}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <table class="table table-bordered table-hover table-striped">
-                <thead><tr>
-                    {% for key in ['year', 'edits', 'unregistered-edits', 'unregistered-edits-percentage', 'minor-edits', 'minor-edits-percentage', 'log-events'] %}
-                        <th>
-                            <span class="sort-link sort-link--{{ key }}" data-column="{{ key }}">
-                                {% if key == 'unregistered-edits' %}
-                                    <span class="help-text" title="{{ msg('unregistered-edits-tooltip') }}">{{ msg(key)|ucfirst }}</span>
-                                {% else %}
-                                    {{ msg(key)|ucfirst }}
-                                {% endif %}
-                                <span class="glyphicon glyphicon-sort"></span>
-                            </span>
-                        </th>
-                    {% endfor %}
-                </tr></thead>
-                <tbody>
-                {% for year, stats in ai.yearMonthCounts %}
-                    <tr>
-                        <td class="sort-entry--year" data-value="{{ year }}">{{ ai.yearLabels[loop.index0] }}</td>
-                        <td class="sort-entry--edits" data-value="{{ stats.all }}">{{ stats.all|num_format }}</td>
-                        <td class="sort-entry--anons" data-value="{{ stats.anon }}">{{ stats.anon }}</td>
-                        {% set year_anons_percent = stats.anon|percent_format(stats.all) %}
-                        <td class="sort-entry--anons-percentage" data-value="{{ year_anons_percent|trim('%') }}">{{ year_anons_percent }}</td>
-                        <td class="sort-entry--minor-edits" data-value="{{ stats.minor }}">{{ stats.minor|num_format }}</td>
-                        {% set year_minor_percent = stats.minor|percent_format(stats.all) %}
-                        <td class="sort-entry--minor-edits-percentage" data-value="{{ year_minor_percent|trim('%') }}">{{ year_minor_percent }}</td>
-                        <td>
-                            {% for event, count in stats.events %}
-                                {##
-                                 # The following messages are used here:
-                                 # * num-protections
-                                 # * num-deletions
-                                 # * num-moves
-                                 #}
-                                {{ count|num_format }} {{ msg('num-'~event, [count]) }}{% if not(loop.last) %}{{ msg('comma-character') }} {% endif %}
-                            {% endfor %}
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        {% endset %}
-        {{ layout.content_block('year-counts', content) }}
+					new Chart($("#year_count"), {
+						type: 'bar',
+						data: {
+							labels: {{ ai.yearLabels|json_encode()|raw }},
+							datasets: yearDatasets,
+						},
+						options: {
+							responsive: true,
+							legend: {
+								display: false,
+							},
+							tooltips: {
+								mode: 'label',
+								callbacks: {
+									label: function(tooltipItem) {
+										return yearDatasets[tooltipItem.datasetIndex].label + ': '
+											+ (new Number(tooltipItem.yLabel)).toLocaleString(i18nLang);
+									}
+								}
+							},
+							barValueSpacing: 20,
+							scales: {
+								yAxes: [{
+									id: 'edits',
+									type: 'linear',
+									position: 'left',
+									gridLines:{
+										display: false
+									},
+									scaleLabel: {
+										display: true,
+										labelString: "{{ msg('edits') }}"
+									},
+									ticks: {
+										beginAtZero: true,
+										callback: function (value) {
+											if (Math.floor(value) === value) {
+												return value.toLocaleString(i18nLang);
+											}
+										}
+									},
+									gridLines: {
+										color: xtools.application.chartGridColor
+									}
+								}, {
+									id: 'size',
+									type: 'linear',
+									position: 'right',
+									gridLines:{
+										display: false
+									},
+									scaleLabel: {
+										display: true,
+										labelString: "{{ msg('size') }}"
+									},
+									ticks: {
+										beginAtZero: true,
+										callback: function (value) {
+											if (Math.floor(value) === value) {
+												return value.toLocaleString(i18nLang);
+											}
+										}
+									},
+									gridLines: {
+										color: xtools.application.chartGridColor
+									}
+								}],
+								xAxes: [{
+									gridLines: {
+										color: xtools.application.chartGridColor
+									}
+								}]
+							},
+						},
+					});
+				});
+			</script>
+			<div class="year-count-charts clearfix">
+				<div class="chart-wrapper">
+					<div class="canvas-wrapper">
+						<canvas id="year_count" height="400" width="800"></canvas>
+					</div>
+					<div class="chart-legend" id="year_count_legend">
+						<div class="legend-body">
+							<div>
+								<span class="color-icon" style="background:{{ chartColor(0) }}"></span>
+								<span class="legend-label">{{ msg('all-edits') }}</span>
+							</div>
+							<div>
+								<span class="color-icon" style="background:{{ chartColor(1) }}"></span>
+								<span class="legend-label">{{ msg('minor-edits') }}</span>
+							</div>
+							<div>
+								<span class="color-icon" style="background:{{ chartColor(2) }}"></span>
+								<span class="legend-label help-text" title="{{ msg('unregistered-edits-tooltip') }}">{{ msg('unregistered-edits') }}</span>
+							</div>
+							<div>
+								<span class="color-icon" style="background:{{ chartColor(3) }}"></span>
+								<span class="legend-label">{{ msg('size') }}</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<table class="table table-bordered table-hover table-striped">
+				<thead><tr>
+					{% for key in ['year', 'edits', 'unregistered-edits', 'unregistered-edits-percentage', 'minor-edits', 'minor-edits-percentage', 'log-events'] %}
+						<th>
+							<span class="sort-link sort-link--{{ key }}" data-column="{{ key }}">
+								{% if key == 'unregistered-edits' %}
+									<span class="help-text" title="{{ msg('unregistered-edits-tooltip') }}">{{ msg(key)|ucfirst }}</span>
+								{% else %}
+									{{ msg(key)|ucfirst }}
+								{% endif %}
+								<span class="glyphicon glyphicon-sort"></span>
+							</span>
+						</th>
+					{% endfor %}
+				</tr></thead>
+				<tbody>
+				{% for year, stats in ai.yearMonthCounts %}
+					<tr>
+						<td class="sort-entry--year" data-value="{{ year }}">{{ ai.yearLabels[loop.index0] }}</td>
+						<td class="sort-entry--edits" data-value="{{ stats.all }}">{{ stats.all|num_format }}</td>
+						<td class="sort-entry--anons" data-value="{{ stats.anon }}">{{ stats.anon }}</td>
+						{% set year_anons_percent = stats.anon|percent_format(stats.all) %}
+						<td class="sort-entry--anons-percentage" data-value="{{ year_anons_percent|trim('%') }}">{{ year_anons_percent }}</td>
+						<td class="sort-entry--minor-edits" data-value="{{ stats.minor }}">{{ stats.minor|num_format }}</td>
+						{% set year_minor_percent = stats.minor|percent_format(stats.all) %}
+						<td class="sort-entry--minor-edits-percentage" data-value="{{ year_minor_percent|trim('%') }}">{{ year_minor_percent }}</td>
+						<td>
+							{% for event, count in stats.events %}
+								{##
+								 # The following messages are used here:
+								 # * num-protections
+								 # * num-deletions
+								 # * num-moves
+								 #}
+								{{ count|num_format }} {{ msg('num-'~event, [count]) }}{% if not(loop.last) %}{{ msg('comma-character') }} {% endif %}
+							{% endfor %}
+						</td>
+					</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+		{% endset %}
+		{{ layout.content_block('year-counts', content) }}
 
-        {# ======================== MONTH COUNTS ======================== #}
-        {% set content %}
-            <table class="table table-bordered table-hover table-striped month-counts-table">
-                <thead><tr>
-                    {% for key in ['month', 'edits', 'unregistered-edits', 'unregistered-edits-percentage', 'minor-edits', 'minor-edits-percentage'] %}
-                        <th>
-                            <span class="sort-link sort-link--{{ key }}" data-column="{{ key }}">
-                                {% if key == 'unregistered-edits' %}
-                                    <span class="help-text" title="{{ msg('unregistered-edits-tooltip') }}">{{ msg(key)|ucfirst }}</span>
-                                {% else %}
-                                    {{ msg(key)|ucfirst }}
-                                {% endif %}
-                                <span class="glyphicon glyphicon-sort"></span>
-                            </span>
-                        </th>
-                    {% endfor %}
-                    <th>
-                        <span class="color-icon" style="background:rgba(171, 212, 235, 1)"></span>
-                        {{ msg('edits') }}
-                        &middot;
-                        <span class="color-icon" style="background:rgba(178, 223, 138, 1)"></span>
-                        {{ msg('minor-edits') }}
-                        &middot;
-                        <span class="color-icon" style="background:rgba(251, 154, 153, 1)"></span>
-                        {{ msg('unregistered-edits') }}
-                    </th>
-                </tr></thead>
-                <tbody>
-                {% set index = 0 %}
-                {% for year, yearStats in ai.yearMonthCounts %}
-                    {% for month, stats in yearStats.months %}
-                        {% set month_str = '%02d'|format(month) %}
-                        <tr>
-                            <td class="sort-entry--month" data-value="{{ year }}{{ month_str }}">
-                                {{ ai.monthLabels[index] }}
-                                {% set index = index + 1 %}
-                            </td>
-                            <td class="sort-entry--edits" data-value="{{ stats.all }}">
-                                {% if stats.all > 0 %}
-                                    {# Generate link to revision history showing all edits for the given month #}
-                                    {% set offset = date(year ~ '-' ~ month_str ~ '-01')|date('Ymt') ~ '235959' %}
-                                    {{ wiki.pageHistLink(page, stats.all|num_format, offset, stats.all) }}
-                                {% else %}
-                                    {{ 0|num_format }}
-                                {% endif %}
-                            </td>
-                            <td class="sort-entry--anons" data-value="{{ stats.anon }}">{{ stats.anon|num_format }}</td>
-                            {% set month_anons_percent = stats.anon|percent_format(stats.all) %}
-                            <td class="sort-entry--anons-percentage" data-value="{{ month_anons_percent|trim('%') }}">{{ month_anons_percent }}</td>
-                            <td class="sort-entry--minor-edits" data-value="{{ stats.minor }}">{{ stats.minor|num_format }}</td>
-                            {% set month_minor_percent = stats.minor|percent_format(stats.all) %}
-                            <td class="sort-entry--minor-edits-percentage" data-value="{{ month_minor_percent|trim('%') }}">{{ month_minor_percent }}</td>
-                            <td class="stripes-column">
-                                {# stripes are shown as figure over max edits for all months, with a max width of 400px #}
-                                {% set allEditsWidth = (stats.all / ai.maxEditsPerMonth) * 400 %}
-                                <div class="stripes" style="background:rgba(171, 212, 235, 1); width:{{ allEditsWidth }}px"></div>
-                                {% set minorEditsWidth = (stats.minor / ai.maxEditsPerMonth) * 400 %}
-                                <div class="stripes" style="background:rgba(178, 223, 138, 1); width:{{ minorEditsWidth }}px"></div>
-                                {% set anonEditsWidth = (stats.anon / ai.maxEditsPerMonth) * 400 %}
-                                <div class="stripes" style="background:rgba(251, 154, 153, 1); width:{{ anonEditsWidth }}px"></div>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                {% endfor %}
-                </tbody>
-            </table>
-        {% endset %}
-        {{ layout.content_block('month-counts', content) }}
+		{# ======================== MONTH COUNTS ======================== #}
+		{% set content %}
+			<table class="table table-bordered table-hover table-striped month-counts-table">
+				<thead><tr>
+					{% for key in ['month', 'edits', 'unregistered-edits', 'unregistered-edits-percentage', 'minor-edits', 'minor-edits-percentage'] %}
+						<th>
+							<span class="sort-link sort-link--{{ key }}" data-column="{{ key }}">
+								{% if key == 'unregistered-edits' %}
+									<span class="help-text" title="{{ msg('unregistered-edits-tooltip') }}">{{ msg(key)|ucfirst }}</span>
+								{% else %}
+									{{ msg(key)|ucfirst }}
+								{% endif %}
+								<span class="glyphicon glyphicon-sort"></span>
+							</span>
+						</th>
+					{% endfor %}
+					<th>
+						<span class="color-icon" style="background:rgba(171, 212, 235, 1)"></span>
+						{{ msg('edits') }}
+						&middot;
+						<span class="color-icon" style="background:rgba(178, 223, 138, 1)"></span>
+						{{ msg('minor-edits') }}
+						&middot;
+						<span class="color-icon" style="background:rgba(251, 154, 153, 1)"></span>
+						{{ msg('unregistered-edits') }}
+					</th>
+				</tr></thead>
+				<tbody>
+				{% set index = 0 %}
+				{% for year, yearStats in ai.yearMonthCounts %}
+					{% for month, stats in yearStats.months %}
+						{% set month_str = '%02d'|format(month) %}
+						<tr>
+							<td class="sort-entry--month" data-value="{{ year }}{{ month_str }}">
+								{{ ai.monthLabels[index] }}
+								{% set index = index + 1 %}
+							</td>
+							<td class="sort-entry--edits" data-value="{{ stats.all }}">
+								{% if stats.all > 0 %}
+									{# Generate link to revision history showing all edits for the given month #}
+									{% set offset = date(year ~ '-' ~ month_str ~ '-01')|date('Ymt') ~ '235959' %}
+									{{ wiki.pageHistLink(page, stats.all|num_format, offset, stats.all) }}
+								{% else %}
+									{{ 0|num_format }}
+								{% endif %}
+							</td>
+							<td class="sort-entry--anons" data-value="{{ stats.anon }}">{{ stats.anon|num_format }}</td>
+							{% set month_anons_percent = stats.anon|percent_format(stats.all) %}
+							<td class="sort-entry--anons-percentage" data-value="{{ month_anons_percent|trim('%') }}">{{ month_anons_percent }}</td>
+							<td class="sort-entry--minor-edits" data-value="{{ stats.minor }}">{{ stats.minor|num_format }}</td>
+							{% set month_minor_percent = stats.minor|percent_format(stats.all) %}
+							<td class="sort-entry--minor-edits-percentage" data-value="{{ month_minor_percent|trim('%') }}">{{ month_minor_percent }}</td>
+							<td class="stripes-column">
+								{# stripes are shown as figure over max edits for all months, with a max width of 400px #}
+								{% set allEditsWidth = (stats.all / ai.maxEditsPerMonth) * 400 %}
+								<div class="stripes" style="background:rgba(171, 212, 235, 1); width:{{ allEditsWidth }}px"></div>
+								{% set minorEditsWidth = (stats.minor / ai.maxEditsPerMonth) * 400 %}
+								<div class="stripes" style="background:rgba(178, 223, 138, 1); width:{{ minorEditsWidth }}px"></div>
+								{% set anonEditsWidth = (stats.anon / ai.maxEditsPerMonth) * 400 %}
+								<div class="stripes" style="background:rgba(251, 154, 153, 1); width:{{ anonEditsWidth }}px"></div>
+							</td>
+						</tr>
+					{% endfor %}
+				{% endfor %}
+				</tbody>
+			</table>
+		{% endset %}
+		{{ layout.content_block('month-counts', content) }}
 
-        {# ======================== AUTOMATED EDITS ======================== #}
-        {% if ai.automatedCount > 0 %}
-        {% set content %}
-            <table class="table table-bordered table-hover table-striped">
-                <thead><tr>
-                    {% for key in ['tool', 'edits'] %}
-                        <th>
-                            <span class="sort-link sort-link--{{ key }}" data-column="{{ key }}">
-                                {{ msg(key)|ucfirst }}
-                                <span class="glyphicon glyphicon-sort"></span>
-                            </span>
-                        </th>
-                    {% endfor %}
-                </tr></thead>
-                <tbody>
-                {% for tool, values in ai.tools %}
-                    <tr>
-                        <td class="sort-entry--tool" data-value="{{ tool }}">
-                            {{ wiki.pageLinkRaw(values.link, project, tool) }}
-                        </td>
-                        <td class="sort-entry--edits" data-value="{{ values.count }}">
-                            {{ values.count|num_format }}
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        {% endset %}
-        {{ layout.content_block('auto-edits', content) }}
-        {% endif %}
+		{# ======================== AUTOMATED EDITS ======================== #}
+		{% if ai.automatedCount > 0 %}
+		{% set content %}
+			<table class="table table-bordered table-hover table-striped">
+				<thead><tr>
+					{% for key in ['tool', 'edits'] %}
+						<th>
+							<span class="sort-link sort-link--{{ key }}" data-column="{{ key }}">
+								{{ msg(key)|ucfirst }}
+								<span class="glyphicon glyphicon-sort"></span>
+							</span>
+						</th>
+					{% endfor %}
+				</tr></thead>
+				<tbody>
+				{% for tool, values in ai.tools %}
+					<tr>
+						<td class="sort-entry--tool" data-value="{{ tool }}">
+							{{ wiki.pageLinkRaw(values.link, project, tool) }}
+						</td>
+						<td class="sort-entry--edits" data-value="{{ values.count }}">
+							{{ values.count|num_format }}
+						</td>
+					</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+		{% endset %}
+		{{ layout.content_block('auto-edits', content) }}
+		{% endif %}
 
-        {# ======================== ASSESSMENTS ======================== #}
-        {% if not (ai.hasDateRange) and ai.assessments and not (page.isMainPage) %}
-        {% set content %}
-            <table class="table table-bordered table-hover table-striped assessments-table">
-                <thead><tr>
-                    {% set assessmentColumns = ['wikiproject', 'assessment'] %}
-                    {% if project.pageAssessments.hasImportanceRatings %}
-                        {% set assessmentColumns = assessmentColumns|merge(['importance']) %}
-                    {% endif %}
-                    {% for key in assessmentColumns %}
-                        <th>
-                            <span class="sort-link sort-link--{{ key }}" data-column="{{ key }}">
-                                {{ msg(key)|ucfirst }}
-                                <span class="glyphicon glyphicon-sort"></span>
-                            </span>
-                        </th>
-                    {% endfor %}
-                </tr></thead>
-                <tbody>
-                {% for wikiproject, assessment in ai.assessments.wikiprojects %}
-                    <tr>
-                        <td class="sort-entry--wikiproject" data-value="{{ wikiproject }}">
-                            {{ wiki.pageLinkRaw(ai.assessments.wikiproject_prefix ~ wikiproject, project, wikiproject|ucfirst) }}
-                        </td>
-                        <td style="background:{{ assessment.class.color }}" class="sort-entry--assessment" data-value="{{ assessment.class.value }}">
-                            {% set assessment_value %}
-                                <img alt="{{ assessment.class.value }}" src="{{ assessment.class.badge }}" class="assessment-badge" />
-                                {{ assessment.class.value|ucfirst }}
-                            {% endset %}
-                            {{ wiki.pageLinkRaw(assessment.class.category, project, assessment_value) }}
-                        </td>
-                        {% if project.pageAssessments.hasImportanceRatings %}
-                            <td style="background:{{ assessment.importance.color }}" class="sort-entry--importance" data-value="{{ assessment.importance.weight }}">
-                                {% set importance_label = assessment.importance ? assessment.importance.value : '???' %}
-                                {{ wiki.pageLinkRaw(assessment.importance.category, project, importance_label) }}
-                            </td>
-                        {% endif %}
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        {% endset %}
-        {{ layout.content_block('assessments', content) }}
-        {% endif %}
+		{# ======================== ASSESSMENTS ======================== #}
+		{% if not (ai.hasDateRange) and ai.assessments and not (page.isMainPage) %}
+		{% set content %}
+			<table class="table table-bordered table-hover table-striped assessments-table">
+				<thead><tr>
+					{% set assessmentColumns = ['wikiproject', 'assessment'] %}
+					{% if project.pageAssessments.hasImportanceRatings %}
+						{% set assessmentColumns = assessmentColumns|merge(['importance']) %}
+					{% endif %}
+					{% for key in assessmentColumns %}
+						<th>
+							<span class="sort-link sort-link--{{ key }}" data-column="{{ key }}">
+								{{ msg(key)|ucfirst }}
+								<span class="glyphicon glyphicon-sort"></span>
+							</span>
+						</th>
+					{% endfor %}
+				</tr></thead>
+				<tbody>
+				{% for wikiproject, assessment in ai.assessments.wikiprojects %}
+					<tr>
+						<td class="sort-entry--wikiproject" data-value="{{ wikiproject }}">
+							{{ wiki.pageLinkRaw(ai.assessments.wikiproject_prefix ~ wikiproject, project, wikiproject|ucfirst) }}
+						</td>
+						<td style="background:{{ assessment.class.color }}" class="sort-entry--assessment" data-value="{{ assessment.class.value }}">
+							{% set assessment_value %}
+								<img alt="{{ assessment.class.value }}" src="{{ assessment.class.badge }}" class="assessment-badge" />
+								{{ assessment.class.value|ucfirst }}
+							{% endset %}
+							{{ wiki.pageLinkRaw(assessment.class.category, project, assessment_value) }}
+						</td>
+						{% if project.pageAssessments.hasImportanceRatings %}
+							<td style="background:{{ assessment.importance.color }}" class="sort-entry--importance" data-value="{{ assessment.importance.weight }}">
+								{% set importance_label = assessment.importance ? assessment.importance.value : '???' %}
+								{{ wiki.pageLinkRaw(assessment.importance.category, project, importance_label) }}
+							</td>
+						{% endif %}
+					</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+		{% endset %}
+		{{ layout.content_block('assessments', content) }}
+		{% endif %}
 
-        {# ======================== BUGS ======================== #}
-        {% if not (ai.hasDateRange) and ai.numBugs > 0 %}
-        {% set content %}
-            <table class="table table-bordered table-hover table-striped bugs-table">
-                <thead><tr>
-                    {% for key in ['priority', 'name', 'notice', 'explanation'] %}
-                        <th>
-                            <span class="sort-link sort-link--{{ key }}" data-column="{{ key }}">
-                                {{ msg(key)|ucfirst }}
-                                <span class="glyphicon glyphicon-sort"></span>
-                            </span>
-                        </th>
-                    {% endfor %}
-                    <th>{{ msg('edit')|ucfirst }}</th>
-                </tr></thead>
-                <tbody>
-                {% for bug in ai.bugs %}
-                    <tr>
-                        <td class="sort-entry--priority" data-value="{{ bug.prio }}">{{ bug.prio }}</td>
-                        <td class="sort-entry--name" data-value="{{ bug.name }}">{{ bug.name }}</td>
-                        <td class="sort-entry--notice" data-value="{{ bug.notice }}">
-                            {% if bug.name == 'Wikidata' %}
-                                {{ bug.notice|raw }}
-                            {% else %}
-                                <code>{{ bug.notice|raw }}</code>
-                            {% endif %}
-                        </td>
-                        <td class="sort-entry--explanation" data-value="{{ bug.explanation }}">{{ bug.explanation|raw }}</td>
-                        <td>
-                            {% if bug.name == 'Wikidata' %}
-                                <a target='_blank' href='//www.wikidata.org/wiki/{{ page.wikidataId }}'>
-                                    {{ msg('edit') }}
-                                </a>
-                            {% else %}
-                                {{ wiki.editLink(page) }}
-                            {% endif %}
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        {% endset %}
-        {% set description_link %}
-            {% set pcwLink %}
-                <a target='_blank' href='https://checkwiki.toolforge.org/'>Project Check Wikipedia</a>
-            {% endset %}
-            {{ msg('powered-by', [pcwLink]) }}
-        {% endset %}
-        {{ layout.content_block('bugs', content, description_link) }}
-        {% endif %}
+		{# ======================== BUGS ======================== #}
+		{% if not (ai.hasDateRange) and ai.numBugs > 0 %}
+		{% set content %}
+			<table class="table table-bordered table-hover table-striped bugs-table">
+				<thead><tr>
+					{% for key in ['priority', 'name', 'notice', 'explanation'] %}
+						<th>
+							<span class="sort-link sort-link--{{ key }}" data-column="{{ key }}">
+								{{ msg(key)|ucfirst }}
+								<span class="glyphicon glyphicon-sort"></span>
+							</span>
+						</th>
+					{% endfor %}
+					<th>{{ msg('edit')|ucfirst }}</th>
+				</tr></thead>
+				<tbody>
+				{% for bug in ai.bugs %}
+					<tr>
+						<td class="sort-entry--priority" data-value="{{ bug.prio }}">{{ bug.prio }}</td>
+						<td class="sort-entry--name" data-value="{{ bug.name }}">{{ bug.name }}</td>
+						<td class="sort-entry--notice" data-value="{{ bug.notice }}">
+							{% if bug.name == 'Wikidata' %}
+								{{ bug.notice|raw }}
+							{% else %}
+								<code>{{ bug.notice|raw }}</code>
+							{% endif %}
+						</td>
+						<td class="sort-entry--explanation" data-value="{{ bug.explanation }}">{{ bug.explanation|raw }}</td>
+						<td>
+							{% if bug.name == 'Wikidata' %}
+								<a target='_blank' href='//www.wikidata.org/wiki/{{ page.wikidataId }}'>
+									{{ msg('edit') }}
+								</a>
+							{% else %}
+								{{ wiki.editLink(page) }}
+							{% endif %}
+						</td>
+					</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+		{% endset %}
+		{% set description_link %}
+			{% set pcwLink %}
+				<a target='_blank' href='https://checkwiki.toolforge.org/'>Project Check Wikipedia</a>
+			{% endset %}
+			{{ msg('powered-by', [pcwLink]) }}
+		{% endset %}
+		{{ layout.content_block('bugs', content, description_link) }}
+		{% endif %}
 
-        <div class="text-muted times-in-utc">
-            {{ msg('times-in-utc') }}
-        </div>
-    </div>
+		<div class="text-muted times-in-utc">
+			{{ msg('times-in-utc') }}
+		</div>
+	</div>
 </div>
 {% endblock %}

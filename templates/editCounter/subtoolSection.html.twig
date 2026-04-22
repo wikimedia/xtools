@@ -1,20 +1,20 @@
 {% import 'macros/layout.html.twig' as layout %}
 
 {% if downloadFormats is not defined %}
-    {% set downloadFormats = ['wikitext', 'csv'] %}
+	{% set downloadFormats = ['wikitext', 'csv'] %}
 {% endif %}
 {% if extraParams is not defined %}
-    {% set extraParams = {} %}
+	{% set extraParams = {} %}
 {% endif %}
 {% if i18nKey in sections %}
-    {% set content %}
-        {{ render(path(route, {'username': user.usernameIdent, 'project': project.domain}|merge(extraParams))) }}
-    {% endset %}
-    {% set headerLink %}
-        <a href="{{ path(route, {project:project.domain, username:user.usernameIdent}|merge(extraParams))}}">{{ msg(i18nKey) }}</a>
-    {% endset %}
-    {% set downloadLink %}
-        {{ layout.downloadLink(route, {project:project.domain, username:user.usernameIdent}|merge(extraParams), downloadFormats, jsonPath is defined ? jsonPath : null) }}
-    {% endset %}
-    {{ layout.content_block(headerLink, content, downloadLink, i18nKey, true) }}
+	{% set content %}
+		{{ render(path(route, {'username': user.usernameIdent, 'project': project.domain}|merge(extraParams))) }}
+	{% endset %}
+	{% set headerLink %}
+		<a href="{{ path(route, {project:project.domain, username:user.usernameIdent}|merge(extraParams))}}">{{ msg(i18nKey) }}</a>
+	{% endset %}
+	{% set downloadLink %}
+		{{ layout.downloadLink(route, {project:project.domain, username:user.usernameIdent}|merge(extraParams), downloadFormats, jsonPath is defined ? jsonPath : null) }}
+	{% endset %}
+	{{ layout.content_block(headerLink, content, downloadLink, i18nKey, true) }}
 {% endif %}

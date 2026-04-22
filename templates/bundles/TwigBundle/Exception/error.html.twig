@@ -5,73 +5,73 @@
 
 {% block body %}
 <div class="panel panel-danger">
-    <header class="panel-heading">
-        <div class="text-center xt-heading-top">
-            <strong>{{ status_code }}: {{ status_text }}</strong>
-        </div>
-    </header>
+	<header class="panel-heading">
+		<div class="text-center xt-heading-top">
+			<strong>{{ status_code }}: {{ status_text }}</strong>
+		</div>
+	</header>
 
-    <div class="panel-body xt-panel-body error-wrapper">
-        <div class="error-mascot--wrapper pull-right">
-            <a target="_blank" title="By Lilyu (Own work) [WTFPL], via Wikimedia Commons" href="https://commons.wikimedia.org/wiki/File%3ALapinou_Furieux.svg"><img class="error-mascot" alt="Lapinou Furieux" src="{{ asset('/build/images/error_mascot.svg') }}"/></a>
-        </div>
+	<div class="panel-body xt-panel-body error-wrapper">
+		<div class="error-mascot--wrapper pull-right">
+			<a target="_blank" title="By Lilyu (Own work) [WTFPL], via Wikimedia Commons" href="https://commons.wikimedia.org/wiki/File%3ALapinou_Furieux.svg"><img class="error-mascot" alt="Lapinou Furieux" src="{{ asset('/build/images/error_mascot.svg') }}"/></a>
+		</div>
 
-        {% if exception is defined and attribute(exception, 'message') is defined %}
-            {% set message = attribute(exception, 'message') %}
-        {% else %}
-            {% set message = 'unknown' %}
-        {% endif %}
-        {% if exception.class is defined and exception.class == 'BadGatewayException' %}
-            {# We ignore 502s as we can't fix them, so there's no need to add a link to report it as a bug. #}
-            <p>{{ msg(message, [exception.msgParams]) }}</p>
-        {% elseif exception.headers is defined and (not exception.headers is empty) and msgExists(message, [exception.headers[0]]) %}
-            <p><strong>{{ msg(message, [exception.headers[0]]) }}</strong></p>
-        {% elseif msgExists(message) %}
-            <p><strong>{{ msg(message) }}</strong></p>
-        {% elseif exception.code == 999 %}
-            {# This is a server-built message ready to be displayed that can safely use raw() #}
-            <p>{{ message|raw }}</p>
-        {% else %}
-            {% set phabLink %}
-                <a target="_blank" href="https://phabricator.wikimedia.org/maniphest/task/create/?title=PLEASE REPLACE WITH A DESCRIPTION OF THE ERROR&amp;priority=75&amp;projects=XTools&amp;description=```{{ attribute(exception, 'file') }}: {{ attribute(exception, 'line') }} - {{ message }}```%0A%0AURL: {{app.request.uri}}%0A%0APlease provide any further details here%0A%0AXTools version: {{ version }}-{{ shortHash() }}">Phabricator</a>
-            {% endset %}
-            <p>{{ msg('error-title', [phabLink]) }}</p>
+		{% if exception is defined and attribute(exception, 'message') is defined %}
+			{% set message = attribute(exception, 'message') %}
+		{% else %}
+			{% set message = 'unknown' %}
+		{% endif %}
+		{% if exception.class is defined and exception.class == 'BadGatewayException' %}
+			{# We ignore 502s as we can't fix them, so there's no need to add a link to report it as a bug. #}
+			<p>{{ msg(message, [exception.msgParams]) }}</p>
+		{% elseif exception.headers is defined and (not exception.headers is empty) and msgExists(message, [exception.headers[0]]) %}
+			<p><strong>{{ msg(message, [exception.headers[0]]) }}</strong></p>
+		{% elseif msgExists(message) %}
+			<p><strong>{{ msg(message) }}</strong></p>
+		{% elseif exception.code == 999 %}
+			{# This is a server-built message ready to be displayed that can safely use raw() #}
+			<p>{{ message|raw }}</p>
+		{% else %}
+			{% set phabLink %}
+				<a target="_blank" href="https://phabricator.wikimedia.org/maniphest/task/create/?title=PLEASE REPLACE WITH A DESCRIPTION OF THE ERROR&amp;priority=75&amp;projects=XTools&amp;description=```{{ attribute(exception, 'file') }}: {{ attribute(exception, 'line') }} - {{ message }}```%0A%0AURL: {{app.request.uri}}%0A%0APlease provide any further details here%0A%0AXTools version: {{ version }}-{{ shortHash() }}">Phabricator</a>
+			{% endset %}
+			<p>{{ msg('error-title', [phabLink]) }}</p>
 
-            {# TODO: Probably want to get rid of this completely, or at least truncate the lines of the error message which can sometimes include massive SQL queries #}
-            {# Fallback to "the server said: ..." #}
-            <p>{{ msg('error-server-message', ['<code>' ~ message ~ '</code>']) }}</p>
-        {% endif %}
+			{# TODO: Probably want to get rid of this completely, or at least truncate the lines of the error message which can sometimes include massive SQL queries #}
+			{# Fallback to "the server said: ..." #}
+			<p>{{ msg('error-server-message', ['<code>' ~ message ~ '</code>']) }}</p>
+		{% endif %}
 
-        {% if status_code == 429 %}
-            <p>
-                {% set loginLink = "<a href='" ~ login_url(app.request) ~ "'>" ~ msg('error-rate-limit-login') ~ "</a>" %}
-                <h3 class="text-danger"><strong>{{ msg('error-rate-limit-login-big', [loginLink]) }}</strong></h3>
-            </p>
-        {% endif %}
-        {% if status_code == 403 and message == 'error-login-required' %}
-            <p>
-                <h3 class="text-danger"><strong><a href="{{ login_url(app.request) }}">
-                    {{ msg('error-login-required-link') }}
-                </a></strong></h3>
-            </p>
-        {% endif %}
+		{% if status_code == 429 %}
+			<p>
+				{% set loginLink = "<a href='" ~ login_url(app.request) ~ "'>" ~ msg('error-rate-limit-login') ~ "</a>" %}
+				<h3 class="text-danger"><strong>{{ msg('error-rate-limit-login-big', [loginLink]) }}</strong></h3>
+			</p>
+		{% endif %}
+		{% if status_code == 403 and message == 'error-login-required' %}
+			<p>
+				<h3 class="text-danger"><strong><a href="{{ login_url(app.request) }}">
+					{{ msg('error-login-required-link') }}
+				</a></strong></h3>
+			</p>
+		{% endif %}
 
-        <div class="text-center">
-            <img class="splash-logo splash-logo--small" style="width:150px" src="{{ asset('/build/images/logo.svg') }}" alt="{{ msg('xtools-title') }}" />
-            <h5 class="about-subtitle">
-                {{ msg('version', [version]) }}
-                ({{ releaseDate() }})
-                &middot;
-                <a target="_blank" href="https://www.mediawiki.org/wiki/Special:MyLanguage/XTools">{{ msg('documentation') }}</a>
-                &middot;
-                {{ layout.apiLink }}
-                &middot;
-                <a target="_blank" href="https://gerrit.wikimedia.org/g/labs/xtools">{{ msg('view-source') }}</a>
-            </h5>
-            <small>
-                {% include 'default/_report_issue_links.html.twig' %}
-            </small>
-        </div>
-    </div>
+		<div class="text-center">
+			<img class="splash-logo splash-logo--small" style="width:150px" src="{{ asset('/build/images/logo.svg') }}" alt="{{ msg('xtools-title') }}" />
+			<h5 class="about-subtitle">
+				{{ msg('version', [version]) }}
+				({{ releaseDate() }})
+				&middot;
+				<a target="_blank" href="https://www.mediawiki.org/wiki/Special:MyLanguage/XTools">{{ msg('documentation') }}</a>
+				&middot;
+				{{ layout.apiLink }}
+				&middot;
+				<a target="_blank" href="https://gerrit.wikimedia.org/g/labs/xtools">{{ msg('view-source') }}</a>
+			</h5>
+			<small>
+				{% include 'default/_report_issue_links.html.twig' %}
+			</small>
+		</div>
+	</div>
 </div>
 {% endblock %}

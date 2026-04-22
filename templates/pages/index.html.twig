@@ -2,30 +2,30 @@
 {% import 'macros/forms.html.twig' as forms %}
 
 {% block body %}
-    <form class="col-lg-8 col-lg-offset-2" action="{{ path('Pages') }}" method="get" accept-charset="utf-8">
-        <fieldset class="form-fieldset">
-            {{ forms.wiki_input(project) }}
-            {{ forms.user_input(true, false, project, false, username, false) }}
-            {{ forms.namespace_select(project, true, namespace) }}
-            {{ forms.redirects_select(redirects) }}
-            {{ forms.deleted_pages_select(deleted) }}
-            {{ forms.date_input('start', false, start) }}
-            {{ forms.date_input('end', false, end) }}
-        </fieldset>
-        <fieldset class="form-fieldset">
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" name="format" value="wikitext">
-                    {{ msg('view-wikitext') }}
-                </label>
-            </div>
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" name="countsOnly" value="true">
-                    {{ msg('counts-only') }}
-                </label>
-            </div>
-        </fieldset>
-        {{ forms.submit_btn() }}
-    </form>
+	<form class="col-lg-8 col-lg-offset-2" action="{{ path('Pages') }}" method="get" accept-charset="utf-8">
+		<fieldset class="form-fieldset">
+			{{ forms.wiki_input(project) }}
+			{{ forms.user_input(true, false, project, false, username, false) }}
+			{{ forms.namespace_select(project, true, namespace) }}
+			{{ forms.redirects_select(redirects) }}
+			{{ forms.deleted_pages_select(deleted) }}
+			{{ forms.date_input('start', false, start) }}
+			{{ forms.date_input('end', false, end) }}
+		</fieldset>
+		<fieldset class="form-fieldset">
+			<div class="checkbox">
+				<label>
+					<input type="checkbox" name="format" value="wikitext">
+					{{ msg('view-wikitext') }}
+				</label>
+			</div>
+			<div class="checkbox">
+				<label>
+					<input type="checkbox" name="countsOnly" value="true">
+					{{ msg('counts-only') }}
+				</label>
+			</div>
+		</fieldset>
+		{{ forms.submit_btn() }}
+	</form>
 {% endblock %}

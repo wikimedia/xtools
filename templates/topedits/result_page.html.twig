@@ -5,203 +5,203 @@
 
 {% block body %}
 <div class="panel panel-primary">
-    <header class="panel-heading">
-        <div class="text-center xt-heading-top" >
-            <a class="back-to-search" href="{{ path('TopEdits') }}">
-                <span class="glyphicon glyphicon-chevron-left"></span>
-                {{ msg('back') }}
-            </a>
-            {{ wiki.userLink(user, project) }}
-            &bull;
-            {{ wiki.pageLink(page, page.title) }}
-            <small>
-                &bull;
-                {{ project.domain }}
-            </small>
-        </div>
-    </header>
+	<header class="panel-heading">
+		<div class="text-center xt-heading-top" >
+			<a class="back-to-search" href="{{ path('TopEdits') }}">
+				<span class="glyphicon glyphicon-chevron-left"></span>
+				{{ msg('back') }}
+			</a>
+			{{ wiki.userLink(user, project) }}
+			&bull;
+			{{ wiki.pageLink(page, page.title) }}
+			<small>
+				&bull;
+				{{ project.domain }}
+			</small>
+		</div>
+	</header>
 
-    <div class="panel-body xt-panel-body">
-        {% set content %}
-            <div class="col-lg-6 stat-list clearfix">
-                <table class="table">
-                    <tr>
-                        <td>{{ msg('page') }}</td>
-                        <td>
-                            {{ wiki.pageLink(page, page.title) }}
-                            <small>({{ wiki.pageLogLink(page) }}
-                            &middot; <a href="{{ path('PageInfoResult', {project:project.domain, page:page.title}) }}">{{ msg('tool-pageinfo') }}</a>)</small>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>{{ msg('user') }}</td>
-                        <td>
-                            {{ wiki.userLink(user, project) }}
-                            <small>(
-                                {%- if enabled('EditCounter') -%}
-                                    <a href="{{ path('EditCounterResult', {project:project.domain, username:user.usernameIdent}) }}" >{{ msg('tool-editcounter') }}</a>
-                                {%- endif -%}
-                                {%- if enabled('TopEdits') -%}
-                                    &middot;
-                                    <a href="{{ path('TopEditsResultNamespace', {project:project.domain, username:user.usernameIdent}) }}" >{{ msg('tool-topedits') }}</a>
-                                {%- endif -%}
-                            )</small>
-                        </td>
-                    </tr>
-                    {% if te.start is not empty %}
-                        <tr>
-                            <td>{{ msg('start') }}</td>
-                            <td>{{ te.startDate }}</td>
-                        </tr>
-                    {% endif %}
-                    {% if te.end is not empty %}
-                        <tr>
-                            <td>{{ msg('end') }}</td>
-                            <td>{{ te.endDate }}</td>
-                        </tr>
-                    {% endif %}
-                    <tr>
-                        <td class="stat-list--new-group">{{ msg('total-edits') }}</td>
-                        <td class="stat-list--new-group">{{ te.numTopEdits|num_format }}</td>
-                    </tr>
+	<div class="panel-body xt-panel-body">
+		{% set content %}
+			<div class="col-lg-6 stat-list clearfix">
+				<table class="table">
+					<tr>
+						<td>{{ msg('page') }}</td>
+						<td>
+							{{ wiki.pageLink(page, page.title) }}
+							<small>({{ wiki.pageLogLink(page) }}
+							&middot; <a href="{{ path('PageInfoResult', {project:project.domain, page:page.title}) }}">{{ msg('tool-pageinfo') }}</a>)</small>
+						</td>
+					</tr>
+					<tr>
+						<td>{{ msg('user') }}</td>
+						<td>
+							{{ wiki.userLink(user, project) }}
+							<small>(
+								{%- if enabled('EditCounter') -%}
+									<a href="{{ path('EditCounterResult', {project:project.domain, username:user.usernameIdent}) }}" >{{ msg('tool-editcounter') }}</a>
+								{%- endif -%}
+								{%- if enabled('TopEdits') -%}
+									&middot;
+									<a href="{{ path('TopEditsResultNamespace', {project:project.domain, username:user.usernameIdent}) }}" >{{ msg('tool-topedits') }}</a>
+								{%- endif -%}
+							)</small>
+						</td>
+					</tr>
+					{% if te.start is not empty %}
+						<tr>
+							<td>{{ msg('start') }}</td>
+							<td>{{ te.startDate }}</td>
+						</tr>
+					{% endif %}
+					{% if te.end is not empty %}
+						<tr>
+							<td>{{ msg('end') }}</td>
+							<td>{{ te.endDate }}</td>
+						</tr>
+					{% endif %}
+					<tr>
+						<td class="stat-list--new-group">{{ msg('total-edits') }}</td>
+						<td class="stat-list--new-group">{{ te.numTopEdits|num_format }}</td>
+					</tr>
 
-                    {% if te.numTopEdits > 0 %}
-                        <tr>
-                            <td>{{ msg('minor-edits') }}</td>
-                            <td>
-                                {{ te.totalMinor|num_format }}
-                                ({{ te.totalMinor|percent_format(te.numTopEdits) }})
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>{{ msg('auto-edits') }}</td>
-                            <td>
-                                {{ te.totalAutomated|num_format }}
-                                ({{ te.totalAutomated|percent_format(te.numTopEdits) }})
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><span class="color-icon reverted-edit"></span>{{ msg('reverted-edits') }}</td>
-                            <td>
-                                {{ te.totalReverted|num_format }}
-                                ({{ te.totalReverted|percent_format(te.numTopEdits) }})
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>atbe<sup>1</sup></td>
-                            <td>{{ te.atbe|num_format(1) }}</td>
-                        </tr>
-                        <tr>
-                            <td class="stat-list--new-group">{{ msg('added-bytes') }}<sup>2</sup></td>
-                            <td class="stat-list--new-group">{{ te.totalAdded|diff_format }}</td>
-                        </tr>
-                        <tr>
-                            <td>{{ msg('deleted-bytes') }}</td>
-                            <td>{{ te.totalRemoved|diff_format }}</td>
-                        </tr>
-                    {% endif %}
-                </table>
-            </div>
+					{% if te.numTopEdits > 0 %}
+						<tr>
+							<td>{{ msg('minor-edits') }}</td>
+							<td>
+								{{ te.totalMinor|num_format }}
+								({{ te.totalMinor|percent_format(te.numTopEdits) }})
+							</td>
+						</tr>
+						<tr>
+							<td>{{ msg('auto-edits') }}</td>
+							<td>
+								{{ te.totalAutomated|num_format }}
+								({{ te.totalAutomated|percent_format(te.numTopEdits) }})
+							</td>
+						</tr>
+						<tr>
+							<td><span class="color-icon reverted-edit"></span>{{ msg('reverted-edits') }}</td>
+							<td>
+								{{ te.totalReverted|num_format }}
+								({{ te.totalReverted|percent_format(te.numTopEdits) }})
+							</td>
+						</tr>
+						<tr>
+							<td>atbe<sup>1</sup></td>
+							<td>{{ te.atbe|num_format(1) }}</td>
+						</tr>
+						<tr>
+							<td class="stat-list--new-group">{{ msg('added-bytes') }}<sup>2</sup></td>
+							<td class="stat-list--new-group">{{ te.totalAdded|diff_format }}</td>
+						</tr>
+						<tr>
+							<td>{{ msg('deleted-bytes') }}</td>
+							<td>{{ te.totalRemoved|diff_format }}</td>
+						</tr>
+					{% endif %}
+				</table>
+			</div>
 
-            {% if te.numTopEdits == 0 %}
-                <div style="clear:both" class="alert alert-info">
-                    {{ msg('no-contribs') }}
-                </div>
-            {% else %}
-                <div class="basic-info-charts clearfix">
-                    {{ chart.pie_chart('minor_edis',
-                        [{
-                            label: msg('minor-edits'),
-                            value: te.totalMinor,
-                            percentage: (te.totalMinor / te.numTopEdits) * 100
-                        },
-                        {
-                            label: msg('major-edits'),
-                            value: te.numTopEdits - te.totalMinor,
-                            percentage: 100 - ((te.totalMinor / te.numTopEdits) * 100)
-                        }]
-                    ) }}
-                    {{ chart.pie_chart('auto_edis',
-                        [{
-                            label: msg('auto-edits'),
-                            value: te.totalAutomated,
-                            percentage: (te.totalAutomated / te.numTopEdits) * 100
-                        },
-                        {
-                            label: msg('manual-edits'),
-                            value: te.numTopEdits - te.totalAutomated,
-                            percentage: 100 - ((te.totalAutomated / te.numTopEdits) * 100)
-                        }]
-                    ) }}
-                    {{ chart.pie_chart('reverted_edis',
-                        [{
-                            label: msg('reverted-edits'),
-                            value: te.totalReverted,
-                            percentage: (te.totalReverted / te.numTopEdits) * 100
-                        },
-                        {
-                            label: msg('unreverted-edits'),
-                            value: te.numTopEdits - te.totalReverted,
-                            percentage: 100 - ((te.totalReverted / te.numTopEdits) * 100)
-                        }]
-                    ) }}
-                </div>
+			{% if te.numTopEdits == 0 %}
+				<div style="clear:both" class="alert alert-info">
+					{{ msg('no-contribs') }}
+				</div>
+			{% else %}
+				<div class="basic-info-charts clearfix">
+					{{ chart.pie_chart('minor_edis',
+						[{
+							label: msg('minor-edits'),
+							value: te.totalMinor,
+							percentage: (te.totalMinor / te.numTopEdits) * 100
+						},
+						{
+							label: msg('major-edits'),
+							value: te.numTopEdits - te.totalMinor,
+							percentage: 100 - ((te.totalMinor / te.numTopEdits) * 100)
+						}]
+					) }}
+					{{ chart.pie_chart('auto_edis',
+						[{
+							label: msg('auto-edits'),
+							value: te.totalAutomated,
+							percentage: (te.totalAutomated / te.numTopEdits) * 100
+						},
+						{
+							label: msg('manual-edits'),
+							value: te.numTopEdits - te.totalAutomated,
+							percentage: 100 - ((te.totalAutomated / te.numTopEdits) * 100)
+						}]
+					) }}
+					{{ chart.pie_chart('reverted_edis',
+						[{
+							label: msg('reverted-edits'),
+							value: te.totalReverted,
+							percentage: (te.totalReverted / te.numTopEdits) * 100
+						},
+						{
+							label: msg('unreverted-edits'),
+							value: te.numTopEdits - te.totalReverted,
+							percentage: 100 - ((te.totalReverted / te.numTopEdits) * 100)
+						}]
+					) }}
+				</div>
 
-                <div class="footnotes" style="clear:both">
-                    <div>
-                        <sup>1</sup> {{ msg('average-time-bw-edits') }}
-                    </div>
-                    <div>
-                        <sup>2</sup> {{ msg('text-added-description') }} <span class="text-muted">({{ msg('approximate')|lower }})</span>
-                    </div>
-                </div>
+				<div class="footnotes" style="clear:both">
+					<div>
+						<sup>1</sup> {{ msg('average-time-bw-edits') }}
+					</div>
+					<div>
+						<sup>2</sup> {{ msg('text-added-description') }} <span class="text-muted">({{ msg('approximate')|lower }})</span>
+					</div>
+				</div>
 
-                <table class="table table-bordered table-hover table-striped top-editors-table">
-                    <thead><tr>
-                        {% for key in ['date', 'links', 'size', 'edit-summary'] %}
-                            <th>
-                                <span{% if key != "links" %} class="sort-link sort-link--{{ key }}" data-column="{{ key }}"{% endif %}>
-                                    {{ msg(key)|ucfirst }}
-                                    {% if key != "links" %}<span class="glyphicon glyphicon-sort"></span>{% endif %}
-                                </span>
-                            </th>
-                        {% endfor %}
-                    </tr></thead>
+				<table class="table table-bordered table-hover table-striped top-editors-table">
+					<thead><tr>
+						{% for key in ['date', 'links', 'size', 'edit-summary'] %}
+							<th>
+								<span{% if key != "links" %} class="sort-link sort-link--{{ key }}" data-column="{{ key }}"{% endif %}>
+									{{ msg(key)|ucfirst }}
+									{% if key != "links" %}<span class="glyphicon glyphicon-sort"></span>{% endif %}
+								</span>
+							</th>
+						{% endfor %}
+					</tr></thead>
 
-                    {% for rev in te.topEdits %}
-                    <tr{% if rev.reverted %} class="reverted-edit"{% endif %}>
-                        <td class="sort-entry--date" data-value="{{ rev.timestamp|date('U') }}">
-                            {{ wiki.permaLink(rev) }}
-                        </td>
-                        <td>
-                            {{ wiki.diffLink(rev) }}
-                            &middot;
-                            {{ wiki.pageHistLink(page, msg('history'), (rev.timestamp|date('U') + 1)|date('YmdHis')) }}
-                        </td>
-                        <td class="sort-entry--size" data-value="{{ rev.size }}">
-                            {{ rev.size|diff_format }}
-                        </td>
-                        <td class="sort-entry--edit-summary" data-value="{{ rev.comment }}">
-                            {% if rev.reverted %}<i class="text-info">({{ msg('reverted')|lower }})</i>&nbsp;{% endif %}
-                            {% if rev.deletedSummary %}
-                                <i class="text-muted">{{ msg('edit-summary-removed') }}</i>
-                            {% else %}
-                                {{ rev.wikifiedSummary|raw }}
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </table>
-            {% endif %}
-        {% endset %}
-        {% set downloadLink %}
-            {{ layout.downloadLink('TopEditsResultPage', {'project': project.domain, 'username': user.usernameIdent, 'page': page.title, 'namespace': te.namespace, start: te.startDate, end: te.endDate}, [], 'UserApiTopEditsPage') }}
-        {% endset %}
-        {{ layout.content_block('topedits-page', content, [msg('topedits-page-desc'), downloadLink], null, false, false) }}
+					{% for rev in te.topEdits %}
+					<tr{% if rev.reverted %} class="reverted-edit"{% endif %}>
+						<td class="sort-entry--date" data-value="{{ rev.timestamp|date('U') }}">
+							{{ wiki.permaLink(rev) }}
+						</td>
+						<td>
+							{{ wiki.diffLink(rev) }}
+							&middot;
+							{{ wiki.pageHistLink(page, msg('history'), (rev.timestamp|date('U') + 1)|date('YmdHis')) }}
+						</td>
+						<td class="sort-entry--size" data-value="{{ rev.size }}">
+							{{ rev.size|diff_format }}
+						</td>
+						<td class="sort-entry--edit-summary" data-value="{{ rev.comment }}">
+							{% if rev.reverted %}<i class="text-info">({{ msg('reverted')|lower }})</i>&nbsp;{% endif %}
+							{% if rev.deletedSummary %}
+								<i class="text-muted">{{ msg('edit-summary-removed') }}</i>
+							{% else %}
+								{{ rev.wikifiedSummary|raw }}
+							{% endif %}
+						</td>
+					</tr>
+					{% endfor %}
+				</table>
+			{% endif %}
+		{% endset %}
+		{% set downloadLink %}
+			{{ layout.downloadLink('TopEditsResultPage', {'project': project.domain, 'username': user.usernameIdent, 'page': page.title, 'namespace': te.namespace, start: te.startDate, end: te.endDate}, [], 'UserApiTopEditsPage') }}
+		{% endset %}
+		{{ layout.content_block('topedits-page', content, [msg('topedits-page-desc'), downloadLink], null, false, false) }}
 
-        <div class="text-muted times-in-utc" style="clear:both">
-            {{ msg('times-in-utc') }}
-        </div>
-    </div>
+		<div class="text-muted times-in-utc" style="clear:both">
+			{{ msg('times-in-utc') }}
+		</div>
+	</div>
 </div>
 {% endblock %}
