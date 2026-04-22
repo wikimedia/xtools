@@ -137,24 +137,6 @@ class ProjectTest extends TestAdapter {
 	}
 
 	/**
-	 * XTools can be run in single-wiki mode, where there is only one project.
-	 */
-	public function testSingleWiki(): void {
-		$this->markTestSkipped( 'No single-wiki support, currently.' );
-
-		$this->projectRepo->setSingleBasicInfo( [
-			'url' => 'https://example.org/a-wiki/',
-			'dbName' => 'example_wiki',
-			'lang' => 'en',
-		] );
-		$project = new Project( 'disregarded_wiki_name' );
-		$project->setRepository( $this->projectRepo );
-		static::assertEquals( 'example_wiki', $project->getDatabaseName() );
-		static::assertEquals( 'https://example.org/a-wiki/', $project->getUrl() );
-		static::assertEquals( 'en', $project->getLang() );
-	}
-
-	/**
 	 * A project is considered to exist if it has at least a domain name.
 	 */
 	public function testExists(): void {

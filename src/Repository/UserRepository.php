@@ -289,7 +289,7 @@ class UserRepository extends Repository {
 		}
 
 		return (bool)$this->executeProjectsQuery(
-			'centralauth',
+			'centralauth_p',
 			'SELECT 1 FROM centralauth_p.globaluser WHERE gu_name = :username',
 			[ 'username' => $user->getUsername() ]
 		)->fetchFirstColumn();

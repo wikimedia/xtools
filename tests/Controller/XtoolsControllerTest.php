@@ -415,10 +415,13 @@ class XtoolsControllerTest extends ControllerTestAdapter {
 	 */
 	public function testCookies(): void {
 		$crawler = $this->client->request( 'GET', '/sc' );
-		static::assertEquals(
-			static::getContainer()->getParameter( 'default_project' ),
-			$crawler->filter( '#project_input' )->attr( 'value' )
-		);
+		if ( !static::getContainer()->getParameter( 'app.single_wiki' ) ) {
+			// No project input on single
+			static::assertEquals(
+				static::getContainer()->getParameter( 'default_project' ),
+				$crawler->filter( '#project_input' )->attr( 'value' )
+			);
+		}
 
 		// For now...
 		if ( !static::getContainer()->getParameter( 'app.is_wmf' ) ) {

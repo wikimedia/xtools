@@ -44,7 +44,7 @@ class AdminStatsRepository extends Repository {
 		$actorTable = $project->getTableName( 'actor' );
 		$loggingTable = $project->getTableName( 'logging', 'logindex' );
 		[ $countSql, $types, $actions ] = $this->getLogSqlParts( $project, $type, $actions );
-		$dateConditions = $this->getDateConditions( $start, $end, false, "logging_logindex.", 'log_timestamp' );
+		$dateConditions = $this->getDateConditions( $start, $end, false, "$loggingTable.", 'log_timestamp' );
 
 		if ( empty( $types ) || empty( $actions ) ) {
 			// Types/actions not applicable to this wiki.
@@ -149,6 +149,7 @@ class AdminStatsRepository extends Repository {
 	 * @param Project $project
 	 * @param string $type Which 'type' we're querying for, as configured in admin_stats.yaml
 	 * @return array Keys are 'local' and 'global', each an array of user groups with keys 'name' and 'rights'.
+	 * If not WMF, 'global' is [].
 	 */
 	public function getUserGroups( Project $project, string $type ): array {
 		$cacheKey = $this->getCacheKey( func_get_args(), 'admingroups' );
@@ -170,10 +171,10 @@ class AdminStatsRepository extends Repository {
 				$this->getUserGroupByLocality( $res, $permissions ),
 				$this->parameterBag->get( 'admin_stats' )[$type]['extra_user_groups']
 			) ),
-			'global' => array_unique( array_merge(
+			'global' => $this->isWMF ? array_unique( array_merge(
 				$this->getUserGroupByLocality( $res, $permissions, true ),
 				$this->parameterBag->get( 'admin_stats' )[$type]['extra_user_groups']
-			) ),
+			) ) : [],
 		];
 
 		// Cache for a week and return.

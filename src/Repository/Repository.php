@@ -34,9 +34,6 @@ abstract class Repository {
 	/** @var Connection The database connection to other tools' databases. */
 	private Connection $toolsConnection;
 
-	/** @var string Prefix URL for where the dblists live. Will be followed by i.e. 's1.dblist' */
-	public const DBLISTS_URL = 'https://noc.wikimedia.org/conf/dblists/';
-
 	/** @var string Cache-key prefix for the per-slice connection-failure breaker. */
 	private const REPLICA_BREAKER_PREFIX = 'replica-breaker.';
 
@@ -93,6 +90,15 @@ abstract class Repository {
 	}
 
 	/**
+	 * Get whether XTools is running against WMF wikis.
+	 * @return bool
+	 * @codeCoverageIgnore
+	 */
+	public function isWMF(): bool {
+		return $this->isWMF;
+	}
+
+	/**
 	 * Get a database connection for the given database.
 	 * @param Project|string $project Project instance, database name (i.e. 'enwiki'), or slice (i.e. 's1').
 	 * @return Connection
@@ -102,7 +108,7 @@ abstract class Repository {
 		if ( $checkBreaker ) {
 			$this->assertReplicaReachable( $slice );
 		}
-		return $this->getConnection( 'toolforge_' . $slice );
+		return $this->getConnection( $slice );
 	}
 
 	/**
@@ -115,9 +121,7 @@ abstract class Repository {
 			if ( preg_match( '/^s\d+$/', $project ) === 1 ) {
 				return $project;
 			}
-			// Assume database name. Remove _p if given.
-			$db = str_replace( '_p', '', $project );
-			return $this->getDbList()[$db] ?? '';
+			return $this->getDbList()[$project] ?? '';
 		}
 		return $this->getDbList()[$project->getDatabaseName()] ?? '';
 	}
@@ -152,7 +156,7 @@ abstract class Repository {
 	 * Fetch and concatenate all the dblists into one array.
 	 * Based on ToolforgeBundle https://github.com/wikimedia/ToolforgeBundle/blob/master/Service/ReplicasClient.php
 	 * License: GPL 3.0 or later
-	 * @return string[] Keys are database names (i.e. 'enwiki'), values are the slices (i.e. 's1').
+	 * @return string[] Keys are database names (i.e. 'enwiki_p'), values are the slices (i.e. 's1').
 	 * @codeCoverageIgnore
 	 */
 	protected function getDbList(): array {
@@ -164,58 +168,45 @@ abstract class Repository {
 		$dbList = [];
 		$exists = true;
 		$i = 0;
-		$sql = "SELECT DISTINCT table_schema
-				FROM information_schema.tables";
+		// exclude MySQL metadata schemas
+		$sql = "SELECT DISTINCT schema_name
+				FROM information_schema.schemata
+				WHERE schema_name NOT IN ('information_schema','performance_schema','mysql','sys')";
 
 		while ( true ) {
 			$i += 1;
-			// We check both the lists at noc.wikimedia.org
-			$response = $this->guzzle->request( 'GET', self::DBLISTS_URL . "s$i.dblist", [ 'http_errors' => false ] );
-			$exists = in_array(
-				$response->getStatusCode(),
-				[ Response::HTTP_OK, Response::HTTP_NOT_MODIFIED ]
-			) && $i < 50;
 
-			if ( !$exists ) {
+			// We only check the presence of the actual replicas, due to a
+			// certain number of incidents: T322466, T420632, etc.
+			// noc.wikimedia.org is less accurate and obviously not
+			// available for non-WMF installations.
+			try {
+				$replicatedProjects = $this->executeProjectsQuery( "s$i", $sql, checkBreaker: false )
+					->fetchFirstColumn();
+			} catch ( HttpException ) {
+				// Exception raised for connection existing, but down
+				continue;
+			} catch ( \InvalidArgumentException ) {
+				// Exception raised for connection not existing
 				break;
 			}
 
-			// And the presence of the actual replicas, due to a certain number
-			// of incidents: T322466, T420632, etc.
-			$checkReplication = true;
-			try {
-				// Bypass the breaker: this probe is the replication-presence safety check
-				// (T322466, T420632), so it must test the real connection, not a recent trip.
-				$replicatedProjects = $this->executeProjectsQuery( "s$i", $sql, checkBreaker: false )
-					->fetchFirstColumn();
-			} catch ( \Throwable ) {
-				// AGF
-				$checkReplication = false;
+			if ( count( $replicatedProjects ) == 0 ) {
+				// No more projects
+				break;
 			}
 
-			$lines = explode( "\n", $response->getBody()->getContents() );
-			foreach ( $lines as $line ) {
-				$line = trim( $line );
-				if ( preg_match( '/^#/', $line ) !== 1 &&
-					$line !== '' &&
-					( !$checkReplication || in_array( $line . "_p", $replicatedProjects ) )
-				) {
-					// Skip comments and blank lines.
-					$dbList[$line] = "s$i";
-				}
+			foreach ( $replicatedProjects as $project ) {
+				$dbList[$project] = "s$i";
 			}
 		}
-
-		// Manually add the meta and centralauth databases.
-		$dbList['meta'] = 's7';
-		$dbList['centralauth'] = 's7';
 
 		// Cache for one week.
 		return $this->setCache( $cacheKey, $dbList, 'P1W' );
 	}
 
 	/**
-	 * Check if a project is in the dblists and replicated.
+	 * Check if a project is in one of the slices.
 	 * (Separate function for easier mocking).
 	 * @param string $dbName
 	 * @return bool
@@ -299,13 +290,6 @@ abstract class Repository {
 		$isLoggingOrRevision = in_array( $tableName, [ 'revision', 'logging', 'archive' ] );
 		if ( !$mapped && $isLoggingOrRevision && $this->isWMF ) {
 			$tableName .= "_userindex";
-		}
-
-		// Figure out database name.
-		// Use class variable for the database name if not set via function parameter.
-		if ( $this->isWMF && !str_ends_with( $databaseName, '_p' ) ) {
-			// Append '_p' if this is labs.
-			$databaseName .= '_p';
 		}
 
 		return "`$databaseName`.`$tableName`";

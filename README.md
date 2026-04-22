@@ -21,9 +21,11 @@ XTools was first refactored in 2014 by [Hedonil](https://de.wikipedia.org/wiki/B
 
 In 2017, it was rewritten again by [Matthewrb](https://en.wikipedia.org/wiki/User:Matthewrb),
 [MusikAnimal](https://en.wikipedia.org/wiki/User:MusikAnimal), [Samwilson](https://meta.wikimedia.org/wiki/User:Samwilson),
-and [others](https://github.com/wikimedia/xtools/graphs/contributors). Up until version 3.12.0, XTools could
-theoretically be used on any MediaWiki installation. However official support was dropped due to lack of usage by
-third parties and associated maintenance burden.
+and [others](https://github.com/wikimedia/xtools/graphs/contributors).
+
+## Installation and configuration
+
+See https://www.mediawiki.org/wiki/Xtools/User_guide.
 
 ## Licence
 

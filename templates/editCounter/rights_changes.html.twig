@@ -41,7 +41,7 @@
 								<td>{{ msg(state ~ '-user-groups') }}</td>
 								<td>
 									{% set localList = ec.userRights.rightsStates.local[state] %}
-									{% set globalList = ec.userRights.rightsStates.global[state] %}
+									{% set globalList = isWMF() ? ec.userRights.rightsStates.global[state] : [] %}
 									{% if localList|merge(globalList)|length  == 0 %}
 										<em class="text-muted">{{ msg('none') }}</em>
 									{% else %}
@@ -88,7 +88,7 @@
 	</div>
 {% endif %}
 
-{% if ec.userRights.globalRightsChanges|length > 0 %}
+{% if isWMF() and ec.userRights.globalRightsChanges|length > 0 %}
 	<h4 class="xt-show-hide--parent">
 		{{ msg('global-rights-changes') }}
 		<small class='xt-show'>[{{ msg('show')|lower }}]</small>

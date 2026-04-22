@@ -38,7 +38,15 @@
 
 		{% include 'editCounter/subtoolSection.html.twig' with {'route': 'TopEditsResultNamespace', 'i18nKey': 'top-edited-pages', 'downloadFormats': ['wikitext'], 'extraParams': {'namespace': 'all'}, 'jsonPath': 'UserApiTopEditsNamespace'} %}
 
-		{% if not(user.isAnon(project)) and 'rights-changes' in sections and (ec.userRights.rightsChanges|length > 0 or ec.userRights.globalRightsChanges|length > 0) %}
+		{% if not(user.isAnon(project))
+			and 'rights-changes' in sections
+			and (
+				ec.userRights.rightsChanges|length > 0
+				or (
+					isWMF()
+					and ec.userRights.globalRightsChanges|length > 0
+				)
+			) %}
 			{% include 'editCounter/subtoolSection.html.twig' with {'route': 'EditCounterRightsChanges', 'i18nKey': 'rights-changes', 'downloadFormats': ['wikitext']} %}
 		{% endif %}
 

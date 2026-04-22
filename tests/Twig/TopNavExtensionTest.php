@@ -64,7 +64,6 @@ class TopNavExtensionTest extends TestAdapter {
 			'Category Edits',
 			'Edit Counter',
 			'Edit Summaries',
-			'Global Contributions',
 			'Pages Created',
 			'Simple Counter',
 			'Top Edits',
@@ -76,8 +75,6 @@ class TopNavExtensionTest extends TestAdapter {
 	 */
 	public function testTopNavPage(): void {
 		static::assertEquals( [
-			'Authorship',
-			'Blame',
 			'Page History',
 		], array_values( $this->topNavExtension->topNavPage() ) );
 	}

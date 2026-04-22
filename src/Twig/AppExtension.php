@@ -193,7 +193,7 @@ class AppExtension extends AbstractExtension {
 
 	/**
 	 * Check whether a given tool is enabled.
-	 * @param string $tool The short name of the tool.
+	 * @param string $tool The short name of the tool (in CamelCase).
 	 * @return bool
 	 */
 	public function toolEnabled( string $tool = 'index' ): bool {
@@ -201,6 +201,15 @@ class AppExtension extends AbstractExtension {
 		if ( $this->parameterBag->has( "enable.$tool" ) ) {
 			$param = (bool)$this->parameterBag->get( "enable.$tool" );
 		}
+		$toolAvailable = match ( $tool ) {
+			// WikiWho exists only for WMF.
+			// GlobalEdits makes no sense for a single wiki,
+			// and relies on CentralAuth which almost no one uses.
+			'Authorship', 'Blame', 'GlobalContribs' => $this->isWMF,
+			// For the rest obey .env
+			default => true,
+		};
+		$param = $param && $toolAvailable;
 		return $param;
 	}
 
@@ -364,13 +373,17 @@ class AppExtension extends AbstractExtension {
 	 * @codeCoverageIgnore
 	 */
 	public function replag(): int {
-		$projectIdent = $this->getRequest()->get( 'project', 'enwiki' );
-		$project = $this->projectRepo->getProject( $projectIdent );
-		$dbName = $project->getDatabaseName();
-		$sql = "SELECT lag FROM `heartbeat_p`.`heartbeat`";
-		return (int)$project->getRepository()->executeProjectsQuery( $project, $sql, [
-			'project' => $dbName,
-		] )->fetchOne();
+		if ( $this->isWMF ) {
+			$projectIdent = $this->getRequest()->get( 'project', 'enwiki' );
+			$project = $this->projectRepo->getProject( $projectIdent );
+			$dbName = $project->getDatabaseName();
+			$sql = "SELECT lag FROM `heartbeat_p`.`heartbeat`";
+			return (int)$project->getRepository()->executeProjectsQuery( $project, $sql, [
+				'project' => $dbName,
+			] )->fetchOne();
+		} else {
+			return 0;
+		}
 	}
 
 	/**

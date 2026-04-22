@@ -16,9 +16,12 @@ imports:
 parameters:
     app.version: '%env(APP_VERSION)%'
     locale: 'en'
-    wiki_url: '%env(WIKI_URL)%'
     default_project: '%env(DEFAULT_PROJECT)%'
+    central_auth_project: '%env(CENTRAL_AUTH_PROJECT)%'
     app.single_wiki: '%env(bool:APP_SINGLE_WIKI)%'
+    database_single_name: '%env(DATABASE_SINGLE_NAME)%'
+    database_meta_name: '%env(DATABASE_META_NAME)%'
+    database_meta_table: '%env(DATABASE_META_TABLE)%'
     app.is_wmf: '%env(bool:APP_IS_WMF)%'
     app.max_page_revisions: '%env(int:APP_MAX_PAGE_REVISIONS)%'
     app.max_user_edits: '%env(int:APP_MAX_USER_EDITS)%'

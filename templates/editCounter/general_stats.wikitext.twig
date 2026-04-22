@@ -22,7 +22,7 @@
 | {{ msg('user-groups') }}
 | {% for group in ec.userRights.rightsStates.local.current %}{{ ec.userRights.rightsName(group) }}{% if not loop.last %}, {% endif %}{% endfor %}
 
-{% if ec.userRights.rightsStates.global.current %}
+{% if isWMF() and ec.userRights.rightsStates.global.current %}
 |-
 | {{ msg('global-user-groups') }}
 | {% for group in ec.userRights.rightsStates.global.current %}{{ ec.userRights.rightsNames[group] }}{% if not loop.last %}, {% endif %}{% endfor %}
@@ -228,7 +228,7 @@
 |-
 |}
 
-{% if not(user.isIP) %}
+{% if not(user.isIP) and isWMF() %}
 {# ======================== GLOBAL EDITS ======================== #}
 === {{ msg('top-projects-edit-counts') ~ ' (' ~ msg('approximate')|lower ~ ')' }} ===
 

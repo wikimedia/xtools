@@ -289,7 +289,7 @@ class PageRepository extends Repository {
 				FROM wikidatawiki_p.wb_items_per_site
 				WHERE ips_item_id = :wikidataId";
 
-		$result = $this->executeProjectsQuery( 'wikidatawiki', $sql, [
+		$result = $this->executeProjectsQuery( 'wikidatawiki_p', $sql, [
 			'wikidataId' => $wikidataId,
 		] )->fetchAllAssociative();
 

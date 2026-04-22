@@ -41,7 +41,7 @@
 					{% endfor %}
 				</td>
 			</tr>
-			{% if ec.userRights.rightsStates.global.current %}
+			{% if isWMF() and ec.userRights.rightsStates.global.current %}
 				<tr>
 					<td>{{ msg('global-user-groups') }}</td>
 					<td>
@@ -372,6 +372,14 @@
 			</tbody>
 		{% endif %}
 
+{# for better separation, because else the last column is empty #}
+{% if user.isIp or not(isWMF()) %}
+	</table>
+</div>
+<div class="col-lg-4 stat-list clearfix">
+	<table class="table">
+{% endif %}
+
 		{# ======================== ADMIN ACTIONS ======================== #}
 		{% if adminStatus is defined and adminStatus == true %}
 			<tbody class="stat-list--group">
@@ -453,7 +461,7 @@
 	</table>
 </div>
 
-{% if not(user.isIP) %}
+{% if not(user.isIP) and isWMF() %}
 	{# ======================== GLOBAL EDITS ======================== #}
 	<div class="col-lg-4 stat-list clearfix">
 		<table class="table top-project-edit-counts">
@@ -468,11 +476,11 @@
 					<tr>
 						<td>
 							{% if topProj.project.databaseName == project.databaseName %}
-								<span title="{{ msg('selected') }}">{% if isRTL() %}&#9668;{% else %}&#9658;{% endif %}</span>
+							    <span title="{{ msg('selected') }}">{% if isRTL() %}&#9668;{% else %}&#9658;{% endif %}</span>
 							{% endif %}
 							{# use project.domain instead of title due to limited space available in the interface #}
 							<a href="{{ path('EditCounterResult', {project:topProj.project.domain, username:user.usernameIdent}) }}">
-								{{- topProj.project.domain -}}
+							    {{- topProj.project.domain -}}
 							</a>{#-
 						-#}</td>
 						<td>
@@ -490,13 +498,7 @@
 					<td>{{ msg('all-projects') }}</td>
 					<td>
 						<strong>
-							{% if is_sub_request %}
-								<a href="{{ path('GlobalContribsResult', { username: user.usernameIdent }) }}">{{ gc.globalEditCount|num_format }}</a>
-							{% else %}
-								<a href="{{ path('GlobalContribsResult', {username:user.usernameIdent}) }}">
-									{{ gc.globalEditCount|num_format }}
-								</a>
-							{% endif %}
+							<a href="{{ path('GlobalContribsResult', { username: user.usernameIdent }) }}">{{ gc.globalEditCount|num_format }}</a>
 						</strong>
 					</td>
 				</tr>

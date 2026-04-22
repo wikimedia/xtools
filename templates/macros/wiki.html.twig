@@ -286,7 +286,7 @@
 			{% endif %}
 			{{ wiki.blockLogLink(user.username, project) }}
 		{% endif %}
-		{% if not(isSingleWiki()) and not(user.isIP) %}
+		{% if isWMF() and not(user.isAnon(project)) %}
 			&middot;
 			{{ wiki.pageLinkRaw('Special:CentralAuth/' ~ user.username, project, msg('sul-info')) }}
 		{% endif %}

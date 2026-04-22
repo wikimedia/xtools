@@ -19,7 +19,7 @@ use Wikimedia\IPUtils;
  */
 class GlobalContribsRepository extends Repository {
 
-	/** @var Project CentralAuth project (meta.wikimedia for WMF installation). */
+	/** @var Project CentralAuth project (meta.wikimedia.org for WMF installation). */
 	protected Project $caProject;
 
 	public function __construct(

@@ -72,11 +72,8 @@ class ProjectRepository extends Repository {
 
 		if ( $this->singleWiki ) {
 			$this->setSingleBasicInfo( [
-				'url' => $this->parameterBag->get( 'wiki_url' ),
-				// Just so this will pass in CI.
-				'dbName' => '',
-				// TODO: this will need to be restored for third party support; KEYWORD: isWMF
-				// 'dbName' => $this->parameterBag->('database_replica_name'),
+				'url' => $this->parameterBag->get( 'default_project' ),
+				'dbName' => $this->parameterBag->get( 'database_single_name' ),
 			] );
 		}
 
@@ -96,11 +93,7 @@ class ProjectRepository extends Repository {
 	 * @return Project
 	 */
 	public function getGlobalProject(): Project {
-		if ( $this->isWMF ) {
-			return $this->getProject( 'metawiki' );
-		} else {
-			return $this->getDefaultProject();
-		}
+		return $this->getProject( $this->parameterBag->get( 'central_auth_project' ) );
 	}
 
 	/**
@@ -111,7 +104,7 @@ class ProjectRepository extends Repository {
 	 */
 	public function setSingleBasicInfo( array $metadata ): void {
 		if ( !array_key_exists( 'url', $metadata ) || !array_key_exists( 'dbName', $metadata ) ) {
-			$error = "Single-wiki metadata should contain 'url', 'dbName' and 'lang' keys.";
+			$error = "Single-wiki metadata should contain 'url' and 'dbName' keys.";
 			throw new Exception( $error );
 		}
 		$this->singleBasicInfo = array_intersect_key( $metadata, [
@@ -129,7 +122,7 @@ class ProjectRepository extends Repository {
 		$this->logger->debug( __METHOD__ . " Getting all projects' metadata" );
 		// Single wiki mode?
 		if ( !empty( $this->singleBasicInfo ) ) {
-			return [ $this->getOne( '' ) ];
+			return [ $this->getOne( $this->singleBasicInfo['dbName'] ) ];
 		}
 
 		// Maybe we've already fetched it.
@@ -137,20 +130,21 @@ class ProjectRepository extends Repository {
 			return $this->cache->getItem( $this->cacheKeyAllProjects )->get();
 		}
 
-		if ( $this->parameterBag->has( "database_meta_table" ) ) {
-			$table = $this->parameterBag->get( 'database_meta_name' ) . '.' .
-				$this->parameterBag->get( 'database_meta_table' );
-		} else {
-			$table = "meta_p.wiki";
-		}
+		$table = $this->parameterBag->get( 'database_meta_name' ) . '.' .
+			$this->parameterBag->get( 'database_meta_table' );
 
 		// Otherwise, fetch all from the database.
 		$sql = "SELECT dbname AS dbName, url, lang FROM $table";
-		$projects = $this->executeProjectsQuery( 'meta', $sql )
+		$projects = $this->executeProjectsQuery( $this->parameterBag->get( 'database_meta_name' ), $sql )
 			->fetchAllAssociative();
 		$projectsMetadata = [];
 		foreach ( $projects as $project ) {
-			$projectsMetadata[$project['dbName']] = $project;
+			$dbName = $project['dbName'];
+			if ( $this->isWMF ) {
+				$dbName .= '_p';
+			}
+			$project['dbName'] = $dbName;
+			$projectsMetadata[$dbName] = $project;
 		}
 
 		// Cache for one day and return.
@@ -175,7 +169,9 @@ class ProjectRepository extends Repository {
 		}
 
 		// Remove _p suffix.
-		$project = rtrim( $project, '_p' );
+		if ( $this->isWMF ) {
+			$project = rtrim( $project, '_p' );
+		}
 
 		// For multi-wiki setups, first check the cache.
 		// First the all-projects cache, then the individual one.
@@ -196,8 +192,8 @@ class ProjectRepository extends Repository {
 			return $this->cache->getItem( $cacheKey )->get();
 		}
 
-		// TODO: make this configurable if XTools is to work on 3rd party wiki farms
-		$table = "meta_p.wiki";
+		$table = $this->parameterBag->get( 'database_meta_name' ) . '.' .
+			$this->parameterBag->get( 'database_meta_table' );
 
 		// Otherwise, fetch the project's metadata from the meta.wiki table.
 		$sql = "SELECT dbname AS dbName, url, lang
@@ -207,7 +203,7 @@ class ProjectRepository extends Repository {
 					OR url LIKE :projectUrl2
 					OR url LIKE :projectUrl3
 					OR url LIKE :projectUrl4";
-		$basicInfo = $this->executeProjectsQuery( 'meta', $sql, [
+		$basicInfo = $this->executeProjectsQuery( $this->parameterBag->get( 'database_meta_name' ), $sql, [
 			'project' => $project,
 			'projectUrl' => "https://$project",
 			'projectUrl2' => "https://$project.org",
@@ -215,6 +211,9 @@ class ProjectRepository extends Repository {
 			'projectUrl4' => "https://www.$project.org",
 		] )->fetchAssociative();
 		$basicInfo = $basicInfo === false ? null : $basicInfo;
+		if ( $this->isWMF && $basicInfo ) {
+			$basicInfo['dbName'] .= '_p';
+		}
 
 		// Cache for one hour and return.
 		return $this->setCache( $cacheKey, $basicInfo, 'PT1H' );
@@ -432,7 +431,7 @@ class ProjectRepository extends Repository {
 					JOIN centralauth_p.globaluser ON gug_user = gu_id
 					WHERE gug_group IN (?)
 					GROUP BY user_name, user_group";
-			$globalUsers = $this->getProjectsConnection( 'centralauth' )
+			$globalUsers = $this->getProjectsConnection( 'centralauth_p' )
 				->executeQuery( $sql, [ $globalGroups ], [ ArrayParameterType::STRING ] )
 				->fetchAllAssociative();
 

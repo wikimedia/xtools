@@ -6,6 +6,11 @@ namespace App\Repository;
 
 use App\Model\Project;
 use App\Model\User;
+use Doctrine\Persistence\ManagerRegistry;
+use GuzzleHttp\Client;
+use Psr\Cache\CacheItemPoolInterface;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 /**
  * An UserRightsRepository is responsible for retrieving information around a user's
@@ -13,6 +18,26 @@ use App\Model\User;
  * @codeCoverageIgnore
  */
 class UserRightsRepository extends Repository {
+
+	/** @var Project CentralAuth project (meta.wikimedia.org for WMF installation). */
+	protected Project $caProject;
+
+	public function __construct(
+		protected ManagerRegistry $managerRegistry,
+		protected CacheItemPoolInterface $cache,
+		protected Client $guzzle,
+		protected LoggerInterface $logger,
+		protected ParameterBagInterface $parameterBag,
+		protected bool $isWMF,
+		protected int $queryTimeout,
+		protected ProjectRepository $projectRepo,
+		string $centralAuthProject
+	) {
+		$this->caProject = new Project( $centralAuthProject );
+		$this->caProject->setRepository( $this->projectRepo );
+		parent::__construct( $managerRegistry, $cache, $guzzle, $logger, $parameterBag, $isWMF, $queryTimeout );
+	}
+
 	/**
 	 * Get user rights changes of the given user, including those made on Meta.
 	 * @param Project $project
@@ -60,7 +85,7 @@ class UserRightsRepository extends Repository {
 
 		// Global rights and Meta-changed rights should use a Meta Project.
 		if ( $type !== 'local' ) {
-			$dbName = 'metawiki';
+			$dbName = $this->caProject->getDatabaseName();
 		}
 
 		$loggingTable = $this->getTableName( $dbName, 'logging', 'logindex' );
@@ -154,7 +179,7 @@ class UserRightsRepository extends Repository {
 			$sql = "SELECT DISTINCT(gug_group) FROM centralauth_p.global_user_groups";
 			$groups = array_merge(
 				$groups,
-				$this->executeProjectsQuery( 'centralauth', $sql )->fetchFirstColumn()
+				$this->executeProjectsQuery( 'centralauth_p', $sql )->fetchFirstColumn()
 			);
 		}
 		// Some installations have the special 'autoconfirmed' and 'temp' user groups.
