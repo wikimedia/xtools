@@ -20,6 +20,7 @@ class SimpleEditCounterRepository extends Repository {
 	 * @param int|string $namespace Namespace ID or 'all' for all namespaces.
 	 * @param int|false $start Unix timestamp.
 	 * @param int|false $end Unix timestamp.
+	 * @param bool $showLatestActions whether to show the
 	 * @return string[] Counts, each row with keys 'source' and 'value'.
 	 */
 	public function fetchData(
@@ -27,7 +28,8 @@ class SimpleEditCounterRepository extends Repository {
 		User $user,
 		int|string $namespace = 'all',
 		int|false $start = false,
-		int|false $end = false
+		int|false $end = false,
+		bool $showLatestActions = false,
 	): array {
 		$cacheKey = $this->getCacheKey( func_get_args(), 'simple_editcount' );
 		if ( $this->cache->hasItem( $cacheKey ) ) {
@@ -37,7 +39,7 @@ class SimpleEditCounterRepository extends Repository {
 		if ( $user->isIpRange() ) {
 			$result = $this->fetchDataIpRange( $project, $user, $namespace, $start, $end );
 		} else {
-			$result = $this->fetchDataNormal( $project, $user, $namespace, $start, $end );
+			$result = $this->fetchDataNormal( $project, $user, $namespace, $start, $end, $showLatestActions );
 		}
 
 		// Cache and return.
@@ -57,7 +59,7 @@ class SimpleEditCounterRepository extends Repository {
 		User $user,
 		int|string $namespace = 'all',
 		int|false $start = false,
-		int|false $end = false,
+		int|false $end = false
 	): array {
 		$userTable = $project->getTableName( 'user' );
 		$pageTable = $project->getTableName( 'page' );
@@ -66,6 +68,7 @@ class SimpleEditCounterRepository extends Repository {
 		$userGroupsTable = $project->getTableName( 'user_groups' );
 
 		$arDateConditions = $this->getDateConditions( $start, $end, false, '', 'ar_timestamp' );
+		$logDateConditions = $this->getDateConditions( $start, $end, false, '', 'log_timestamp' );
 		$revDateConditions = $this->getDateConditions( $start, $end );
 
 		// Always JOIN on page, see T325492

@@ -406,7 +406,7 @@ class User extends Model {
 	 * Get edit count within given timeframe and namespace
 	 * @param Project $project
 	 * @param int|string $namespace Namespace ID or 'all' for all namespaces
-	 * @param false|int $start Start date as Unix timestamp.
+	 * @param int|false $start Start date as Unix timestamp.
 	 * @param int|false $end End date as Unix timestamp.
 	 * @return int
 	 * Just returns a repository result.
@@ -419,6 +419,17 @@ class User extends Model {
 		false|int $end = false
 	): int {
 		return $this->repository->countEdits( $project, $this, $namespace, $start, $end );
+	}
+
+	/**
+	 * Get the timestamp of the latest edit and logged action made by the user.
+	 * @param Project $project
+	 * @return string[] with keys 'log' and 'edit'
+	 * Just returns a repository result.
+	 * @codeCoverageIgnore
+	 */
+	public function getLatestEditAndLog( Project $project ): array {
+		return $this->repository->getLatestEditAndLog( $project, $this );
 	}
 
 	/**

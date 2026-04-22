@@ -24,6 +24,7 @@ class ModelTest extends TestAdapter {
 	public function testBasics(): void {
 		// Use SimpleEditCounter since Model is abstract.
 		$repo = $this->createMock( SimpleEditCounterRepository::class );
+		$editRepo = $this->createMock( EditRepository::class );
 		$project = $this->createMock( Project::class );
 		$user = $this->createMock( User::class );
 		$start = '2020-01-01';
@@ -31,6 +32,7 @@ class ModelTest extends TestAdapter {
 
 		$model = new SimpleEditCounter(
 			$repo,
+			$editRepo,
 			$project,
 			$user,
 			'all',

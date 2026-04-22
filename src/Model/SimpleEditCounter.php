@@ -4,6 +4,7 @@ declare( strict_types = 1 );
 
 namespace App\Model;
 
+use App\Repository\EditRepository;
 use App\Repository\Repository;
 use App\Repository\SimpleEditCounterRepository;
 
@@ -24,24 +25,31 @@ class SimpleEditCounter extends Model {
 		'user_groups' => [],
 		'global_user_groups' => [],
 		'creation_count' => 0,
+		'latest_edit' => null,
+		'latest_log_id' => null,
+		'latest_log_timestamp' => null,
 	];
 
 	/**
 	 * Constructor for the SimpleEditCounter class.
 	 * @param Repository|SimpleEditCounterRepository $repository
+	 * @param EditRepository $editRepo
 	 * @param Project $project
 	 * @param ?User $user
 	 * @param string|int|null $namespace Namespace ID or 'all'.
 	 * @param false|int $start As Unix timestamp.
 	 * @param false|int $end As Unix timestamp.
+	 * @param bool $showLatestActions whether to show the timestamps of the latest edit and logged action.
 	 */
 	public function __construct(
 		protected Repository|SimpleEditCounterRepository $repository,
+		protected EditRepository $editRepo,
 		protected Project $project,
 		protected ?User $user,
 		string|int|null $namespace = 'all',
 		protected false|int $start = false,
-		protected false|int $end = false
+		protected false|int $end = false,
+		protected bool $showLatestActions = false,
 	) {
 		if ( $this->user->getEditCount( $this->project ) > $this->user->maxEdits() ) {
 			$this->limited = true;
@@ -68,6 +76,16 @@ class SimpleEditCounter extends Model {
 			];
 		} else {
 			$this->prepareFullData();
+		}
+		if ( $this->showLatestActions ) {
+			$latest = $this->user->getLatestEditAndLog( $this->project );
+			$this->data[ 'latest_edit' ] = $this->editRepo->getEditFromRevIdForPage(
+				$this->user->getRepository(),
+				$this->project,
+				$latest[ 'edit_id' ]
+			);
+			$this->data[ 'latest_log_id' ] = $latest[ 'log_id' ];
+			$this->data[ 'latest_log_timestamp' ] = $latest[ 'log_timestamp' ];
 		}
 
 		if ( !$this->user->isAnon( $this->project ) ) {
@@ -171,6 +189,30 @@ class SimpleEditCounter extends Model {
 	 */
 	public function getGlobalUserGroups(): array {
 		return $this->data['global_user_groups'];
+	}
+
+	/**
+	 * Get the latest edit
+	 * @return ?Edit
+	 */
+	public function getLatestEdit(): ?Edit {
+		return $this->data['latest_edit'];
+	}
+
+	/**
+	 * Get the latest logged action's id
+	 * @return ?int
+	 */
+	public function getLatestLogId(): ?int {
+		return $this->data['latest_log_id'];
+	}
+
+	/**
+	 * Get the latest logged action's timestamp
+	 * @return ?string
+	 */
+	public function getLatestLogTimestamp(): ?string {
+		return $this->data['latest_log_timestamp'];
 	}
 
 	/**

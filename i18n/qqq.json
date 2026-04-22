@@ -400,6 +400,7 @@
 	"see-full-page-stats": "Label for a link to view full statistics on a page.",
 	"see-full-statistics": "Label for a link to view the full statistics. Shown on pages that have only part of the statistics shown.",
 	"show": "Toggle visibility of section (short word)\n{{Identical|Show}}",
+	"show-latest-edit-log": "Option in the SimpleEditCounter form to show the timestamps fo last edit and last logged action.",
 	"show-sections-desc": "Tooltip for checkboxes that allow you to pick which statistics to show.",
 	"simple-counter-limited-results": "Warning message shown when running the Simple Edit Counter on a user that has a very high edit count, and only limited results are returned.",
 	"size": "Label for the size of the page.\n{{Identical|Size}}",

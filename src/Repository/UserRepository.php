@@ -197,6 +197,43 @@ class UserRepository extends Repository {
 	}
 
 	/**
+	 * Get the timestamp of the last edit and logged action made by the user.
+	 * @param Project $project
+	 * @param User $user
+	 * @return string[] with keys 'log' and 'edit'
+	 */
+	public function getLatestEditAndLog( Project $project, User $user ): array {
+		$revisionTable = $project->getTableName( 'revision' );
+		$loggingTable = $project->getTableName( 'logging' );
+
+		$sql = "(SELECT 'rev' AS `source`, rev_timestamp AS `timestamp`, rev_id AS `id`
+				FROM $revisionTable
+				WHERE rev_actor = :actorId
+				ORDER BY rev_timestamp DESC
+				LIMIT 1)
+			UNION
+			(SELECT 'log' AS `source`, log_timestamp AS `timestamp`, log_id AS `id`
+				FROM $loggingTable
+				WHERE log_actor = :actorId
+				ORDER BY log_timestamp DESC
+				LIMIT 1)";
+
+		$result = $this->executeProjectsQuery( $project, $sql, [
+			'actorId' => $user->getActorId( $project ),
+		] )->fetchAllAssociative();
+		$latest = [ 'edit' => null, 'log' => null ];
+		foreach ( $result as $row ) {
+			if ( $row['source'] == "rev" ) {
+				$latest['edit_id'] = $row[ 'id' ];
+			} else {
+				$latest['log_timestamp'] = $row[ 'timestamp' ];
+				$latest['log_id'] = $row[ 'id' ];
+			}
+		}
+		return $latest;
+	}
+
+	/**
 	 * Get information about the currently-logged in user.
 	 * @return array|stdClass|null null if not logged in.
 	 */

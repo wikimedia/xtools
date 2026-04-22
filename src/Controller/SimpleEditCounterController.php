@@ -5,6 +5,7 @@ declare( strict_types=1 );
 namespace App\Controller;
 
 use App\Model\SimpleEditCounter;
+use App\Repository\EditRepository;
 use App\Repository\SimpleEditCounterRepository;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -49,14 +50,20 @@ class SimpleEditCounterController extends XtoolsController {
 		], $this->params, [ 'project' => $this->project ] ) );
 	}
 
-	private function prepareSimpleEditCounter( SimpleEditCounterRepository $simpleEditCounterRepo ): SimpleEditCounter {
+	private function prepareSimpleEditCounter(
+		SimpleEditCounterRepository $simpleEditCounterRepo,
+		EditRepository $editRepo,
+		bool $showLatestActions
+	): SimpleEditCounter {
 		$sec = new SimpleEditCounter(
 			$simpleEditCounterRepo,
+			$editRepo,
 			$this->project,
 			$this->user,
 			$this->namespace,
 			$this->start,
-			$this->end
+			$this->end,
+			$showLatestActions
 		);
 		$sec->prepareData();
 
@@ -86,8 +93,16 @@ class SimpleEditCounterController extends XtoolsController {
 	 * Display the results.
 	 * @codeCoverageIgnore
 	 */
-	public function resultAction( SimpleEditCounterRepository $simpleEditCounterRepo ): Response {
-		$sec = $this->prepareSimpleEditCounter( $simpleEditCounterRepo );
+	public function resultAction(
+		SimpleEditCounterRepository $simpleEditCounterRepo,
+		EditRepository $editRepo,
+	): Response {
+		$showLatestActions = $this->request->query->getBoolean( 'latest' );
+		$sec = $this->prepareSimpleEditCounter(
+			$simpleEditCounterRepo,
+			$editRepo,
+			$showLatestActions
+		);
 
 		return $this->getFormattedResponse( 'simpleEditCounter/result', [
 			'xtPage' => 'SimpleEditCounter',

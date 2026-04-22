@@ -55,6 +55,18 @@
 								<td>{{ sec.globalUserGroups|join(', ') }}</td>
 							</tr>
 						{% endif %}
+						{% if sec.latestEdit is not null %}
+							<tr>
+								<td>{{ msg('latest-edit') }}</td>
+								<td>{{ wiki.diffLink(sec.latestEdit, label = sec.latestEdit.getTimestamp|date_format) }}</td>
+							</tr>
+						{% endif %}
+						{% if sec.latestLogId is not null %}
+							<tr>
+								<td>{{ msg('latest-action') }}</td>
+								<td>{{ wiki.logLink(project, sec.latestLogId, label=sec.latestLogTimestamp|date_format) }}</td>
+							</tr>
+						{% endif %}
 					{% endif %}
 					{% if not(user.ipRange) %}
 						<tr>

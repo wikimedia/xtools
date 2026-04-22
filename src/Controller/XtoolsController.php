@@ -639,6 +639,7 @@ abstract class XtoolsController extends AbstractController {
 			'exclude_pattern',
 			'classonly',
 			'countsOnly',
+			'latest',
 
 			// Legacy parameters.
 			'user',
