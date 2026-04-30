@@ -243,6 +243,7 @@
 	"latest-action": "最新日志操作",
 	"latest-edit": "最新编辑",
 	"latest-revision": "最新版本",
+	"less-than": "少于$1",
 	"limit": "限制",
 	"links": "链接",
 	"links-external": "外部链接",

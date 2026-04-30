@@ -459,6 +459,7 @@
 	"unregistered-edits-tooltip": "임시 계정 또는 IP의 편집",
 	"unregistered-edits-percentage": "등록되지 않은 사용자의 편집 %",
 	"unreverted-edits": "되돌리지 않은 편집",
+	"use-log-scale": "대수 눈금 사용",
 	"user": "사용자",
 	"user-groups": "사용자 그룹",
 	"user-id": "사용자 ID",
