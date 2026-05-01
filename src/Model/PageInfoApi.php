@@ -202,7 +202,10 @@ class PageInfoApi extends Model {
 			'[typeof~="mw:Extension/ref"]',
 		] ) )->each( static function ( Crawler $subCrawler ) {
 			foreach ( $subCrawler as $subNode ) {
-				$subNode->parentNode->removeChild( $subNode );
+				// don't remove the node if it was removed already (crashes)
+				if ( $subNode->isConnected ) {
+					$subNode->parentNode->removeChild( $subNode );
+				}
 			}
 		} );
 
