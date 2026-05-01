@@ -14,10 +14,13 @@ class Authorship extends Model {
 	public const SUPPORTED_PROJECTS = [
 		'ar.wikipedia.org',
 		'de.wikipedia.org',
+		'dsb.wikipedia.org',
 		'en.wikipedia.org',
 		'es.wikipedia.org',
 		'eu.wikipedia.org',
+		'fa.wikipedia.org',
 		'fr.wikipedia.org',
+		'hi.wikipedia.org',
 		'hu.wikipedia.org',
 		'id.wikipedia.org',
 		'it.wikipedia.org',
@@ -25,7 +28,11 @@ class Authorship extends Model {
 		'nl.wikipedia.org',
 		'pl.wikipedia.org',
 		'pt.wikipedia.org',
+		'ru.wikipedia.org',
+		'sv.wikipedia.org',
 		'tr.wikipedia.org',
+		'uk.wikipedia.org',
+		'vi.wikipedia.org',
 	];
 
 	/** @var int|null Target revision ID. Null for latest revision. */
