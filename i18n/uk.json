@@ -12,6 +12,7 @@
 			"Nemo bis",
 			"Piramidion",
 			"Renessaince",
+			"Repakr",
 			"Vlad5250",
 			"Ата",
 			"Пан Хаунд"
@@ -217,6 +218,7 @@
 	"latest-action": "Остання журнальована дія",
 	"latest-edit": "Останнє редагування",
 	"latest-revision": "Поточна версія",
+	"less-than": "Менше ніж $1",
 	"limit": "Обмеження",
 	"links": "Посилання",
 	"links-external": "Зовнішні посилання",
