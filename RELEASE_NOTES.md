@@ -1,5 +1,14 @@
 # Release Notes #
 
+## 3.24.4 ##
+- Authorship (T372340): Enable dsb, fa, hi, ru, sv, uk, vi Wikipedias.
+- PageInfo (T424866): Fix error with pages containing unbalanced wikitext.
+- PageInfo (T401360): Show "Less than 30" for page watchers as appropriate.
+- TopEdits (T407814): Restore sha1-based revert detection
+- GlobalContribs (T322466): Prevent erroring out when a project doesn't yet
+  exist in the database.
+- Localization updates.
+
 ## 3.24.3 ##
 - AutoEdits (T420807): Fix query for tag excludes
 - AutoEdits (T420806): Fix dropdown for selecting a tool on the index page.
