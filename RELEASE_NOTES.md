@@ -1,5 +1,9 @@
 # Release Notes #
 
+## 3.24.6 ##
+- Authorship (T372340): Enable ce, sr, no, fi, cs, ro and sh language Wikipedias.
+- Localization updates.
+
 ## 3.24.5 ##
 - Repository: Fix a typo introduced in a query in 3.24.4.
 
