@@ -40,6 +40,7 @@ class ProjectTest extends TestAdapter {
 					'scriptPath' => '/test_w',
 					'wikiName' => 'Test Wiki',
 					'mainpage' => 'Test Main Page',
+					'servername' => 'en-gb.wikipedia.org',
 				],
 			] );
 		$this->projectRepo->expects( static::once() )
@@ -53,6 +54,7 @@ class ProjectTest extends TestAdapter {
 		static::assertEquals( 'test_wiki', $project->getCacheKey() );
 		static::assertEquals( 'https://test.example.org/', $project->getUrl() );
 		static::assertEquals( 'en', $project->getLang() );
+		static::assertEquals( 'en-gb', $project->getServerSubdomain() );
 		static::assertEquals( '/test_w', $project->getScriptPath() );
 		static::assertEquals( '/test_wiki/$1', $project->getArticlePath() );
 		static::assertEquals( 'https://test.example.org/w/api.php', $project->getApiUrl() );

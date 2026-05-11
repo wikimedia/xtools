@@ -30,7 +30,7 @@ class AuthorshipRepository extends Repository {
 		}
 
 		$title = rawurlencode( str_replace( ' ', '_', $page->getTitle() ) );
-		$projectLang = $page->getProject()->getLang();
+		$projectLang = $page->getProject()->getServerSubdomain();
 		$oRevId = $returnRevId ? 'true' : 'false';
 
 		$url = "https://wikiwho.wmcloud.org/$projectLang/api/v1.0.0-beta/rev_content/$title"

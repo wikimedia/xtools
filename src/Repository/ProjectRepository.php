@@ -271,6 +271,7 @@ class ProjectRepository extends Repository {
 				'timezone' => $info['timezone'],
 				'timeOffset' => $info['timeoffset'],
 				'mainpage' => $info['mainpage'],
+				'servername' => $info['servername'],
 			];
 		}
 

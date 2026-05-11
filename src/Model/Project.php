@@ -141,6 +141,16 @@ class Project extends Model {
 	}
 
 	/**
+	 * Get the language code used in the subdomain,
+	 * which is not neccessarily the same as ::getLang().
+	 * @return string
+	 */
+	public function getServerSubdomain(): string {
+		$info = $this->getMetadata();
+		return explode( '.', $info['general']['servername'] )[0];
+	}
+
+	/**
 	 * The project URL is the fully-qualified domain name, with protocol and trailing slash.
 	 * @param bool $withTrailingSlash Whether to append a slash.
 	 * @return string
