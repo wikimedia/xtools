@@ -12,7 +12,10 @@ use GuzzleHttp\Exception\RequestException;
 class Authorship extends Model {
 	/** @const string[] Domain names of wikis supported by WikiWho. */
 	public const SUPPORTED_PROJECTS = [
+		'als.wikipedia.org',
 		'ar.wikipedia.org',
+		'be.wikipedia.org',
+		'bn.wikipedia.org',
 		'ce.wikipedia.org',
 		'cs.wikipedia.org',
 		'de.wikipedia.org',
@@ -23,11 +26,15 @@ class Authorship extends Model {
 		'fa.wikipedia.org',
 		'fi.wikipedia.org',
 		'fr.wikipedia.org',
+		'he.wikipedia.org',
 		'hi.wikipedia.org',
 		'hu.wikipedia.org',
 		'id.wikipedia.org',
 		'it.wikipedia.org',
 		'ja.wikipedia.org',
+		'ml.wikipedia.org',
+		'ms.wikipedia.org',
+		'ne.wikipedia.org',
 		'nl.wikipedia.org',
 		'no.wikipedia.org',
 		'pl.wikipedia.org',
@@ -35,10 +42,14 @@ class Authorship extends Model {
 		'ro.wikipedia.org',
 		'ru.wikipedia.org',
 		'sh.wikipedia.org',
+		'sq.wikipedia.org',
 		'sr.wikipedia.org',
 		'sv.wikipedia.org',
+		'th.wikipedia.org',
+		'tl.wikipedia.org',
 		'tr.wikipedia.org',
 		'uk.wikipedia.org',
+		'ur.wikipedia.org',
 		'vi.wikipedia.org',
 	];
 
