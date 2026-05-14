@@ -1,5 +1,9 @@
 # Release Notes #
 
+## 3.24.7 ##
+- Authorship (T372340): Enable als, be, bn, he, ml, ms, ne, sq, th, tl, and ur
+  language Wikipedias.
+
 ## 3.24.6 ##
 - Authorship (T372340): Enable ce, sr, no, fi, cs, ro and sh language Wikipedias.
 - Localization updates.
