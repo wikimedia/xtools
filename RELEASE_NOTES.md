@@ -1,5 +1,9 @@
 # Release Notes #
 
+## 3.24.8 ##
+- Authorship (T372340): Enable support for 28 more languages.
+- Localization updates.
+
 ## 3.24.7 ##
 - Authorship (T372340): Enable als, be, bn, he, ml, ms, ne, sq, th, tl, and ur
   language Wikipedias.
