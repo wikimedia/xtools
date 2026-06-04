@@ -129,13 +129,7 @@ class AdminStats extends Model {
 	 * @return array Each entry contains 'name' (user group) and 'rights' (the permissions).
 	 */
 	public function getUserGroupIcons( bool $wikiPath = false ): array {
-		// Quick cache, valid only for the same request.
-		static $userGroupIcons = null;
-		if ( $userGroupIcons !== null ) {
-			$out = $userGroupIcons;
-		} else {
-			$out = $userGroupIcons = $this->getRepository()->getUserGroupIcons();
-		}
+		$out = $this->getRepository()->getUserGroupIcons();
 
 		if ( $wikiPath ) {
 			$out = array_map( static function ( $url ) {

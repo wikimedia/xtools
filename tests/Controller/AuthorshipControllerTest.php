@@ -21,7 +21,7 @@ class AuthorshipControllerTest extends ControllerTestAdapter {
 		$this->assertSuccessfulRoutes( [
 			'/authorship',
 			'/authorship/de.wikipedia.org',
-			'/authorship/en.wikipedia.org/Hanksy/2016-01-01',
+			'/authorship/en.wikipedia.org/Adam_Himebauch/2016-01-01',
 		] );
 	}
 }

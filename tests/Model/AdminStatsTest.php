@@ -16,7 +16,6 @@ use App\Tests\TestAdapter;
 class AdminStatsTest extends TestAdapter {
 	protected AdminStatsRepository $asRepo;
 	protected Project $project;
-	protected ProjectRepository $projectRepo;
 
 	/**
 	 * Set up container, class instances and mocks.
@@ -38,12 +37,10 @@ class AdminStatsTest extends TestAdapter {
 	}
 
 	/**
-	 * Test icons for each group.
-	 * Note that this should be independant from everything,
-	 * and so is static.
+	 * Test fetching user group icons.
 	 */
 	public function testGroupIcons(): void {
-		$this->asRepo->expects( static::once() )
+		$this->asRepo->expects( static::exactly( 2 ) )
 			->method( 'getUserGroupIcons' )
 			->willReturn( [
 				'sysop' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Mop.svg/20px-Mop.svg.png',
@@ -52,7 +49,7 @@ class AdminStatsTest extends TestAdapter {
 		static::assertEquals( [
 			'sysop' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Mop.svg/20px-Mop.svg.png',
 		], $as->getUserGroupIcons() );
-		// Test for wikitext; also implictly ensure we cache
+		// Test for wikitext.
 		static::assertEquals( [
 			'sysop' => 'Mop.svg',
 		], $as->getUserGroupIcons( true ) );

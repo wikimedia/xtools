@@ -17,7 +17,13 @@ class AdminStatsRepository extends Repository {
 	 * @return string[] System user group name as the key, URL to image as the value.
 	 */
 	public function getUserGroupIcons(): array {
-		return $this->parameterBag->get( 'user_group_icons' );
+		// Quick cache, valid only for the same request.
+		static $userGroupIcons = null;
+		if ( $userGroupIcons !== null ) {
+			return $userGroupIcons;
+		} else {
+			return $this->parameterBag->get( 'user_group_icons' );
+		}
 	}
 
 	/**
