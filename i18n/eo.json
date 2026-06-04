@@ -4,7 +4,8 @@
 			"Fitik",
 			"Mirin",
 			"Robin van der Vliet",
-			"StarrySky"
+			"StarrySky",
+			"Tymewalk"
 		]
 	},
 	"abusefilter": "MisuzoFiltro",
@@ -100,6 +101,7 @@
 	"edits-not-in-categories": "Redaktoj ne en kategorioj",
 	"edits-with-summaries": "Redaktoj kun resumoj",
 	"end": "Fina dato",
+	"error-authorship-unsupported-project": "$1 ne estas subtenata projekto.",
 	"error-rate-limit-login": "ensaluti",
 	"error-server-message": "La servilo diris: $1",
 	"executed": "Rulita en $1 {{PLURAL:$2|sekundo|sekundoj}}.",
@@ -130,11 +132,14 @@
 	"last-week": "Redaktoj en lastaj 7 tagoj",
 	"last-year": "Redaktoj en lastaj 365 tagoj",
 	"latest-edit": "Lasta redakto",
+	"latest-revision": "Plej lasta revizio",
+	"less-than": "Pli malgranda ol $1",
 	"limit": "Limo",
 	"links": "Ligiloj",
 	"links-external": "Eksteraj ligiloj",
 	"links-in": "Ligiloj al ĉi tiu paĝo",
 	"links-out": "Ligiloj ehavataj de ĉi tiu paĝo",
+	"loading": "Ŝargante",
 	"log": "Protokolo",
 	"log-delete": "Forigo de protokolero",
 	"log-types": "Specoj de protokoleroj",
@@ -163,6 +168,7 @@
 	"num-namespaces": "{{PLURAL:$1|nomspaco|nomspacoj}}",
 	"num-weeks": "{{PLURAL:$1|semajno|semajnoj}}",
 	"num-years": "{{PLURAL:$1|jaro|jaroj}}",
+	"page": "Paĝo",
 	"page-size": "Grando de paĝo",
 	"page-title": "Titolo de paĝo",
 	"pager-newer-n": "{{PLURAL:$1|pli novan 1|pli novajn $1}}",
@@ -170,6 +176,8 @@
 	"pages": "Paĝoj",
 	"percentage": "Procento",
 	"performer": "Faranto",
+	"powered-by": "Funkcianta per $1",
+	"priority": "Prioritato",
 	"project": "Projekto",
 	"query": "Informpeto",
 	"rank": "Rango",
@@ -211,5 +219,6 @@
 	"wikitext": "Vikiteksto",
 	"with-summary": "Kun resumo",
 	"words": "Vortoj",
-	"year": "Jaro"
+	"year": "Jaro",
+	"yes": "Jes"
 }
