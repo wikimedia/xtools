@@ -342,6 +342,8 @@
 	"priority": "우선 순위",
 	"project": "프로젝트",
 	"projects": "프로젝트",
+	"proofreadpage-quality": "문서 상태",
+	"proofreadpage-qualitychanges": "ProofreadPage 품질 변경 비율",
 	"prose": "산문",
 	"protect": "보호",
 	"proxy-check": "프록시 검사",
