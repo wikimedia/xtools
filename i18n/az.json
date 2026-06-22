@@ -10,7 +10,8 @@
 			"Serkanland",
 			"Vesely35",
 			"Wertuose",
-			"Şeyx Şamil"
+			"Şeyx Şamil",
+			"Əkrəm"
 		]
 	},
 	"abusefilter": "DəyişiklikSüzgəci",
@@ -250,7 +251,7 @@
 	"multiple-users-allowed": "Birdən çox istifadəçiyə icazə verilir (xətt simvolu ilə ayırın)",
 	"na": "Bilinmir",
 	"name": "Ad",
-	"namespace": "Adlar fəzası",
+	"namespace": "Ad fəzası",
 	"namespace-totals": "Ad fəzasının cəmi",
 	"namespaces": "Ad fəzaları",
 	"namespaces-desc": "Məqalələrə $2 {{PLURAL:$1|redaktə}} edilib",
