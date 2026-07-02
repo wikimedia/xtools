@@ -31,6 +31,7 @@ class RateLimitSubscriber implements EventSubscriberInterface {
 		'loginAction',
 		'oauthCallbackAction',
 		'recordUsageAction',
+		'setlangAction',
 		'showAction',
 	];
 
@@ -111,7 +112,7 @@ class RateLimitSubscriber implements EventSubscriberInterface {
 			return;
 		}
 
-		$loggedIn = (bool)$this->request->getSession()->get( 'logged_in_user' );
+		$loggedIn = $this->request->hasPreviousSession() && $this->request->getSession()->get( 'logged_in_user' );
 		$isApi = str_ends_with( $action, 'ApiAction' );
 
 		// No rate limits on lightweight pages, logged in users, subrequests or API requests.

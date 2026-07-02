@@ -18,6 +18,9 @@ use Symfony\Component\HttpFoundation\RequestStack;
  * and interactions with the Intuition library.
  */
 class I18nHelper {
+
+	public const LANG_COOKIE_NAME = 'xtools_lang';
+
 	protected ContainerInterface $container;
 	protected Intuition $intuition;
 	protected IntlDateFormatter $dateFormatter;
@@ -36,8 +39,8 @@ class I18nHelper {
 	}
 
 	/**
-	 * Get an Intuition object, set to the current language based on the query string or session
-	 * of the current request.
+	 * Get an Intuition object, set to the current language based on the query
+	 * string or the persisted lang cookie.
 	 * @return Intuition
 	 * @throws Exception If the 'i18n/en.json' file doesn't exist (as it's the default).
 	 */
@@ -60,12 +63,6 @@ class I18nHelper {
 		// Validate the language.
 		if ( !$this->intuition->getLangName( $useLang ) ) {
 			$useLang = 'en';
-		}
-
-		// Save the language to the session.
-		$session = $this->requestStack->getSession();
-		if ( $session->get( 'lang' ) !== $useLang ) {
-			$session->set( 'lang', $useLang );
 		}
 
 		$this->intuition->setLang( strtolower( $useLang ) );
@@ -277,13 +274,15 @@ class I18nHelper {
 	}
 
 	/**
-	 * Determine the interface language, either from the current request or session.
+	 * Determine the interface language from ?uselang= or the persisted cookie.
 	 * @return string
 	 */
 	private function getIntuitionLang(): string {
-		$queryLang = $this->getRequest()->query->get( 'uselang' );
-		$sessionLang = $this->requestStack->getSession()->get( 'lang' );
-		return $queryLang ?? $sessionLang ?? 'en';
+		$request = $this->getRequest();
+		// Coerce '?uselang=' with an empty value to null so the cookie fallback still fires.
+		$queryLang = $request->query->get( 'uselang' ) ?: null;
+		$cookieLang = $request->cookies->get( self::LANG_COOKIE_NAME );
+		return $queryLang ?? $cookieLang ?? 'en';
 	}
 
 	/**

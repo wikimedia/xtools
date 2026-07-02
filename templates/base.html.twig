@@ -79,7 +79,7 @@
 					<li class="divider" role="separator"></li>
 					{% for key, value in allLangs()|filter((value, key) => key != 'qqq') %}
 						<li>
-							<a class="lang-link" href="{{ path(app.request.attributes.get('_route'), app.request.get('_route_params')|merge({'uselang': key})) }}" data-lang="{{ key }}">{{ value|e }}</a>
+							<a class="lang-link" rel="nofollow" href="{{ path('xtools_setlang', {'code': key, 'return': app.request.requestUri}) }}" data-lang="{{ key }}">{{ value|e }}</a>
 						</li>
 					{% endfor %}
 				</ul>
