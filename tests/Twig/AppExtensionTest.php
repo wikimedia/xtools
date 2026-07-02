@@ -38,7 +38,9 @@ class AppExtensionTest extends TestAdapter {
 			$requestStack,
 			$i18nHelper,
 			$urlGenerator,
-			$this->createMock( ProjectRepository::class ),
+			$this->createConfiguredMock( ProjectRepository::class, [
+				'gitHash' => '432c791c49aa03d6e4b05ff6cac9901998b767fe',
+			] ),
 			static::getContainer()->get( 'parameter_bag' ),
 			static::getContainer()->getParameter( 'app.is_wmf' ),
 			static::getContainer()->getParameter( 'app.single_wiki' ),
@@ -147,12 +149,8 @@ class AppExtensionTest extends TestAdapter {
 	 * Methods that fetch data about the git repository.
 	 */
 	public function testGitMethods(): void {
-		// This test is mysteriously failing on Scrutinizer, but not on Travis.
-		// Commenting out for now.
-		// static::assertEquals(7, strlen($this->appExtension->gitShortHash()));
-
 		static::assertEquals( 40, strlen( $this->appExtension->gitHash() ) );
-		static::assertMatchesRegularExpression( '/\d{4}-\d{2}-\d{2}/', $this->appExtension->gitDate() );
+		static::assertEquals( 8, strlen( $this->appExtension->gitShortHash() ) );
 	}
 
 	/**

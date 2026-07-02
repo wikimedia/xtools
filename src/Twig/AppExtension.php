@@ -59,7 +59,6 @@ class AppExtension extends AbstractExtension {
 			new TwigFunction( 'isRTL', [ $this, 'isRTL' ] ),
 			new TwigFunction( 'shortHash', [ $this, 'gitShortHash' ] ),
 			new TwigFunction( 'hash', [ $this, 'gitHash' ] ),
-			new TwigFunction( 'releaseDate', [ $this, 'gitDate' ] ),
 			new TwigFunction( 'enabled', [ $this, 'toolEnabled' ] ),
 			new TwigFunction( 'tools', [ $this, 'tools' ] ),
 			new TwigFunction( 'color', [ $this, 'getColorList' ] ),
@@ -181,8 +180,7 @@ class AppExtension extends AbstractExtension {
 	 * @return string
 	 */
 	public function gitShortHash(): string {
-		// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.exec
-		return exec( 'git rev-parse --short HEAD' );
+		return substr( $this->gitHash(), 0, 8 );
 	}
 
 	/**
@@ -190,18 +188,7 @@ class AppExtension extends AbstractExtension {
 	 * @return string
 	 */
 	public function gitHash(): string {
-		// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.exec
-		return exec( 'git rev-parse HEAD' );
-	}
-
-	/**
-	 * Get the date of the HEAD commit.
-	 * @return string
-	 */
-	public function gitDate(): string {
-		// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.exec
-		$date = new DateTime( exec( 'git show -s --format=%ci' ) );
-		return $this->dateFormat( $date, 'yyyy-MM-dd' );
+		return $this->projectRepo->gitHash();
 	}
 
 	/**

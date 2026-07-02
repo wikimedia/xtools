@@ -466,4 +466,24 @@ abstract class Repository {
 			throw $e;
 		}
 	}
+
+	/**
+	 * MISCELLANEOUS
+	 */
+
+	/**
+	 * Get the full hash of the currently checked-out Git commit.
+	 * @return string
+	 */
+	public function gitHash(): string {
+		$cacheKey = $this->getCacheKey( 'git_short_hash' );
+		if ( $this->cache->hasItem( $cacheKey ) ) {
+			return $this->cache->getItem( $cacheKey )->get();
+		}
+
+		// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.exec
+		$hash = exec( 'git rev-parse HEAD' );
+
+		return $this->setCache( $cacheKey, $hash, 'P7D' );
+	}
 }
