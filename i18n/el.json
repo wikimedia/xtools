@@ -11,7 +11,8 @@
 			"Nikosgranturismogt",
 			"Norhorn",
 			"Panos78",
-			"Protnet"
+			"Protnet",
+			"Warudo"
 		]
 	},
 	"abusefilter": "Φίλτρο κατάχρησης",
@@ -67,7 +68,7 @@
 	"average-page-size": "Μέσο μέγεθος σελίδας",
 	"average-per-page": "Μέσος όρος επεξεργασιών ανά σελίδα",
 	"average-time-bw-edits": "Μέσος χρόνος μεταξύ επεξεργασιών (ημέρες)",
-	"average-time-bw-edits-abbr": "atbe",
+	"average-time-bw-edits-abbr": "μχμε",
 	"back": "Πίσω",
 	"basic-information": "Βασικές πληροφορίες",
 	"blame-as-of": "Από το",
