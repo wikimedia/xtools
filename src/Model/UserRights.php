@@ -380,7 +380,8 @@ class UserRights extends Model {
 
 	private function unsetAutoRemoval( array &$rightsChanges, array $removed ): void {
 		foreach ( $rightsChanges as $timestamp => $change ) {
-			if ( $change['grantType'] === 'automatic' ) {
+			if ( $change['grantType'] === 'automatic' ||
+				 $change['grantType'] === 'pending' ) {
 				$rightsChanges[$timestamp]['removed'] = array_diff( $change['removed'], $removed );
 				if ( empty( $rightsChanges[$timestamp]['removed'] ) ) {
 					unset( $rightsChanges[$timestamp] );
