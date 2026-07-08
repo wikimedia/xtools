@@ -45,6 +45,7 @@ class Authorship extends Model {
 		'it.wikipedia.org',
 		'ja.wikipedia.org',
 		'ka.wikipedia.org',
+		'ko.wikipedia.org',
 		'kk.wikipedia.org',
 		'ku.wikipedia.org',
 		'lt.wikipedia.org',
@@ -53,6 +54,7 @@ class Authorship extends Model {
 		'ml.wikipedia.org',
 		'mr.wikipedia.org',
 		'ms.wikipedia.org',
+		'mt.wikipedia.org',
 		'ne.wikipedia.org',
 		'nl.wikipedia.org',
 		'no.wikipedia.org',
@@ -79,6 +81,7 @@ class Authorship extends Model {
 		'uz.wikipedia.org',
 		'vec.wikipedia.org',
 		'vi.wikipedia.org',
+		'zh.wikipedia.org',
 	];
 
 	/** @var int|null Target revision ID. Null for latest revision. */
