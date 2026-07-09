@@ -1,0 +1,50 @@
+# Local development overlay, applied automatically by `docker compose up`.
+# The working tree is bind-mounted so edits are live; the containers run as the
+# host user so files written back (vendor/, node_modules/, var/) stay yours.
+services:
+
+  app:
+    build:
+      target: base
+    user: "${DOCKER_UID:-1000}:${DOCKER_GID:-1000}"
+    env_file:
+      - .env.docker
+    environment:
+      APP_ENV: dev
+      APP_DEBUG: 1
+    # Lets the replica host names resolve to a Toolforge SSH tunnel on the host.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - .:/var/www
+
+  api:
+    build:
+      target: base
+    user: "${DOCKER_UID:-1000}:${DOCKER_GID:-1000}"
+    env_file:
+      - .env.docker
+    environment:
+      APP_ENV: dev
+      APP_DEBUG: 1
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - .:/var/www
+
+  web:
+    ports:
+      - "3001:3001"
+    volumes:
+      - .:/var/www
+      # Live-edit the vhost without rebuilding the web image.
+      - ./.docker/apache/xtools.conf:/etc/apache2/sites-available/xtools.conf:ro
+
+  # Rebuilds public/build on change so contributors don't need Node on the host.
+  assets:
+    image: node:20.12.2-bookworm-slim
+    working_dir: /app
+    user: "${DOCKER_UID:-1000}:${DOCKER_GID:-1000}"
+    command: sh -c "npm install && npm run watch"
+    volumes:
+      - .:/app

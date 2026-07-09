@@ -1,0 +1,77 @@
+# Base stack. `docker compose up` layers docker-compose.override.yml on top
+# automatically for local development. The web port (3001) matches prod's
+# site-serving vhost. The Apache -> php-fpm hop runs over TCP (:9000) on the
+# compose network, standing in for prod's local Unix socket: there the front
+# and the fpm pools share a host, here they're separate containers. Credentials
+# and env_files live in the override, not here, so the base stays neutral about
+# which database it talks to.
+services:
+  db:
+    # 10.6 matches WMF's wikireplicas/Toolforge and, being pre-10.10, keeps
+    # Doctrine on the platform that doesn't demand an explicit length for the
+    # length-less VARCHAR columns in the existing migrations.
+    image: mariadb:10.6
+    environment:
+      MARIADB_DATABASE: xtools
+      MARIADB_USER: xtools
+      MARIADB_PASSWORD: xtools
+      MARIADB_ROOT_PASSWORD: root
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      XTOOLS_ROLE: app
+    # php-fpm only starts once the entrypoint has installed deps and migrated,
+    # so a passing healthcheck means the schema is ready. start_period covers a
+    # slow first-boot composer install.
+    healthcheck:
+      test: ["CMD-SHELL", "php -r 'exit(@fsockopen(\"127.0.0.1\", 9000) ? 0 : 1);'"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 180s
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      XTOOLS_ROLE: api
+    healthcheck:
+      test: ["CMD-SHELL", "php -r 'exit(@fsockopen(\"127.0.0.1\", 9000) ? 0 : 1);'"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 180s
+    depends_on:
+      db:
+        condition: service_healthy
+      # Wait until the app is healthy (migrations done) before serving /api, so
+      # the api pool never queries an unmigrated schema.
+      app:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: .docker/apache/Dockerfile
+    depends_on:
+      app:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+
+volumes:
+  db-data:

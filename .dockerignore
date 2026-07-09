@@ -1,0 +1,12 @@
+# Regenerated inside the image (composer install / npm build), so keep them out
+# of the build context. Everything else in the tree is source we want.
+/.git/
+/var/
+/vendor/
+/node_modules/
+/public/build/
+.env.local
+.env.*.local
+/coverage/
+.phpunit.result.cache
+.phpcs-cache
