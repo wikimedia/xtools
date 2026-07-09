@@ -161,20 +161,20 @@ class RateLimitSubscriber implements EventSubscriberInterface {
 	 * but with a different interface language, as happens when it is crawling the language dropdown in the UI.
 	 */
 	private function logCrawlers(): void {
-		$useLangMatches = [];
-		$hasMatch = preg_match( '/\?uselang=(.*)/', $this->uri, $useLangMatches );
-
-		if ( $hasMatch !== 1 ) {
+		if ( !$this->request->query->has( 'uselang' ) ) {
 			return;
 		}
 
-		$useLang = $useLangMatches[1];
+		$useLang = $this->request->query->get( 'uselang' );
 
 		// If requesting the same language as the target project, ignore.
 		// FIXME: This has side-effects (T384711#10759078)
 		if ( preg_match( '/[=\/]' . preg_quote( $useLang ) . '.?wik/', $this->uri ) === 1 ) {
 			return;
 		}
+
+		$clientIp = $this->request->getClientIp() ?? '(unknown)';
+		$this->crawlerLogger->info( "Possible crawler detected for $clientIp" );
 
 		// Require login.
 		throw new AccessDeniedHttpException( 'error-login-required' );
