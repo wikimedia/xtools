@@ -60,7 +60,7 @@
 			<img class="splash-logo splash-logo--small" style="width:150px" src="{{ asset('/build/images/logo.svg') }}" alt="{{ msg('xtools-title') }}" />
 			<h5 class="about-subtitle">
 				{{ msg('version', [version]) }}
-				({{ releaseDate() }})
+				(<a href="https://gerrit.wikimedia.org/g/labs/xtools/+/{{ hash() }}" target="_blank" title="Current code revision">r.{{ shortHash() }}</a>)
 				&middot;
 				<a target="_blank" href="https://www.mediawiki.org/wiki/Special:MyLanguage/XTools">{{ msg('documentation') }}</a>
 				&middot;
