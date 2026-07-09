@@ -17,8 +17,8 @@ final class Version20170623205224 extends AbstractMigration {
 	public function up( Schema $schema ): void {
 		$table = $schema->createTable( 'usage_projects' );
 		$table->addColumn( 'id', 'integer', [ 'autoincrement' => true ] );
-		$table->addColumn( 'tool', 'string' );
-		$table->addColumn( 'project', 'string' );
+		$table->addColumn( 'tool', 'string', [ 'length' => 255 ] );
+		$table->addColumn( 'project', 'string', [ 'length' => 255 ] );
 		$table->addColumn( 'count', 'integer' );
 		$table->setPrimaryKey( [ 'id' ] );
 	}

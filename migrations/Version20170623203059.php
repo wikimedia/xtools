@@ -18,7 +18,7 @@ final class Version20170623203059 extends AbstractMigration {
 		$table = $schema->createTable( 'usage_timeline' );
 		$table->addColumn( 'id', 'integer', [ 'autoincrement' => true ] );
 		$table->addColumn( 'date', 'date' );
-		$table->addColumn( 'tool', 'string' );
+		$table->addColumn( 'tool', 'string', [ 'length' => 255 ] );
 		$table->addColumn( 'count', 'integer' );
 		$table->setPrimaryKey( [ 'id' ] );
 	}
