@@ -37,6 +37,15 @@ abstract class Repository {
 	/** @var string Prefix URL for where the dblists live. Will be followed by i.e. 's1.dblist' */
 	public const DBLISTS_URL = 'https://noc.wikimedia.org/conf/dblists/';
 
+	/** @var string Cache-key prefix for the per-slice connection-failure breaker. */
+	private const REPLICA_BREAKER_PREFIX = 'replica-breaker.';
+
+	/** @var string How long a slice's breaker stays tripped after a failed connection. */
+	private const REPLICA_BREAKER_COOLDOWN = 'PT30S';
+
+	/** @var int[] Driver codes meaning "couldn't connect to the host at all" (vs. dropped mid-query). */
+	private const CONNECT_ERROR_CODES = [ 2002, 2003, 2005 ];
+
 	/**
 	 * Create a new Repository.
 	 */
@@ -81,22 +90,44 @@ abstract class Repository {
 	 * Get a database connection for the given database.
 	 * @param Project|string $project Project instance, database name (i.e. 'enwiki'), or slice (i.e. 's1').
 	 * @return Connection
-	 * @codeCoverageIgnore
 	 */
-	protected function getProjectsConnection( Project|string $project ): Connection {
+	protected function getProjectsConnection( Project|string $project, bool $checkBreaker = true ): Connection {
+		$slice = $this->resolveSlice( $project );
+		if ( $checkBreaker ) {
+			$this->assertReplicaReachable( $slice );
+		}
+		return $this->getConnection( 'toolforge_' . $slice );
+	}
+
+	/**
+	 * Resolve which replica slice (i.e. 's1') a project or database lives on.
+	 * @param Project|string $project Project instance, database name (i.e. 'enwiki'), or slice (i.e. 's1').
+	 * @return string
+	 */
+	private function resolveSlice( Project|string $project ): string {
 		if ( is_string( $project ) ) {
 			if ( preg_match( '/^s\d+$/', $project ) === 1 ) {
-				$slice = $project;
-			} else {
-				// Assume database name. Remove _p if given.
-				$db = str_replace( '_p', '', $project );
-				$slice = $this->getDbList()[$db];
+				return $project;
 			}
-		} else {
-			$slice = $this->getDbList()[$project->getDatabaseName()];
+			// Assume database name. Remove _p if given.
+			$db = str_replace( '_p', '', $project );
+			return $this->getDbList()[$db] ?? '';
 		}
+		return $this->getDbList()[$project->getDatabaseName()] ?? '';
+	}
 
-		return $this->getConnection( 'toolforge_' . $slice );
+	/**
+	 * Fail fast when a slice refused a connection very recently, rather than spending
+	 * another connection timeout on a replica that's likely still down (and piling more
+	 * attempts onto it). The breaker is tripped in executeProjectsQuery() and clears itself
+	 * after a short cooldown, after which the next request probes the slice again.
+	 * @param string $slice i.e. 's1'.
+	 * @throws ServiceUnavailableHttpException if the slice's breaker is tripped.
+	 */
+	private function assertReplicaReachable( string $slice ): void {
+		if ( $this->cache->hasItem( self::REPLICA_BREAKER_PREFIX . $slice ) ) {
+			throw new ServiceUnavailableHttpException( 30, 'error-replica-unavailable', null, 503 );
+		}
 	}
 
 	/**
@@ -147,7 +178,10 @@ abstract class Repository {
 			// of incidents: T322466, T420632, etc.
 			$checkReplication = true;
 			try {
-				$replicatedProjects = $this->executeProjectsQuery( "s$i", $sql )->fetchFirstColumn();
+				// Bypass the breaker: this probe is the replication-presence safety check
+				// (T322466, T420632), so it must test the real connection, not a recent trip.
+				$replicatedProjects = $this->executeProjectsQuery( "s$i", $sql, checkBreaker: false )
+					->fetchFirstColumn();
 			} catch ( \Throwable ) {
 				// AGF
 				$checkReplication = false;
@@ -388,22 +422,33 @@ abstract class Repository {
 	 * @param array $params Parameters to bound to the prepared query.
 	 * @param int|null $timeout Maximum statement time in seconds. null will use the
 	 *   default specified by the APP_QUERY_TIMEOUT env variable.
+	 * @param bool $checkBreaker Whether to honor the fail-fast breaker. Pass false for the
+	 *   dblist replication probe, which must test the real connection to keep its safety check.
 	 * @return Result
 	 * @throws DriverException
-	 * @codeCoverageIgnore
 	 */
 	public function executeProjectsQuery(
 		Project|string $project,
 		string $sql,
 		array $params = [],
-		?int $timeout = null
+		?int $timeout = null,
+		bool $checkBreaker = true
 	): Result {
 		try {
 			$timeout = $timeout ?? $this->queryTimeout;
 			$sql = "SET STATEMENT max_statement_time = $timeout FOR\n" . $sql;
 
-			return $this->getProjectsConnection( $project )->executeQuery( $sql, $params );
+			return $this->getProjectsConnection( $project, $checkBreaker )->executeQuery( $sql, $params );
 		} catch ( DriverException $e ) {
+			if ( in_array( $e->getCode(), self::CONNECT_ERROR_CODES ) ) {
+				// Connection refused/unreachable: trip the breaker so subsequent requests
+				// stop hammering this slice until it's had a moment to recover.
+				$this->setCache(
+					self::REPLICA_BREAKER_PREFIX . $this->resolveSlice( $project ),
+					true,
+					self::REPLICA_BREAKER_COOLDOWN
+				);
+			}
 			$this->handleDriverError( $e, $timeout );
 		}
 	}
@@ -435,7 +480,6 @@ abstract class Repository {
 	 * @param int|null $timeout Timeout value, if applicable. This is passed to the i18n message.
 	 * @throws HttpException
 	 * @throws DriverException
-	 * @codeCoverageIgnore
 	 */
 	private function handleDriverError( DriverException $e, ?int $timeout ): void {
 		// If no value was passed for the $timeout, it must be the default.
@@ -445,6 +489,11 @@ abstract class Repository {
 
 		if ( $e->getCode() === 1226 ) {
 			throw new ServiceUnavailableHttpException( 30, 'error-service-overload', null, 503 );
+		} elseif ( in_array( $e->getCode(), self::CONNECT_ERROR_CODES ) ) {
+			// Can't establish a connection at all: the replica host is down, refusing
+			// connections, or unresolvable. Distinct from 2006/2013 below, which are a
+			// connection dropping mid-query. Retryable, so 503 rather than a bare 500.
+			throw new ServiceUnavailableHttpException( 30, 'error-replica-unavailable', null, 503 );
 		} elseif ( in_array( $e->getCode(), [ 2006, 2013 ] ) ) {
 			// FIXME: Attempt to reestablish connection on 2006 error (MySQL server has gone away).
 			throw new HttpException(

@@ -150,6 +150,7 @@
 	"error-rate-limit": "If you are human, you are making too many requests during a short period of time. Please wait $1 {{PLURAL:$1|minute|minutes}} before reloading this tool, or $2 to prevent this from happening again. If you are a robot, please use our $3 instead.",
 	"error-rate-limit-login": "login",
 	"error-rate-limit-login-big": "Please $1 to avoid rate limiting.",
+	"error-replica-unavailable": "XTools can't reach the Wikimedia database replicas right now. Please try again in a few minutes.",
 	"error-server-message": "The server said: $1",
 	"error-service-overload": "XTools is currently overloaded servicing other requests. Please try again in a few minutes.",
 	"error-title": "A fatal error has occurred within XTools. This has been automatically reported, but feel free to file a task on $1 (requires a Wikimedia account).",
