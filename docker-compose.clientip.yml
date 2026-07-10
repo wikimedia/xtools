@@ -1,0 +1,42 @@
+# mod_remoteip trust-boundary test. Self-contained (not layered on
+# docker-compose.yml): only Apache is needed to test header resolution, so the
+# php/db stack is left out entirely. Driven by .docker/clientip/run.sh.
+#
+# A dedicated network with fixed addresses makes the trust boundary real: `edge`
+# sits inside the test vhost's RemoteIPInternalProxy list and `attacker` sits
+# outside it, so we can prove a forged X-Forwarded-For is honored from the
+# trusted hop and ignored from the untrusted one.
+services:
+  web:
+    build:
+      context: .
+      dockerfile: .docker/apache/Dockerfile
+    volumes:
+      - ./.docker/apache/xtools-clientip.conf:/etc/apache2/sites-available/xtools.conf:ro
+    networks:
+      clientip:
+        ipv4_address: 198.18.0.10
+
+  edge:
+    image: curlimages/curl:latest
+    entrypoint: ["sleep", "infinity"]
+    depends_on: [web]
+    networks:
+      clientip:
+        ipv4_address: 198.18.0.20
+
+  attacker:
+    image: curlimages/curl:latest
+    entrypoint: ["sleep", "infinity"]
+    depends_on: [web]
+    networks:
+      clientip:
+        ipv4_address: 198.19.0.30
+
+networks:
+  clientip:
+    ipam:
+      config:
+        # RFC 2544 benchmarking range, safe on an isolated docker net. A /15 so
+        # edge (198.18.0.20) and attacker (198.19.0.30) fall in separate /24s.
+        - subnet: 198.18.0.0/15

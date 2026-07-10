@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpKernel\Event\ControllerEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -73,30 +73,38 @@ class RateLimitSubscriber implements EventSubscriberInterface {
 	}
 
 	/**
-	 * Register our interest in the kernel.controller event.
-	 * @return string[]
+	 * Register our interest in the kernel.request event.
+	 * @return array
 	 */
 	public static function getSubscribedEvents(): array {
+		// Run just after the router populates _controller (priority 32), but before the
+		// controller is built. XtoolsController resolves the project in its constructor,
+		// which hits a wiki replica; limiting any later than this would let rejected
+		// traffic reach the very replica the limiter exists to protect.
 		return [
-			KernelEvents::CONTROLLER => 'onKernelController',
+			KernelEvents::REQUEST => [ 'onKernelRequest', 31 ],
 		];
 	}
 
 	/**
 	 * Check if the current user has exceeded the configured usage limitations.
-	 * @param ControllerEvent $event The event.
+	 * @param RequestEvent $event The event.
 	 */
-	public function onKernelController( ControllerEvent $event ): void {
-		$controller = $event->getController();
-		$action = null;
-
-		// when a controller class defines multiple action methods, the controller
-		// is returned as [$controllerInstance, 'methodName']
-		if ( is_array( $controller ) ) {
-			[ $controller, $action ] = $controller;
+	public function onKernelRequest( RequestEvent $event ): void {
+		// The router stores the target as "Class::method", or just "Class" for an
+		// invokable controller. Read the action off this string so we don't instantiate
+		// the controller (and pay its constructor's replica cost) just to decide to reject.
+		$controller = $event->getRequest()->attributes->get( '_controller' );
+		if ( !is_string( $controller ) ) {
+			return;
 		}
-
-		if ( !$controller instanceof XtoolsController ) {
+		if ( str_contains( $controller, '::' ) ) {
+			[ $class, $action ] = explode( '::', $controller, 2 );
+		} else {
+			$class = $controller;
+			$action = '__invoke';
+		}
+		if ( !is_a( $class, XtoolsController::class, true ) ) {
 			return;
 		}
 
@@ -125,21 +133,23 @@ class RateLimitSubscriber implements EventSubscriberInterface {
 		}
 
 		$this->logCrawlers();
-		$this->xffRateLimit();
+		$this->rateLimitByClientIp();
 	}
 
 	/**
 	 * Don't let individual users hog up all the resources.
 	 */
-	private function xffRateLimit(): void {
-		$xff = $this->request->headers->get( 'x-forwarded-for', '' );
-
-		if ( $xff === '' ) {
-			// Happens in local environments, or outside of Cloud Services.
+	private function rateLimitByClientIp(): void {
+		$clientIp = $this->request->getClientIp();
+		// Happens in local environments, or when the proxy chain provides no usable IP.
+		if ( $clientIp === null ) {
 			return;
 		}
-
-		$cacheKey = "ratelimit.session." . sha1( $xff );
+		$cacheKey = self::subnetCacheKey( $clientIp );
+		// inet_pton couldn't parse the address; nothing sane to bucket on.
+		if ( $cacheKey === null ) {
+			return;
+		}
 		$cacheItem = $this->cache->getItem( $cacheKey );
 
 		// If increment value already in cache, or start with 1.
@@ -154,6 +164,30 @@ class RateLimitSubscriber implements EventSubscriberInterface {
 		$cacheItem->set( $count )
 			->expiresAfter( new DateInterval( 'PT' . $this->rateDuration . 'M' ) );
 		$this->cache->save( $cacheItem );
+	}
+
+	/**
+	 * Bucket a client IP by subnet so bots cycling addresses within one subnet share a
+	 * single rate-limit counter: IPv4 by /24, IPv6 by /64.
+	 * @param string $clientIp
+	 * @return string|null Null when the address doesn't parse.
+	 */
+	public static function subnetCacheKey( string $clientIp ): ?string {
+		$packed = inet_pton( $clientIp );
+		if ( $packed === false ) {
+			return null;
+		}
+		// Unwrap an IPv4-mapped IPv6 address (::ffff:x.x.x.x, in any notation) to its embedded
+		// IPv4, so it buckets by /24 rather than the all-zero /64 every mapped address shares.
+		if ( strlen( $packed ) === 16 && str_starts_with( $packed, str_repeat( "\x00", 10 ) . "\xff\xff" ) ) {
+			$packed = substr( $packed, 12 );
+		}
+		// 4-byte packed form is IPv4 (rate-limit by /24); 16-byte is IPv6 (by /64).
+		$prefix = strlen( $packed ) === 4
+			? substr( $packed, 0, 3 )
+			: substr( $packed, 0, 8 );
+
+		return "ratelimit.session." . sha1( $prefix );
 	}
 
 	/**
