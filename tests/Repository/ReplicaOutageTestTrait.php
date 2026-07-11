@@ -20,24 +20,51 @@ trait ReplicaOutageTestTrait {
 	private ArrayAdapter $cache;
 
 	/**
-	 * Fresh cache, pre-primed with a dblist so resolveSlice() maps db -> slice without
-	 * hitting the network.
+	 * Fresh cache, pre-primed with a per-slice dblist so resolveSlice() maps db -> slice
+	 * without probing the network. getDbList() reads one cache entry per replica connection.
 	 */
 	private function primeReplicaCache(): void {
 		$this->cache = new ArrayAdapter();
-		$item = $this->cache->getItem( 'dblists' );
-		$item->set( [ 'enwiki' => 's1', 'commonswiki' => 's4', 'meta' => 's7' ] );
-		$this->cache->save( $item );
+		foreach ( [ 's1' => [ 'enwiki' ], 's4' => [ 'commonswiki' ], 's7' => [ 'meta' ] ] as $slice => $projects ) {
+			$item = $this->cache->getItem( 'dblist_' . $slice );
+			$item->set( $projects );
+			$this->cache->save( $item );
+		}
 	}
 
 	/**
-	 * A registry whose sole connection throws a DriverException carrying $code.
+	 * An empty cache, for the tests that want getDbList() to actually probe the replicas rather
+	 * than read the entries primeReplicaCache() seeded.
+	 */
+	private function emptyCache(): void {
+		$this->cache = new ArrayAdapter();
+	}
+
+	/**
+	 * The Doctrine connection names getDbList() iterates: two it ignores (default, toolsdb) and
+	 * the three replica slices the primed cache describes. Only the keys matter to getDbList().
+	 * @return array<string, string>
+	 */
+	private function connectionNames(): array {
+		return [
+			'default' => 'doctrine.dbal.default_connection',
+			'toolsdb' => 'doctrine.dbal.toolsdb_connection',
+			's1' => 'doctrine.dbal.s1_connection',
+			's4' => 'doctrine.dbal.s4_connection',
+			's7' => 'doctrine.dbal.s7_connection',
+		];
+	}
+
+	/**
+	 * A registry whose sole connection throws a DriverException carrying $code, and which
+	 * enumerates the replica slices so getDbList()'s connection loop has something to walk.
 	 */
 	private function registryThrowing( int $code ): ManagerRegistry {
 		$connection = $this->createMock( Connection::class );
 		$connection->method( 'executeQuery' )->willThrowException( $this->driverError( $code ) );
 		$registry = $this->createMock( ManagerRegistry::class );
 		$registry->method( 'getConnection' )->willReturn( $connection );
+		$registry->method( 'getConnectionNames' )->willReturn( $this->connectionNames() );
 		return $registry;
 	}
 

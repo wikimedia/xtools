@@ -34,6 +34,15 @@ abstract class Repository {
 	/** @var Connection The database connection to other tools' databases. */
 	private Connection $toolsConnection;
 
+	/** @var string[]|null Request-lifetime memo of the assembled dblist, keyed by database name. */
+	private ?array $dbListCache = null;
+
+	/** @var array<string,string>|null Request-lifetime memo of the configured connection names. */
+	private ?array $connectionNames = null;
+
+	/** @var string[] Connections that aren't replica slices: the internal metadata db and toolsdb. */
+	private const NON_REPLICA_CONNECTIONS = [ 'default', 'toolsdb' ];
+
 	/** @var string Cache-key prefix for the per-slice connection-failure breaker. */
 	private const REPLICA_BREAKER_PREFIX = 'replica-breaker.';
 
@@ -105,6 +114,12 @@ abstract class Repository {
 	 */
 	protected function getProjectsConnection( Project|string $project, bool $checkBreaker = true ): Connection {
 		$slice = $this->resolveSlice( $project );
+		if ( $slice === '' ) {
+			// The project resolved to no slice: either its slice was skipped this request
+			// (down, or an empty probe) or it isn't a replicated project. Fail fast as a
+			// retryable 503 rather than letting getConnection('') throw a cryptic Doctrine error.
+			throw new ServiceUnavailableHttpException( 30, 'error-replica-unavailable', null, 503 );
+		}
 		if ( $checkBreaker ) {
 			$this->assertReplicaReachable( $slice );
 		}
@@ -112,18 +127,43 @@ abstract class Repository {
 	}
 
 	/**
-	 * Resolve which replica slice (i.e. 's1') a project or database lives on.
-	 * @param Project|string $project Project instance, database name (i.e. 'enwiki'), or slice (i.e. 's1').
+	 * Resolve which replica connection (i.e. 's1') a project or database lives on.
+	 * @param Project|string $project Project instance, database name (i.e. 'enwiki'), or the name
+	 *   of a configured connection (i.e. 's1'), which is returned as-is.
 	 * @return string
 	 */
 	private function resolveSlice( Project|string $project ): string {
 		if ( is_string( $project ) ) {
-			if ( preg_match( '/^s\d+$/', $project ) === 1 ) {
+			// A replica connection name is already a slice: return it unchanged, whatever it's
+			// called (not just the WMF s1..sN shape). This is also what keeps getDbList()'s probe,
+			// which passes connection names, from re-entering getDbList() here and recursing: the
+			// memo isn't set mid-assembly, so the lookup below would call getDbList() again.
+			// Assumes a connection is never named the same as a wiki database.
+			if ( $this->isReplicaConnection( $project ) ) {
 				return $project;
 			}
 			return $this->getDbList()[$project] ?? '';
 		}
 		return $this->getDbList()[$project->getDatabaseName()] ?? '';
+	}
+
+	/**
+	 * Whether $name is a configured replica-slice connection (i.e. not the metadata db or toolsdb).
+	 * @param string $name
+	 * @return bool
+	 */
+	private function isReplicaConnection( string $name ): bool {
+		return !in_array( $name, self::NON_REPLICA_CONNECTIONS, true )
+			&& array_key_exists( $name, $this->connectionNames() );
+	}
+
+	/**
+	 * The configured Doctrine connection names, memoized for the request. Keyed by name.
+	 * @return array<string, string>
+	 */
+	private function connectionNames(): array {
+		$this->connectionNames ??= $this->managerRegistry->getConnectionNames();
+		return $this->connectionNames;
 	}
 
 	/**
@@ -157,52 +197,59 @@ abstract class Repository {
 	 * Based on ToolforgeBundle https://github.com/wikimedia/ToolforgeBundle/blob/master/Service/ReplicasClient.php
 	 * License: GPL 3.0 or later
 	 * @return string[] Keys are database names (i.e. 'enwiki_p'), values are the slices (i.e. 's1').
-	 * @codeCoverageIgnore
 	 */
 	protected function getDbList(): array {
-		$cacheKey = 'dblists';
-		if ( $this->cache->hasItem( $cacheKey ) ) {
-			return $this->cache->getItem( $cacheKey )->get();
+		if ( isset( $this->dbListCache ) ) {
+			return $this->dbListCache;
 		}
 
 		$dbList = [];
-		$exists = true;
-		$i = 0;
-		// exclude MySQL metadata schemas
+		// Enumerate the replica connections: everything but the internal metadata db and toolsdb.
+		$replicaConns = array_diff_key( $this->connectionNames(), array_flip( self::NON_REPLICA_CONNECTIONS ) );
+		// Exclude MySQL's own metadata schemas.
 		$sql = "SELECT DISTINCT schema_name
 				FROM information_schema.schemata
 				WHERE schema_name NOT IN ('information_schema','performance_schema','mysql','sys')";
-
-		while ( true ) {
-			$i += 1;
-
-			// We only check the presence of the actual replicas, due to a
-			// certain number of incidents: T322466, T420632, etc.
-			// noc.wikimedia.org is less accurate and obviously not
-			// available for non-WMF installations.
-			try {
-				$replicatedProjects = $this->executeProjectsQuery( "s$i", $sql, checkBreaker: false )
-					->fetchFirstColumn();
-			} catch ( HttpException ) {
-				// Exception raised for connection existing, but down
-				continue;
-			} catch ( \InvalidArgumentException ) {
-				// Exception raised for connection not existing
-				break;
+		// Loop through the relevant connections to build the project db list.
+		foreach ( array_keys( $replicaConns ) as $conn ) {
+			$cacheKey = 'dblist_' . $conn;
+			if ( $this->cache->hasItem( $cacheKey ) ) {
+				$projectList = $this->cache->getItem( $cacheKey )->get();
+			} else {
+				// We only check the presence of the actual replicas, due to a
+				// certain number of incidents: T322466, T420632, etc.
+				// noc.wikimedia.org is less accurate and obviously not
+				// available for non-WMF installations.
+				try {
+					$projectList = $this->executeProjectsQuery( $conn, $sql, checkBreaker: false )
+						->fetchFirstColumn();
+				} catch ( HttpException ) {
+					// Slice reported unavailable, overloaded, or timed-out: skip it so the
+					// healthy slices still resolve, and let a later request re-probe. Anything
+					// else (an unexpected driver error, a programming bug) propagates rather
+					// than silently dropping the slice's projects.
+					continue;
+				}
+				// An empty probe means the slice answered but returned nothing: the
+				// stale/empty-dblist failure mode. Skip it without caching, so the next request
+				// re-probes rather than serving a poisoned list for a week.
+				if ( $projectList === [] ) {
+					continue;
+				}
+				// Cache the slice's project list for one week.
+				$this->setCache( $cacheKey, $projectList, 'P1W' );
 			}
-
-			if ( count( $replicatedProjects ) == 0 ) {
-				// No more projects
-				break;
-			}
-
-			foreach ( $replicatedProjects as $project ) {
-				$dbList[$project] = "s$i";
+			foreach ( $projectList as $project ) {
+				$dbList[$project] = $conn;
 			}
 		}
 
-		// Cache for one week.
-		return $this->setCache( $cacheKey, $dbList, 'P1W' );
+		// Memoize only a non-empty result. A request that assembled nothing (every slice skipped)
+		// must stay free to re-probe on its next call rather than serving [] for its whole lifetime.
+		if ( $dbList !== [] ) {
+			$this->dbListCache = $dbList;
+		}
+		return $dbList;
 	}
 
 	/**
