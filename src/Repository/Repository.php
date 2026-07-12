@@ -47,6 +47,12 @@ abstract class Repository {
 	private const CONNECT_ERROR_CODES = [ 2002, 2003, 2005 ];
 
 	/**
+	 * @var int[] Driver codes meaning the server is up but shedding load: a connection or
+	 *   resource limit is maxed (1040 global, 1203 per-user, 1226 GRANT resource limit).
+	 */
+	private const OVERLOAD_ERROR_CODES = [ 1040, 1203, 1226 ];
+
+	/**
 	 * Create a new Repository.
 	 */
 	public function __construct(
@@ -487,13 +493,22 @@ abstract class Repository {
 			$timeout = $this->queryTimeout;
 		}
 
-		if ( $e->getCode() === 1226 ) {
+		if ( in_array( $e->getCode(), self::OVERLOAD_ERROR_CODES ) ) {
+			// Server is up but rejecting: a connection or resource limit is maxed. Unlike a
+			// dead host these reject instantly (no wasted connection timeout), so shed this one
+			// request as a retryable 503 rather than tripping the breaker, which exists to spare
+			// us repeated timeouts on a host that's actually down.
 			throw new ServiceUnavailableHttpException( 30, 'error-service-overload', null, 503 );
 		} elseif ( in_array( $e->getCode(), self::CONNECT_ERROR_CODES ) ) {
 			// Can't establish a connection at all: the replica host is down, refusing
 			// connections, or unresolvable. Distinct from 2006/2013 below, which are a
 			// connection dropping mid-query. Retryable, so 503 rather than a bare 500.
 			throw new ServiceUnavailableHttpException( 30, 'error-replica-unavailable', null, 503 );
+		} elseif ( $e->getCode() === 1205 ) {
+			// Lock wait timeout: the query waited out innodb_lock_wait_timeout for a row lock
+			// held by another transaction. Transient contention on specific rows, not a sick
+			// host, and a retry usually wins the lock, so a retryable 503 beats a bare 500.
+			throw new ServiceUnavailableHttpException( 30, 'error-lock-contention', null, 503 );
 		} elseif ( in_array( $e->getCode(), [ 2006, 2013 ] ) ) {
 			// FIXME: Attempt to reestablish connection on 2006 error (MySQL server has gone away).
 			throw new HttpException(

@@ -139,6 +139,7 @@
 	"error-deleted-data-msg": "$1 {{PLURAL:$1|revision|revisions}} of this page {{PLURAL:$1|contains|contain}} information that {{PLURAL:$1|has|have}} been $2. As a result, some data may be inaccurate or misleading.",
 	"error-denied": "Your access to XTools has been blocked due to apparent abuse or disruptive automation. Please contact $1",
 	"error-ip-range-unsupported": "Sorry, this functionality is not available for IP ranges. Please enter either a single username or IP address.",
+	"error-lock-contention": "XTools couldn't complete your request due to temporary database contention. Please try again in a moment.",
 	"error-login": "Login failed! Please try again.",
 	"error-login-required": "For performance reasons, the requested data is only available to logged-in users.",
 	"error-login-required-link": "Please login to continue.",

@@ -60,7 +60,10 @@ class ReplicaOutageTest extends TestCase {
 			'connection refused (2002)' => [ 2002, 503, 'error-replica-unavailable', true ],
 			'cannot connect to host (2003)' => [ 2003, 503, 'error-replica-unavailable', true ],
 			'unknown host (2005)' => [ 2005, 503, 'error-replica-unavailable', true ],
+			'too many connections (1040)' => [ 1040, 503, 'error-service-overload', true ],
+			'too many user connections (1203)' => [ 1203, 503, 'error-service-overload', true ],
 			'resource overload (1226)' => [ 1226, 503, 'error-service-overload', true ],
+			'lock wait timeout (1205)' => [ 1205, 503, 'error-lock-contention', true ],
 			'server gone away (2006)' => [ 2006, 504, 'error-lost-connection', false ],
 			'lost connection (2013)' => [ 2013, 504, 'error-lost-connection', false ],
 			'query timeout (1969)' => [ 1969, 504, 'error-query-timeout', false ],
@@ -94,6 +97,18 @@ class ReplicaOutageTest extends TestCase {
 
 	public function testNonConnectErrorDoesNotTripTheBreaker(): void {
 		$repo = $this->makeRepository( $this->registryThrowing( 1969 ) );
+
+		$this->runExpectingHttpException( static fn () => $repo->executeProjectsQuery( 'enwiki', 'SELECT 1' ) );
+
+		static::assertFalse( $this->cache->hasItem( 'replica-breaker.s1' ) );
+	}
+
+	/**
+	 * An overload rejection sheds the one request as a 503 but must not trip the slice breaker:
+	 * the server is up, so fast-failing the whole slice for 30s would over-shed a busy replica.
+	 */
+	public function testOverloadErrorDoesNotTripTheBreaker(): void {
+		$repo = $this->makeRepository( $this->registryThrowing( 1203 ) );
 
 		$this->runExpectingHttpException( static fn () => $repo->executeProjectsQuery( 'enwiki', 'SELECT 1' ) );
 

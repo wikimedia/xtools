@@ -159,6 +159,7 @@
 	"error-deleted-data-msg": "Error shown when admins revision deleted or suppressed some information in the revision history of a page. Parameters:\n* $1 - the number of revisions that have been deleted\n* $2 - link to documentation on deleted revisions, with the message {{msg-wm|Xtools-error-deleted-data-link}} as the link text.",
 	"error-denied": "Error shown when the user's access to XTools has been blocked. $1 is an email address.",
 	"error-ip-range-unsupported": "Error shown when a user attempts to use a tool that doesn't support IP ranges as the user input.",
+	"error-lock-contention": "Error message shown when a database query hit a lock wait timeout (transient row-lock contention). Unlike {{msg-wm|Xtools-error-service-overload}}, the server is healthy; the query lost a race for a row lock and a retry usually succeeds.",
 	"error-login": "Error shown when logging in failed.",
 	"error-login-required": "Error shown when the user must be logged in to use the tool.",
 	"error-login-required-link": "Link text for logging in when the user must be logged in to use the tool.",
