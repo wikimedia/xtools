@@ -161,6 +161,7 @@
 	"error-rate-limit": "Jos olet ihminen, teet liian monta pyyntöä lyhyessä ajassa. Ole hyvä ja odota $1 {{PLURAL:$1|minuutti|minuuttia}} ennen kuin yritätä uudelleen, tai $2 estääksesi tämän tapahtuvan uudelleen. Jos olet robotti, ole hyvä jä käytä $3.",
 	"error-rate-limit-login": "kirjaudu",
 	"error-rate-limit-login-big": "Ole hyvä ja $1 välttääksesi nopeusrajoitukset.",
+	"error-replica-unavailable": "XTools ei saa yhteyttä Wikimedian tietokannan kopioihin juuri nyt. Yritä uudelleen muutaman minuutin kuluttua.",
 	"error-server-message": "Palvelin sanoi: $1",
 	"error-service-overload": "XTools on tällä hetkellä ylikuormittunut muista pyynnöistä. Ole hyvä ja yritä uudelleen muutaman minuutin päästä.",
 	"error-title": "XToolsissa tapahtui sisäinen virhe. Se on automaattisesti välitetty eteenpäin, mutta halutessasi voit ilmoittaa siitä $1:ssä (vaatii Wikimedia-tilin).",

@@ -157,6 +157,7 @@
 	"error-rate-limit": "Əgər insansınızsa, qısa müddət ərzində çoxlu sorğular edirsiniz. Zəhmət olmasa, bu aləti yenidən yükləməzdən əvvəl $1 {{PLURAL:$1|dəqiqə}} gözləyin və ya bunun yenidən baş verməməsi üçün $2. Robotsunuzsa, zəhmət olmasa $3 istifadə edin.",
 	"error-rate-limit-login": "daxil olun",
 	"error-rate-limit-login-big": "Zəhmət olmasa, sürət limitini aşmamaq üçün $1.",
+	"error-replica-unavailable": "XTools hazırda Wikimedia verilənlər bazası replikalarını oxuya bilmir. Zəhmət olmasa, bir neçə dəqiqədən sonra yenidən cəhd edin.",
 	"error-server-message": "Server deyir ki: $1",
 	"error-service-overload": "XTools hazırda digər sorğulara xidmət etməklə həddən artıq yüklənir. Bir neçə dəqiqədən sonra yenidən cəhd edin.",
 	"error-title": "XTools daxilində ciddi xəta baş verdi. Bu, avtomatik olaraq bildirildi, lakin $1 saytında bildirə bilərsiniz (Wikimedia hesabı tələb olunur).",

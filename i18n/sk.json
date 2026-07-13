@@ -152,6 +152,7 @@
 	"error-rate-limit": "Ak ste človek, zadávate príliš veľa požiadaviek v priebehu krátkeho časového úseku. Prosím počkajte $1 {{PLURAL:$1|minútu|minúty|minút}} pred načítaním tohto nástroja znovu, alebo $2, aby sa tomuto zabránilo. Ak ste bot, prosím použite našu $3.",
 	"error-rate-limit-login": "prihlásenie",
 	"error-rate-limit-login-big": "Prosím $1 pre vyhnutie sa obmedzeniu rýchlosti.",
+	"error-replica-unavailable": "XTools momentálne nemá prístup k replikám databázy Wikimedia. Skúste to znova o niekoľko minút.",
 	"error-server-message": "Sever povedal: $1",
 	"error-service-overload": "XTools je momentálne preťažený vybavovaním iných žiadostí. Prosím skúste znovu o niekoľko minút neskôr.",
 	"error-title": "V nástroji XTools nastala fatálna chyba. Bola automaticky nahlásená ale môžete takisto zadať úlohu na jej odstránenie na $1 (vyžaduje sa účet Wikimédia).",

@@ -152,6 +152,7 @@
 	"error-rate-limit": "Se es humano, estás facendo demasiadas solicitudes durante un curto período de tempo. Agarda $1 {{PLURAL:$1|minuto|minutos}} antes de volver cargar esta ferramenta ou $2 para evitar que isto volva ocorrer. Se es un robot, utiliza a nosa $3.",
 	"error-rate-limit-login": "inicia sesión",
 	"error-rate-limit-login-big": "Por favor, $1 para evitar o límite de solicitudes.",
+	"error-replica-unavailable": "XTools non pode acceder ás réplicas da base de datos da Wikimedia nestes intres. Inténtao de novo nuns minutos.",
 	"error-server-message": "O servidor respondeu: $1",
 	"error-service-overload": "Nestes intres, XTools está sobrecargado atendendo outras solicitudes. Inténtao de novo nuns minutos.",
 	"error-title": "Houbo un erro grave en XTools. Este erro notificouse automaticamente, pero es libre de abrir un informe en $1 (cómpre unha conta da Wikimedia).",

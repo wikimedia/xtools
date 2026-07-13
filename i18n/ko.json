@@ -160,6 +160,7 @@
 	"error-rate-limit": "혹시 사람이라면 짧은 시간 안에 너무 많은 요청을 하고 계십니다. 이 도구를 다시 로드하기 전에 $1 {{PLURAL:$1|분}} 동안 기다려 주시고, 이 일이 다시 발생하지 않게 하려면 $2하십시오. 로봇이라면 $3를 대신 사용해 주십시오.",
 	"error-rate-limit-login": "로그인",
 	"error-rate-limit-login-big": "속도 제한을 방지하려면 $1를 사용하십시오.",
+	"error-replica-unavailable": "XTools가 현재 위키미디어 데이터베이스 레플리카에 연결할 수 없습니다. 몇 분 후에 다시 시도해 주세요.",
 	"error-server-message": "서버 응답: $1",
 	"error-service-overload": "XTools가 현재 다른 요청에 대한 서비스 제공에 과부하가 걸려있습니다. 몇 분 뒤에 다시 시도해 주십시오.",
 	"error-title": "XTools에 치명적인 오류가 발생했습니다. 자동으로 보고되지만 $1에 자유롭게 일감을 신청해도 됩니다. (위키미디어 계정 필요)",
