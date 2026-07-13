@@ -55,6 +55,15 @@ class DefaultController extends XtoolsController {
 		UrlGeneratorInterface $urlGenerator,
 		string $centralAuthProject
 	): RedirectResponse {
+		// Automatically log in a development user if defined.
+		$loggedInUser = $this->getParameter( 'app.logged_in_user' );
+		if ( $loggedInUser ) {
+			$requestStack->getSession()->set( 'logged_in_user', (object)[
+				'username' => $loggedInUser,
+			] );
+			return $this->redirectToRoute( 'homepage' );
+		}
+
 		try {
 			[ $next, $token ] = $this->getOauthClient( $request, $projectRepo, $urlGenerator, $centralAuthProject )
 				->initiate();
