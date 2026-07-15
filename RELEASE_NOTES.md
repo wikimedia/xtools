@@ -1,5 +1,17 @@
 # Release Notes #
 
+## 3.25.0 ##
+- AdminStats (T354024): Add footnote on (re)protect and (re)block.
+- Authorship (T372340): Enable support for kowiki, mtwiki and zhwiki.
+- UserRights: fix removal of redundant auto-removals.
+- RateLimitSubscriber: allow subrequests with uselang query string param.
+- RateLimitSubscriber: reduce anonymous session DB traffic.
+- RateLimitSubscriber: rate limit by /24 (IPv4) or /64 (IPv6), and impose
+  rate limits before touching the replicas.
+- Repository: improve DB error handling.
+- Add a Docker container for local development.
+- Localization updates.
+
 ## 3.24.8 ##
 - Authorship (T372340): Enable support for 28 more languages.
 - Localization updates.
