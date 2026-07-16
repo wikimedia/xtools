@@ -141,6 +141,7 @@
 	"error-deleted-data-msg": "$1 {{PLURAL:$1| revízia|revízie}} tejto stránky {{PLURAL:$1| obsahuje|obsahuje}} informácie, ktoré {{PLURAL:$1| has|have}} bolo $2 . V dôsledku toho môžu byť niektoré údaje nepresné alebo zavádzajúce.",
 	"error-denied": "Váš prístup k Xtools bol zablokovaný z dôvodu zjavného zneužitia automatizácie alebo používania rušivej automatizácie. Prosím kontaktujte $1",
 	"error-ip-range-unsupported": "Prepáčte táto funkcia nie je dostupná pre rozsah IP adries. Zadajte prosím jedno používateľské meno alebo IP adresu.",
+	"error-lock-contention": "XTools nemohol dokončiť vašu požiadavku z dôvodu dočasného konfliktu v databáze. Skúste to znova o chvíľu.",
 	"error-login": "Prihlásenie zlyhalo! Prosím skúste znovu.",
 	"error-login-required": "Z dôvodov výkonnosti sú požadované údaje dostupné len pre prihlásených používateľov.",
 	"error-login-required-link": "Prosím, prihláste sa, aby ste pokračovali.",

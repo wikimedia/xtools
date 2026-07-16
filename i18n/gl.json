@@ -141,6 +141,7 @@
 	"error-deleted-data-msg": "$1 {{PLURAL:$1|revisión|revisións}} desta páxina {{PLURAL:$1|contén|conteñen}} información que foi $2. Como resultado, algúns datos poden ser inexactos ou enganosos.",
 	"error-denied": "Bloqueouse o teu acceso a XTools debido a unha automatización aparentemente abusiva ou destrutiva. Ponte en contacto $1",
 	"error-ip-range-unsupported": "Sentímolo, esta función non está dispoñible para rangos de IP. Introduce un único nome de usuario ou enderezo IP.",
+	"error-lock-contention": "XTools non puido completar a túa solicitude debido a un problema temporal na base de datos. Inténtao de novo nuns intres.",
 	"error-login": "Fallou o inicio de sesión! Por favor, inténtao de novo.",
 	"error-login-required": "Por motivos de rendemento, os datos solicitados só están dispoñibles para os usuarios que iniciaron sesión.",
 	"error-login-required-link": "Por favor, inicia sesión para continuar.",

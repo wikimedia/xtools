@@ -146,6 +146,7 @@
 	"error-deleted-data-msg": "Bu səhifənin $1 {{PLURAL:$1|versiyası}} $2 məlumat ehtiva edir. Buna görə də bəzi məlumatlar qeyri-dəqiq və ya yanıldıcı ola bilər.",
 	"error-denied": "XTools-a girişiniz sui-istifadə və ya pozucu avtomatlaşdırma səbəbindən bloklanıb. Zəhmət olmasa $1 ilə əlaqə saxlayın",
 	"error-ip-range-unsupported": "Üzr istəyirik, bu funksiya IP diapazonları üçün əlçatan deyil. Zəhmət olmasa tək istifadəçi adı və ya IP ünvanı daxil edin.",
+	"error-lock-contention": "Müvəqqəti verilənlər bazası problemi səbəbindən XTools sorğunuzu yerinə yetirə bilmədi. Zəhmət olmasa, bir az sonra yenidən cəhd edin.",
 	"error-login": "Giriş alınmadı! Zəhmət olmasa, bir daha cəhd edin.",
 	"error-login-required": "Performans səbəblərinə görə, tələb olunan məlumatlar yalnız giriş etmiş istifadəçilər üçün əlçatandır.",
 	"error-login-required-link": "Zəhmət olmasa, davam etmək üçün daxil olun.",
