@@ -12,7 +12,6 @@ use App\Model\User;
  * An PagesRepository is responsible for retrieving information from the
  * databases for the Pages Created tool. It does not do any post-processing
  * of that data.
- * @codeCoverageIgnore
  */
 class PagesRepository extends UserRepository {
 	/**

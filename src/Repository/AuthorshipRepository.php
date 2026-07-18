@@ -12,7 +12,6 @@ use GuzzleHttp\Exception\ServerException;
 
 /**
  * AuthorshipRepository is responsible for retrieving authorship data about a single page.
- * @codeCoverageIgnore
  */
 class AuthorshipRepository extends Repository {
 	/**

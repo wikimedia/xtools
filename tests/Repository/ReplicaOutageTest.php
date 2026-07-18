@@ -4,6 +4,7 @@ declare( strict_types = 1 );
 
 namespace App\Tests\Repository;
 
+use App\Model\Project;
 use App\Repository\Repository;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\DriverException;
@@ -236,6 +237,21 @@ class ReplicaOutageTest extends TestCase {
 			static::assertSame( 503, $e->getStatusCode() );
 			static::assertSame( 'error-replica-unavailable', $e->getMessage() );
 		}
+	}
+
+	/**
+	 * resolveSlice() also accepts a Project instance, routing on its database name rather than a
+	 * bare string. Proven by a connect failure tripping the breaker for the slice the project's
+	 * database lives on (enwiki -> s1 in the primed dblist).
+	 */
+	public function testProjectInstanceResolvesToItsSlice(): void {
+		$project = $this->createMock( Project::class );
+		$project->method( 'getDatabaseName' )->willReturn( 'enwiki' );
+		$repo = $this->makeRepository( $this->registryThrowing( 2002 ) );
+
+		$this->runExpectingHttpException( static fn () => $repo->executeProjectsQuery( $project, 'SELECT 1' ) );
+
+		static::assertTrue( $this->cache->hasItem( 'replica-breaker.s1' ) );
 	}
 
 	/**

@@ -16,7 +16,6 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 /**
  * This class provides data to the Project class.
- * @codeCoverageIgnore
  */
 class ProjectRepository extends Repository {
 	/** @var string[] Basic metadata if XTools is in single-wiki mode. */

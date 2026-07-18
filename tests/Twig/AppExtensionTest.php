@@ -14,6 +14,8 @@ use App\Tests\TestAdapter;
 use App\Twig\AppExtension;
 use DateTime;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 
 /**
@@ -251,6 +253,74 @@ class AppExtensionTest extends TestAdapter {
 			"&lt;script&gt;alert(\"XSS baby\")&lt;/script&gt; " .
 				"<a target='_blank' href='https://test.example.org/wiki/Test_page'>test page</a>",
 			$this->appExtension->wikify( $summary, $project )
+		);
+	}
+
+	/**
+	 * Authorship, Blame and GlobalContribs only make sense on WMF wikis (WikiWho, CentralAuth), so
+	 * they stay unavailable off-WMF even when enabled in config; other tools obey config regardless.
+	 * isWMF is a constructor argument, so injecting it both ways covers both branches in one run.
+	 */
+	public function testToolEnabledHonorsIsWMF(): void {
+		static::assertTrue(
+			$this->makeAppExtension( true, [ 'enable.Blame' => true ] )->toolEnabled( 'Blame' ),
+			'Blame is available on WMF when enabled'
+		);
+		static::assertFalse(
+			$this->makeAppExtension( false, [ 'enable.Blame' => true ] )->toolEnabled( 'Blame' ),
+			'Blame stays unavailable off-WMF even when enabled'
+		);
+		static::assertFalse(
+			$this->makeAppExtension( true, [ 'enable.Blame' => false ] )->toolEnabled( 'Blame' ),
+			'the config switch still controls Blame on WMF'
+		);
+		static::assertTrue(
+			$this->makeAppExtension( false, [ 'enable.index' => true ] )->toolEnabled( 'index' ),
+			'a tool not restricted to WMF obeys config regardless of isWMF'
+		);
+	}
+
+	/**
+	 * The footer quote is suppressed off-WMF when the Quote tool is disabled, but WMF always shows
+	 * it (it lives in the footer there, not the nav).
+	 */
+	public function testQuoteHiddenOffWmfWhenDisabled(): void {
+		static::assertSame(
+			'',
+			$this->makeAppExtension( false, [ 'enable.Quote' => false ] )->quote()
+		);
+		static::assertSame(
+			'hi',
+			$this->makeAppExtension( false, [ 'enable.Quote' => true, 'quotes' => [ 'hi' ] ] )->quote()
+		);
+		static::assertSame(
+			'hi',
+			$this->makeAppExtension( true, [ 'enable.Quote' => false, 'quotes' => [ 'hi' ] ] )->quote()
+		);
+	}
+
+	/**
+	 * Build an AppExtension with isWMF injected directly. toolEnabled() and quote() read only
+	 * $isWMF and the parameter bag, so the other collaborators are inert mocks.
+	 * @param bool $isWMF
+	 * @param array<string, mixed> $params Parameter-bag entries the method under test reads.
+	 */
+	private function makeAppExtension( bool $isWMF, array $params = [] ): AppExtension {
+		$parameterBag = $this->createMock( ParameterBagInterface::class );
+		$parameterBag->method( 'has' )
+			->willReturnCallback( static fn ( string $key ) => isset( $params[$key] ) );
+		$parameterBag->method( 'get' )
+			->willReturnCallback( static fn ( string $key ) => $params[$key] ?? null );
+
+		return new AppExtension(
+			$this->createMock( RequestStack::class ),
+			$this->createMock( I18nHelper::class ),
+			$this->createMock( UrlGenerator::class ),
+			$this->createMock( ProjectRepository::class ),
+			$parameterBag,
+			$isWMF,
+			false,
+			30
 		);
 	}
 }

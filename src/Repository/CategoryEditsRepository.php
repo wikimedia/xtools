@@ -21,7 +21,6 @@ use Wikimedia\IPUtils;
 /**
  * CategoryEditsRepository is responsible for retrieving data from the database
  * about the edits made by a user to pages in a set of given categories.
- * @codeCoverageIgnore
  */
 class CategoryEditsRepository extends Repository {
 	/**

@@ -15,7 +15,6 @@ use Wikimedia\IPUtils;
 
 /**
  * A GlobalContribsRepository is responsible for retrieving information from the database for the GlobalContribs tool.
- * @codeCoverageIgnore
  */
 class GlobalContribsRepository extends Repository {
 

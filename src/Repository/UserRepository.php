@@ -18,7 +18,6 @@ use Wikimedia\IPUtils;
 
 /**
  * This class provides data for the User class.
- * @codeCoverageIgnore
  */
 class UserRepository extends Repository {
 	public function __construct(

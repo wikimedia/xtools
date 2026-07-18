@@ -13,7 +13,6 @@ use Wikimedia\IPUtils;
  * An EditSummaryRepository is responsible for retrieving information from the
  * databases for the Edit Summary tool. It does not do any post-processing
  * of that data.
- * @codeCoverageIgnore
  */
 class EditSummaryRepository extends UserRepository {
 	/**

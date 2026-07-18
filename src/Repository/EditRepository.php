@@ -16,7 +16,6 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 /**
  * An EditRepository fetches data about a single revision.
- * @codeCoverageIgnore
  */
 class EditRepository extends Repository {
 	public function __construct(

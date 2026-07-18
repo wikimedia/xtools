@@ -14,7 +14,6 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 /**
  * BlameRepository is responsible for retrieving authorship data about a single page.
- * @codeCoverageIgnore
  */
 class BlameRepository extends AuthorshipRepository {
 	/**

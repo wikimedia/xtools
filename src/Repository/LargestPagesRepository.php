@@ -14,7 +14,6 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 /**
  * A LargestPagesRepository is responsible for retrieving information from the database for the LargestPages tool.
- * @codeCoverageIgnore
  */
 class LargestPagesRepository extends Repository {
 	/**

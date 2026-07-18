@@ -19,7 +19,6 @@ use Wikimedia\IPUtils;
 /**
  * AutoEditsRepository is responsible for retrieving data from the database
  * about the automated edits made by a user.
- * @codeCoverageIgnore
  */
 class AutoEditsRepository extends UserRepository {
 	/** @var array List of automated tools, used for fetching the tool list and filtering it. */

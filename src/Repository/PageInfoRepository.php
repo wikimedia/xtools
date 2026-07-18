@@ -16,7 +16,6 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * PageInfoRepository is responsible for retrieving data about a single page on a given wiki.
- * @codeCoverageIgnore
  */
 class PageInfoRepository extends AutoEditsRepository {
 	/** @var int Maximum number of revisions to process, as configured via APP_MAX_PAGE_REVISIONS */

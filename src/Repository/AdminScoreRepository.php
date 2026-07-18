@@ -10,7 +10,6 @@ use App\Model\User;
 /**
  * A AdminScoreRepository is responsible for retrieving information from the
  * databases for the AdminScore tool. It does not do any post-processing of that data.
- * @codeCoverageIgnore
  */
 class AdminScoreRepository extends Repository {
 	/**

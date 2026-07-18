@@ -11,7 +11,6 @@ use Wikimedia\IPUtils;
 /**
  * SimpleEditCounterRepository is responsible for retrieving data
  * from the database for the Simple Edit Counter tool.
- * @codeCoverageIgnore
  */
 class SimpleEditCounterRepository extends Repository {
 	/**

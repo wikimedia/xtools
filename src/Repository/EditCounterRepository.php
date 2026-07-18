@@ -16,7 +16,6 @@ use Wikimedia\IPUtils;
 /**
  * An EditCounterRepository is responsible for retrieving edit count information from the
  * databases and API. It doesn't do any post-processing of that information.
- * @codeCoverageIgnore
  */
 class EditCounterRepository extends Repository {
 	public function __construct(

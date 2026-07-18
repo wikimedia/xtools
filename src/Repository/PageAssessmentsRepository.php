@@ -10,7 +10,6 @@ use App\Model\Project;
 /**
  * An PageAssessmentsRepository is responsible for retrieving page assessment
  * information from the database, and the XTools configuration via the Container.
- * @codeCoverageIgnore
  */
 class PageAssessmentsRepository extends Repository {
 	/** @var array The assessments config. */

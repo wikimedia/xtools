@@ -28,9 +28,6 @@ use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
  * A repository is responsible for retrieving data from wherever it lives (databases, APIs, filesystems, etc.)
  */
 abstract class Repository {
-	/** @var Connection The database connection to the meta database. */
-	private Connection $metaConnection;
-
 	/** @var Connection The database connection to other tools' databases. */
 	private Connection $toolsConnection;
 
@@ -84,18 +81,6 @@ abstract class Repository {
 	private function getConnection( string $name ): Connection {
 		/** @type Connection */
 		return $this->managerRegistry->getConnection( $name );
-	}
-
-	/**
-	 * Get the database connection for the 'meta' database.
-	 * @return Connection
-	 * @codeCoverageIgnore
-	 */
-	protected function getMetaConnection(): Connection {
-		if ( !isset( $this->metaConnection ) ) {
-			$this->metaConnection = $this->getProjectsConnection( 'meta' );
-		}
-		return $this->metaConnection;
 	}
 
 	/**

@@ -19,7 +19,6 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * A PageRepository fetches data about Pages, either singularly or for multiple.
  * Despite the name, this does not have a direct correlation with the Pages tool.
- * @codeCoverageIgnore
  */
 class PageRepository extends Repository {
 	/**

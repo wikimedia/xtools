@@ -20,7 +20,6 @@ use Wikimedia\IPUtils;
  * TopEditsRepository is responsible for retrieving data from the database
  * about the top-edited pages of a user. It doesn't do any post-processing
  * of that information.
- * @codeCoverageIgnore
  */
 class TopEditsRepository extends UserRepository {
 	public function __construct(

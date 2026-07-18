@@ -15,7 +15,6 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 /**
  * An UserRightsRepository is responsible for retrieving information around a user's
  * rights on a given wiki. It doesn't do any post-processing of that information.
- * @codeCoverageIgnore
  */
 class UserRightsRepository extends Repository {
 
