@@ -285,7 +285,7 @@ class TopEditsRepository extends UserRepository {
 				ORDER BY `count` DESC
 				LIMIT 10";
 
-		$totals = $this->executeQuery( $sql, $project, $user, $ns )
+		$totals = $this->executeQuery( $sql, $project, $user, $ns, $params )
 			->fetchAllAssociative();
 
 		// Cache and return.

@@ -230,7 +230,7 @@ class PageRepository extends Repository {
 				WHERE $userClause rev_page = :pageid $dateConditions";
 		$params = [ 'pageid' => $page->getId() ];
 		if ( $user ) {
-			$params['rev_actor'] = $user->getActorId( $page->getProject() );
+			$params['actorId'] = $user->getActorId( $page->getProject() );
 		}
 
 		$result = (int)$this->executeProjectsQuery( $page->getProject(), $sql, $params )->fetchOne();

@@ -229,7 +229,7 @@ class PageInfoRepository extends AutoEditsRepository {
 		$result = $this->executeProjectsQuery( $project, $sql, [ 'title' => $title . '/%', 'namespace' => $ns ] )
 			->fetchAllAssociative();
 
-		return $this->setCache( $cacheKey, $result[0]['count'] );
+		return $this->setCache( $cacheKey, (int)$result[0]['count'] );
 	}
 
 	/**
