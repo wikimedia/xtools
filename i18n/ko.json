@@ -149,6 +149,7 @@
 	"error-deleted-data-msg": "이 문서의 $1 {{PLURAL:$1|판|판들}}은 $2 정보를 포함하고 있습니다. 그 결과로, 몇몇 데이터는 부정확하거나 오해의 소지가 있을 수 있습니다.",
 	"error-denied": "당신은 명백한 악용 또는 방해를 주는 자동화로 인해 XTools의 접근이 차단되었습니다. $1에 문의하십시오",
 	"error-ip-range-unsupported": "죄송합니다. IP 대역에는 이 기능을 사용할 수 없습니다. 단일 사용자 이름이나 IP 주소를 입력해 주십시오.",
+	"error-lock-contention": "일시적인 데이터베이스 경합으로 인해 XTools에서 요청을 완료할 수 없습니다. 잠시 후 다시 시도해 주세요.",
 	"error-login": "로그인을 실패했습니다! 다시 시도해 주십시오.",
 	"error-login-required": "성능상의 이유로, 요청된 데이터는 로그인된 사용자만 사용 가능합니다.",
 	"error-login-required-link": "계속하려면 로그인해 주십시오.",

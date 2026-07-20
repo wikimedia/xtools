@@ -156,6 +156,7 @@
 	"error-deleted-data-msg": "此頁面{{PLURAL:$1|修訂}} $1 {{PLURAL:$1|包含}}{{PLURAL:$1|已}}$2的資訊。因此，某些資料可能不準確或是有誤導內容。",
 	"error-denied": "出自於明顯的濫用或破壞性自動化操作，您已被封鎖對 XTools 的訪問。請聯絡：$1",
 	"error-ip-range-unsupported": "很抱歉，此功能不適用於 IP 範圍。請輸入一個使用者名稱或是 IP 位址。",
+	"error-lock-contention": "由於資料庫臨時發生堵塞，XTools 無法完成您的請求，請稍後再試。",
 	"error-login": "登入失敗！請重試。",
 	"error-login-required": "出於效能因素，請求的資料僅對已登入使用者可用。",
 	"error-login-required-link": "請先登入以繼續。",
