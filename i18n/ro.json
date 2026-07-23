@@ -10,6 +10,7 @@
 			"SZ475",
 			"Strainu",
 			"Tanea.d",
+			"Vellion Eagle",
 			"WebSourceContentRO"
 		]
 	},
@@ -212,6 +213,7 @@
 	"latest-action": "Ultima acțiune de logare",
 	"latest-edit": "Ultima modificare",
 	"latest-revision": "Ultima revizuire",
+	"less-than": "Mai puțin decât $1",
 	"limit": "Limită",
 	"links": "Legături",
 	"links-external": "Legături externe",
@@ -337,6 +339,7 @@
 	"priority": "Prioritate",
 	"project": "Proiect",
 	"projects": "Proiecte",
+	"proofreadpage-quality": "Starea paginii",
 	"prose": "proză",
 	"protect": "Protejări",
 	"proxy-check": "Verificare proxy",
