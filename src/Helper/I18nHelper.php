@@ -237,13 +237,8 @@ class I18nHelper {
 	 * @return string
 	 */
 	public function dateFormat( string|int|DateTime $datetime, string $pattern = 'yyyy-MM-dd HH:mm' ): string {
-		$lang = $this->getLangForTranslatingNumerals();
 		if ( !isset( $this->dateFormatter ) ) {
-			$this->dateFormatter = new IntlDateFormatter(
-				$lang,
-				IntlDateFormatter::SHORT,
-				IntlDateFormatter::SHORT
-			);
+			$this->dateFormatter = $this->newDateFormatter( $this->getLangForTranslatingNumerals() );
 		}
 
 		if ( is_string( $datetime ) ) {
@@ -261,6 +256,24 @@ class I18nHelper {
 	}
 
 	/********************* PRIVATE METHODS */
+
+	/**
+	 * Build a date formatter for the given locale, falling back to English when ICU can't.
+	 * Intuition accepts locales ICU doesn't, and for those `new IntlDateFormatter` hands back
+	 * an unconstructed object instead of throwing (intl_get_error_code() even stays 0), so the
+	 * failure only surfaces as a fatal once we call a method on it. We probe with getPattern().
+	 * @param string $lang
+	 * @return IntlDateFormatter
+	 */
+	private function newDateFormatter( string $lang ): IntlDateFormatter {
+		$formatter = new IntlDateFormatter( $lang, IntlDateFormatter::SHORT, IntlDateFormatter::SHORT );
+		try {
+			$formatter->getPattern();
+		} catch ( \Throwable ) {
+			$formatter = new IntlDateFormatter( 'en', IntlDateFormatter::SHORT, IntlDateFormatter::SHORT );
+		}
+		return $formatter;
+	}
 
 	/**
 	 * Return the language to be used when translating numberals.

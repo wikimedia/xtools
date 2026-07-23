@@ -60,6 +60,16 @@ class I18nHelperTest extends TestAdapter {
 		static::assertEquals( $datetime, $this->i18n->dateFormat( 1674477240 ) );
 	}
 
+	public function testDateFormatIcuInvalidLang(): void {
+		// Alemannic ('als') is a language Intuition knows but ICU can't build a formatter
+		// for; dateFormat() must fall back to English rather than fatal on it.
+		$i18n = new I18nHelper(
+			$this->getRequestStack( $this->session, [ 'uselang' => 'als' ] ),
+			static::getContainer()->getParameter( 'kernel.project_dir' )
+		);
+		static::assertEquals( '2023-01-23 12:34', $i18n->dateFormat( '2023-01-23T12:34' ) );
+	}
+
 	public function testGetIntuitionInvalidLang(): void {
 		$invalidI18n = new I18nHelper(
 			$this->getRequestStack( $this->session, [ 'uselang' => 'invalid-lang' ] ),
