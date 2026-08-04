@@ -192,9 +192,9 @@ abstract class Repository {
 		// Enumerate the replica connections: everything but the internal metadata db and toolsdb.
 		$replicaConns = array_diff_key( $this->connectionNames(), array_flip( self::NON_REPLICA_CONNECTIONS ) );
 		// Exclude MySQL's own metadata schemas.
-		$sql = "SELECT DISTINCT schema_name
-				FROM information_schema.schemata
-				WHERE schema_name NOT IN ('information_schema','performance_schema','mysql','sys')";
+		$sql = "SELECT DISTINCT table_schema
+				FROM information_schema.tables
+				WHERE table_schema NOT IN ('information_schema','performance_schema','mysql','sys')";
 		// Loop through the relevant connections to build the project db list.
 		foreach ( array_keys( $replicaConns ) as $conn ) {
 			$cacheKey = 'dblist_' . $conn;
