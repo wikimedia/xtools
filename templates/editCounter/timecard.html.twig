@@ -36,7 +36,7 @@
 			{% for day in 1..7 %}
 				<tr>
 					<th>{{ days[day] }}</th>
-					{% for item in ec.timeCard|filter(item => item.day_of_week == day and item.hour != 24) %}
+					{% for item in ec.timeCard|filter(item => item.dayOfWeek == day and item.hour != 24) %}
 						<td>{{ item.value }}</td>
 					{% endfor %}
 				</tr>
@@ -70,7 +70,7 @@
 		];
 		timeCardDatasets.forEach((day) => day.data.forEach((entry) => {
 				entry.x = entry.hour;
-				entry.y = 8 - entry.day_of_week;
+				entry.y = 8 - entry.dayOfWeek;
 			})
 		);
 

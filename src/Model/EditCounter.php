@@ -738,14 +738,14 @@ class EditCounter extends Model {
 		foreach ( range( 1, 7 ) as $day ) {
 			foreach ( range( 0, 23 ) as $hour ) {
 				if ( isset( $totals[$index] )
-					&& (int)$totals[$index]['day_of_week'] === $day
+					&& (int)$totals[$index]['dayOfWeek'] === $day
 					&& (int)$totals[$index]['hour'] === $hour
 				) {
 					$sortedTotals[] = $totals[$index];
 					$index++;
 				} else {
 					$sortedTotals[] = [
-						'day_of_week' => $day,
+						'dayOfWeek' => $day,
 						'hour' => $hour,
 						'value' => 0,
 					];

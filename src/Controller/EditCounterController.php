@@ -734,7 +734,7 @@ class EditCounterController extends XtoolsController {
 					items: new OA\Items( type: "object" ),
 					example: [
 						[
-							"day_of_week" => 1,
+							"dayOfWeek" => 1,
 							"hour" => 0,
 							"value" => 50,
 							"scale" => 5,

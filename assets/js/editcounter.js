@@ -535,7 +535,7 @@ xtools.editcounter.setupTimecard = function ( timeCardDatasets, days ) {
 			.on( 'click', function () {
 				const offset = $( this ).is( ':checked' ) ? timezoneOffset : -timezoneOffset;
 				const colorList = new Array( 7 );
-				chart.data.datasets.forEach( ( day ) => colorList[ day.data[ 0 ].day_of_week - 1 ] = day.backgroundColor[ 0 ] );
+				chart.data.datasets.forEach( ( day ) => colorList[ day.data[ 0 ].dayOfWeek - 1 ] = day.backgroundColor[ 0 ] );
 				chart.data.datasets = chart.data.datasets.map( ( day ) => {
 					const backgroundColors = [];
 					day.data = day.data.map( ( datum ) => {

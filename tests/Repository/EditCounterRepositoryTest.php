@@ -243,7 +243,7 @@ class EditCounterRepositoryTest extends TestCase {
 	 */
 	public function testGetTimeCardUsesIpcTimestampForRange(): void {
 		$repo = $this->makeRepository( true );
-		$rows = [ [ 'day_of_week' => 1, 'hour' => 12, 'value' => 3 ] ];
+		$rows = [ [ 'dayOfWeek' => 1, 'hour' => 12, 'value' => 3 ] ];
 		$repo->cannedQueries = [ '*' => $this->assocResult( $rows ) ];
 
 		$totals = $repo->getTimeCard( $this->makeProject(), $this->makeIpRangeUser() );
