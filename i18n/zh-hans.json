@@ -271,6 +271,7 @@
 	"max-text-deleted": "最大文本删除量",
 	"memory-usage": "执行消耗$1{{PLURAL:$2|兆字节}}内存。",
 	"merge": "合并",
+	"mimetype": "MIME类型",
 	"minor-edits": "小编辑",
 	"minor-edits-percentage": "小编辑%",
 	"minor-edits-tooltip": "用户将编辑标记为“微小”的编辑。这些编辑不一定是小编辑。",

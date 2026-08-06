@@ -235,6 +235,7 @@
 	"max-text-deleted": "Máximo texto borrado",
 	"memory-usage": "{{PLURAL:$2|Empregouse $1 megabyte|Empregáronse $1 megabytes}} de memoria para a execución.",
 	"merge": "Fusión",
+	"mimetype": "Tipo MIME",
 	"minor-edits": "Edicións pequenas",
 	"minor-edits-percentage": "% de edicións pequenas",
 	"minor-edits-tooltip": "Edicións nas que o usuario marcou a edición como pequena. Non son necesariamente edicións pequenas.",

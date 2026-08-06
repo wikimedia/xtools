@@ -240,6 +240,7 @@
 	"max-text-deleted": "Maksimum silinən mətn",
 	"memory-usage": "İcra etmək üçün yaddaşın $1 {{PLURAL:$2|meqabayt}} hissəsi istifadə olunub",
 	"merge": "Birləşdirmə",
+	"mimetype": "MIME növü",
 	"minor-edits": "Kiçik redaktələr",
 	"minor-edits-percentage": "Kiçik redaktələr %",
 	"minor-edits-tooltip": "İstifadəçinin redaktəni kiçik kimi qeyd etdiyi redaktələr. Bunlar həmişə kiçik redaktələr olmur.",

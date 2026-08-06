@@ -236,6 +236,7 @@
 	"max-text-deleted": "Maks. tekst slettet",
 	"memory-usage": "Har brugt $1 {{PLURAL:$2|megabyte|megabyte}}  hukommelse at udføre.",
 	"merge": "Sammenflet",
+	"mimetype": "MIME-type",
 	"minor-edits": "Mindre ændringer",
 	"minor-edits-percentage": "Mindre redigeringer %",
 	"minor-edits-tooltip": "Rettelser, hvor brugeren har markeret rettelsen som mindre. Disse er ikke nødvendigvis små rettelser.",

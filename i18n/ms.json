@@ -232,6 +232,7 @@
 	"max-text-deleted": "Maks. teks dipadamkan",
 	"memory-usage": "Memerlukan $1 {{PLURAL:$2|megabait}} memori untuk dilaksanakan.",
 	"merge": "Gabungkan",
+	"mimetype": "Jenis MIME",
 	"minor-edits": "Suntingan kecil",
 	"minor-edits-percentage": "% suntingan kecil",
 	"minor-edits-tooltip": "Suntingan yang ditanda sebagai suntingan kecil oleh pengguna terlibat. Suntingan tersebut tidak semestinya suntingan kecil.",
