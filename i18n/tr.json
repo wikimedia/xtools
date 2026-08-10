@@ -247,6 +247,7 @@
 	"max-text-deleted": "Max. silinmiş metin",
 	"memory-usage": "Yürütülecek belleğin $1 {{PLURAL:$2|megabyte|megabyte}} alınmasından alınmıştır.",
 	"merge": "Birleştir",
+	"mimetype": "MIME türü",
 	"minor-edits": "Küçük değişiklikler",
 	"minor-edits-percentage": "Küçük değişiklikler %",
 	"minor-edits-tooltip": "Kullanıcının düzenlemeyi küçük olarak işaretlediği düzenlemeler. Bunlar her zaman büyük düzenlemeler değildir.",

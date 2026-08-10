@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"KormiSK",
 			"Oujon",
 			"TomášPolonec",
 			"Vegetator",
@@ -235,6 +236,7 @@
 	"max-text-deleted": "Maximálny vymazaný text",
 	"memory-usage": "Pre vybavenie bolo vyhradené $1{{PLURAL:$2|megabajt|megabajty|megabajtov}} pamäte.",
 	"merge": "Zlúčiť",
+	"mimetype": "Typ MIME",
 	"minor-edits": "Menšie úpravy",
 	"minor-edits-percentage": "Menšie úpravy %",
 	"minor-edits-tooltip": "Úpravy, ktoré používateľ označil ako drobné. Nemusí nutne ísť o malé úpravy.",

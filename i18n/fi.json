@@ -242,6 +242,7 @@
 	"max-text-deleted": "Maks. tekstiä poistettu",
 	"memory-usage": "Suoritus käytti $1 {{PLURAL:$2|megatavun|megatavua}} muistia.",
 	"merge": "Muokkaushistorioita yhdistetty",
+	"mimetype": "MIME-tyyppi",
 	"minor-edits": "Pieniä muokkauksia",
 	"minor-edits-percentage": "Pienten muokkausten %-osuus",
 	"minor-edits-tooltip": "Muokkaukset, joissa käyttäjä on merkinnyt muokkauksen pieneksi. Nämä eivät välttämättä ole kooltaan pieniä muokkauksia.",
