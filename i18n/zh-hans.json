@@ -418,6 +418,7 @@
 	"see-full-page-stats": "查看完整页面统计",
 	"see-full-statistics": "查看完整统计",
 	"show": "显示",
+	"show-latest-edit-log": "显示用户上次做出的编辑和上次被记录的操作",
 	"show-sections-desc": "选择所要显示的数据。您选择的越多，加载的时间越长。",
 	"simple-counter-limited-results": "该用户执行了大量编辑。仅显示有限结果。",
 	"size": "大小",
