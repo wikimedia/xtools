@@ -117,7 +117,7 @@
 	"download-label": "Преузми",
 	"edit": "Уреди",
 	"edit-count": "Број измена",
-	"edit-count-desc": "$2 {{PLURAL:$1|измена|измене|измена}}",
+	"edit-count-desc": "$2 {{PLURAL:$1|измена|измене}}",
 	"edit-summaries": "Описи измена",
 	"edit-summaries-desc": "$2 {{PLURAL:$1|резиме измена коришћен|резимеа измена коришћена|резимеа измена коришћено}} у простору чланка",
 	"edit-summaries-percentage": "% описа измена",

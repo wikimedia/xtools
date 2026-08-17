@@ -383,6 +383,7 @@
 	"see-full-page-stats": "Se fuld sidestatistik",
 	"see-full-statistics": "Se fuld statistik",
 	"show": "Vis",
+	"show-latest-edit-log": "Vis brugerens seneste redigering og seneste loggede handling",
 	"show-sections-desc": "Vælg hvilke statistikker der skal vises. Jo flere du vælger, jo længere tid tager det at indlæse.",
 	"simple-counter-limited-results": "Denne bruger har foretaget et betydeligt højt antal redigeringer. Viser begrænsede resultater.",
 	"size": "Størrelse",
