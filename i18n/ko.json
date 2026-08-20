@@ -390,6 +390,7 @@
 	"see-full-page-stats": "문서 통계 전체 보기",
 	"see-full-statistics": "통계 전체 보기",
 	"show": "펼치기",
+	"show-latest-edit-log": "사용자의 마지막 수정 내역과 마지막으로 기록된 작업을 표시합니다",
 	"show-sections-desc": "표시할 통계를 선택하십시오. 많이 선택할수록 불러오는데 더 많은 시간이 소요됩니다.",
 	"simple-counter-limited-results": "이 사용자는 기여 수가 상당히 많습니다. 제한된 결과를 표시합니다.",
 	"size": "크기",
