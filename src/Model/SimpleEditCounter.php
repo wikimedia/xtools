@@ -79,13 +79,19 @@ class SimpleEditCounter extends Model {
 		}
 		if ( $this->showLatestActions ) {
 			$latest = $this->user->getLatestEditAndLog( $this->project );
-			$this->data[ 'latest_edit' ] = $this->editRepo->getEditFromRevIdForPage(
-				$this->user->getRepository(),
-				$this->project,
-				$latest[ 'edit_id' ]
-			);
-			$this->data[ 'latest_log_id' ] = $latest[ 'log_id' ];
-			$this->data[ 'latest_log_timestamp' ] = $latest[ 'log_timestamp' ];
+			// Guard against users with no edits.
+			if ( isset( $latest['edit'] ) ) {
+				$this->data[ 'latest_edit' ] = $this->editRepo->getEditFromRevIdForPage(
+					$this->user->getRepository(),
+					$this->project,
+					$latest['edit']
+				);
+			}
+			// Guard against users with no logged actions.
+			if ( isset( $latest['log_id'] ) ) {
+				$this->data[ 'latest_log_id' ] = $latest['log_id'];
+				$this->data[ 'latest_log_timestamp' ] = $latest['log_timestamp'];
+			}
 		}
 
 		if ( !$this->user->isAnon( $this->project ) ) {

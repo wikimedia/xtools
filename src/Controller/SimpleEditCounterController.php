@@ -4,6 +4,7 @@ declare( strict_types=1 );
 
 namespace App\Controller;
 
+use App\Model\Edit;
 use App\Model\SimpleEditCounter;
 use App\Repository\EditRepository;
 use App\Repository\SimpleEditCounterRepository;
@@ -119,6 +120,7 @@ class SimpleEditCounterController extends XtoolsController {
 	#[OA\Parameter( ref: "#/components/parameters/Namespace" )]
 	#[OA\Parameter( ref: "#/components/parameters/Start" )]
 	#[OA\Parameter( ref: "#/components/parameters/End" )]
+	#[OA\Parameter( ref: "#/components/parameters/Latest" )]
 	#[OA\Response(
 		response: 200,
 		description: "Simple edit count, along with user groups and global user groups.",
@@ -142,7 +144,7 @@ class SimpleEditCounterController extends XtoolsController {
 	#[OA\Response( ref: "#/components/responses/503", response: 503 )]
 	#[OA\Response( ref: "#/components/responses/504", response: 504 )]
 	#[Route(
-		'/api/user/simple_editcount/{project}/{username}/{namespace}/{start}/{end}',
+		'/api/user/simple_editcount/{project}/{username}/{namespace}/{start}/{end}/{latest}',
 		name: 'SimpleEditCounterApi',
 		requirements: [
 			'username' => '(ipr-.+\/\d+[^\/])|([^\/]+)',
@@ -154,6 +156,7 @@ class SimpleEditCounterController extends XtoolsController {
 			'start' => false,
 			'end' => false,
 			'namespace' => 'all',
+			'latest' => false,
 		],
 		methods: [ 'GET' ]
 	)]
@@ -161,12 +164,22 @@ class SimpleEditCounterController extends XtoolsController {
 	 * API endpoint for the Simple Edit Counter.
 	 * @codeCoverageIgnore
 	 */
-	public function simpleEditCounterApiAction( SimpleEditCounterRepository $simpleEditCounterRepo ): JsonResponse {
+	public function simpleEditCounterApiAction(
+		SimpleEditCounterRepository $simpleEditCounterRepo,
+		EditRepository $editRepo,
+	): JsonResponse {
 		$this->recordApiUsage( 'user/simple_editcount' );
-		$sec = $this->prepareSimpleEditCounter( $simpleEditCounterRepo );
+		$sec = $this->prepareSimpleEditCounter(
+			$simpleEditCounterRepo,
+			$editRepo,
+			$this->getBoolVal( 'latest' ),
+		);
 		$data = $sec->getData();
 		if ( $this->user->isIpRange() ) {
 			unset( $data['deleted_edit_count'] );
+		}
+		if ( $data[ 'latest_edit' ] instanceof Edit ) {
+			$data[ 'latest_edit' ] = $data[ 'latest_edit' ]->getForJson();
 		}
 		return $this->getFormattedApiResponse( $data );
 	}

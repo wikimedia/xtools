@@ -223,11 +223,11 @@ class UserRepository extends Repository {
 		] )->fetchAllAssociative();
 		$latest = [ 'edit' => null, 'log' => null ];
 		foreach ( $result as $row ) {
-			if ( $row['source'] == "rev" ) {
-				$latest['edit_id'] = $row[ 'id' ];
+			if ( $row['source'] == 'rev' ) {
+				$latest['edit'] = (int)$row['id'];
 			} else {
-				$latest['log_timestamp'] = $row[ 'timestamp' ];
-				$latest['log_id'] = $row[ 'id' ];
+				$latest['log_timestamp'] = $row['timestamp'];
+				$latest['log_id'] = (int)$row['id'];
 			}
 		}
 		return $latest;

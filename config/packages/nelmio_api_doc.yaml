@@ -167,6 +167,14 @@ nelmio_api_doc:
                     schema:
                         type: boolean
                         default: false
+                Latest:
+                    in: path
+                    name: latest
+                    required: true
+                    description: Include latest actions in the response.
+                    schema:
+                        type: boolean
+                        default: false
                 Offset:
                     in: path
                     name: offset
