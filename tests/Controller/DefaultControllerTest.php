@@ -42,8 +42,10 @@ class DefaultControllerTest extends ControllerTestAdapter {
 		);
 
 		// Make sure all active tools are listed.
-		static::assertCount( 11, $crawler->filter( '.tool-list a.btn' ) );
-		// note: only 11 because testing in app_single_wiki=1 and app_is_wmf=0
+		static::assertCount(
+			static::getContainer()->getParameter( 'app.is_wmf' ) ? 14 : 11,
+			$crawler->filter( '.tool-list a.btn' )
+		);
 	}
 
 	/**
@@ -74,7 +76,7 @@ class DefaultControllerTest extends ControllerTestAdapter {
 				'domain' => 'en.wikipedia.org',
 				'url' => 'https://en.wikipedia.org/',
 				'api' => 'https://en.wikipedia.org/w/api.php',
-				'database' => 'enwiki',
+				'database' => 'enwiki_p',
 			];
 
 			// from database name

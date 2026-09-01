@@ -33,9 +33,9 @@ class TopNavExtensionTest extends TestAdapter {
 			$this->createMock( UrlGenerator::class ),
 			$this->createMock( ProjectRepository::class ),
 			static::getContainer()->get( 'parameter_bag' ),
-			static::getContainer()->getParameter( 'app.is_wmf' ),
-			static::getContainer()->getParameter( 'app.single_wiki' ),
-			static::getContainer()->getParameter( 'app.replag_threshold' )
+			isWMF: true,
+			singleWiki: false,
+			replagThreshold: 0
 		);
 	}
 
@@ -64,6 +64,7 @@ class TopNavExtensionTest extends TestAdapter {
 			'Category Edits',
 			'Edit Counter',
 			'Edit Summaries',
+			'Global Contributions',
 			'Pages Created',
 			'Simple Counter',
 			'Top Edits',
@@ -75,6 +76,8 @@ class TopNavExtensionTest extends TestAdapter {
 	 */
 	public function testTopNavPage(): void {
 		static::assertEquals( [
+			'Authorship',
+			'Blame',
 			'Page History',
 		], array_values( $this->topNavExtension->topNavPage() ) );
 	}
