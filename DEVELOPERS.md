@@ -12,12 +12,37 @@ docker compose up --build
 ```
 
 The site comes up at http://localhost:3001. First boot installs dependencies
-and runs migrations, so give it a minute; assets rebuild on change. You need
-neither PHP nor Node installed on the host.
+and runs migrations, so give it a minute. You need neither PHP nor Node
+installed on the host.
 
 Containers run as UID 1000 so files they write back (vendor, node_modules) stay
 yours. If your host user isn't 1000, export `DOCKER_UID` and `DOCKER_GID`
 before `up`.
+
+### Front-end assets
+
+The compiled assets in `public/build` are committed, so the stack serves them
+as-is. The stack does not rebuild them. To change JavaScript or CSS, use the
+`assets` service, which gives you Node in a container. Install the packages
+once:
+
+```
+docker compose run --rm assets npm install
+```
+
+Then start the watcher in its own terminal while you work. It rebuilds
+`public/build` on each change:
+
+```
+docker compose run --rm assets npm run watch
+```
+
+Before you commit a change to `assets/`, stop the watcher and make a production
+build. Commit the result together with your source change:
+
+```
+docker compose run --rm assets npm run build
+```
 
 ### Wiki replica access
 

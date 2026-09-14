@@ -40,11 +40,17 @@ services:
       # Live-edit the vhost without rebuilding the web image.
       - ./.docker/apache/xtools.conf:/etc/apache2/sites-available/xtools.conf:ro
 
-  # Rebuilds public/build on change so contributors don't need Node on the host.
+  # Node for the front-end assets, so contributors don't need it on the host.
+  # public/build is committed, so the stack runs without this service. The
+  # profile keeps it out of `docker compose up`; start it on demand instead:
+  #   docker compose run --rm assets npm install     # once
+  #   docker compose run --rm assets npm run watch   # rebuild while you work
+  #   docker compose run --rm assets npm run build   # before you commit
   assets:
     image: node:20.12.2-bookworm-slim
     working_dir: /app
     user: "${DOCKER_UID:-1000}:${DOCKER_GID:-1000}"
-    command: sh -c "npm install && npm run watch"
+    profiles:
+      - assets
     volumes:
       - .:/app
