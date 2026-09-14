@@ -1,5 +1,13 @@
 # Release Notes #
 
+## 3.26.0 ##
+- EditCounter (T433394): fix local-time breaking timecard
+- SimpleCounter (T198872): Add latest edit and logged action, and add a
+  parameter so the API has parity.
+- PagesCreated (T352737): Add MIME type column for File namespace.
+- (T344090): Re-add third party support.
+- Localization updates.
+
 ## 3.25.0 ##
 - AdminStats (T354024): Add footnote on (re)protect and (re)block.
 - Authorship (T372340): Enable support for kowiki, mtwiki and zhwiki.
