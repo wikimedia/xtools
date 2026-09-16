@@ -138,7 +138,8 @@ class GlobalContribsRepository extends Repository {
 
 			foreach ( $this->globalEditCountsFromCentralAuth( $user ) as $projectMeta ) {
 				if ( $projectMeta['total'] > 0 ) {
-					$dbNames[] = $projectMeta['dbName'];
+					// FIXME: Hotfix to get GlobalContribs working again after third-party refactor.
+					$dbNames[] = $projectMeta['dbName'] . '_p';
 				}
 			}
 		}
@@ -190,7 +191,6 @@ class GlobalContribsRepository extends Repository {
 			$resultQuery = $this->executeProjectsQuery( $slice, $sql, [
 				'actor' => $username,
 			] );
-
 			// phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
 			while ( $row = $resultQuery->fetchAssociative() ) {
 				$actorIds[$row['dbName']] = (int)$row['actor_id'];

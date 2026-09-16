@@ -298,7 +298,7 @@ class GlobalContribsRepositoryTest extends TestCase {
 		$projectRepo = $this->createMock( ProjectRepository::class );
 		$projectRepo->expects( static::once() )
 			->method( 'getProject' )
-			->with( 'enwiki' )
+			->with( 'enwiki_p' )
 			->willReturn( $enwiki );
 
 		$repo = $this->makeRepository( $projectRepo );
@@ -308,7 +308,7 @@ class GlobalContribsRepositoryTest extends TestCase {
 		] ] ] ];
 
 		$projects = $repo->getProjectsWithEdits( $this->makeUser() );
-		static::assertSame( [ 'enwiki' => $enwiki ], $projects );
+		static::assertSame( [ 'enwiki_p' => $enwiki ], $projects );
 	}
 
 	/**
