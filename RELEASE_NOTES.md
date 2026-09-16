@@ -1,5 +1,8 @@
 # Release Notes #
 
+## 3.26.1 ##
+- GlobalContribs: hotfix; ensure DB names from CentralAuth get the _p suffix.
+
 ## 3.26.0 ##
 - EditCounter (T433394): fix local-time breaking timecard
 - SimpleCounter (T198872): Add latest edit and logged action, and add a
