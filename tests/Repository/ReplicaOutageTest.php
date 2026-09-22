@@ -8,6 +8,7 @@ use App\Model\Project;
 use App\Repository\Repository;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\DriverException;
+use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\DBAL\Result;
 use Doctrine\Persistence\ManagerRegistry;
 use GuzzleHttp\Client;
@@ -95,6 +96,22 @@ class ReplicaOutageTest extends TestCase {
 		$repo = $this->makeRepository( $this->registryThrowing( 2002 ) );
 
 		$this->runExpectingHttpException( static fn () => $repo->executeProjectsQuery( 'enwiki', 'SELECT 1' ) );
+
+		static::assertTrue( $this->cache->hasItem( 'replica-breaker.s1' ) );
+	}
+
+	/**
+	 * The builder path gets the same treatment. It used to call handleDriverError() on its own,
+	 * which translates the error but never caches the breaker key, so a dead slice reached
+	 * through executeQueryBuilder() was re-dialled on every request. Both entry points share
+	 * runQuery() now.
+	 */
+	public function testExecuteQueryBuilderTripsTheBreaker(): void {
+		$repo = $this->makeRepository( $this->registryThrowing( 2002 ) );
+		$qb = new QueryBuilder( $this->createMock( Connection::class ) );
+		$qb->select( '1' );
+
+		$this->runExpectingHttpException( static fn () => $repo->executeQueryBuilder( $qb, 'enwiki' ) );
 
 		static::assertTrue( $this->cache->hasItem( 'replica-breaker.s1' ) );
 	}

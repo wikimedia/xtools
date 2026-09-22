@@ -456,11 +456,71 @@ abstract class Repository {
 		?int $timeout = null,
 		bool $checkBreaker = true
 	): Result {
+		return $this->runQuery( $project, $sql, $params, [], $timeout, $checkBreaker );
+	}
+
+	/**
+	 * Execute a QueryBuilder using the projects connection, handling certain Exceptions.
+	 * Prefer this over executeProjectsQuery() for new queries: the builder carries its own
+	 * parameter types, so array parameters (i.e. ArrayParameterType::INTEGER for an IN list)
+	 * expand correctly, which executeProjectsQuery() can't do.
+	 *
+	 * $project must name the same connection the builder was created from. The builder is used
+	 * only to render SQL and parameters; the query runs on the connection $project resolves to,
+	 * so that a failure can be attributed to a known slice and trip its breaker.
+	 * @param QueryBuilder $qb
+	 * @param Project|string $project Project instance, database name (i.e. 'enwiki'), or slice (i.e. 's1').
+	 * @param int|null $timeout Maximum statement time in seconds. null will use the
+	 *   default specified by the APP_QUERY_TIMEOUT env variable.
+	 * @param bool $checkBreaker Whether to honor the fail-fast breaker.
+	 * @return Result
+	 * @throws HttpException
+	 * @throws DriverException
+	 */
+	public function executeQueryBuilder(
+		QueryBuilder $qb,
+		Project|string $project,
+		?int $timeout = null,
+		bool $checkBreaker = true
+	): Result {
+		return $this->runQuery(
+			$project,
+			$qb->getSQL(),
+			$qb->getParameters(),
+			$qb->getParameterTypes(),
+			$timeout,
+			$checkBreaker
+		);
+	}
+
+	/**
+	 * Apply the statement timeout, run the query, and translate driver errors. Shared by
+	 * executeProjectsQuery() and executeQueryBuilder() so both get the timeout and the breaker.
+	 * @param Project|string $project Project instance, database name (i.e. 'enwiki'), or slice (i.e. 's1').
+	 * @param string $sql
+	 * @param array $params Parameters to bind to the prepared query.
+	 * @param array $types Types of $params, keyed the same way. Empty for a query with no
+	 *   array parameters, which is every caller that doesn't use a QueryBuilder.
+	 * @param int|null $timeout Maximum statement time in seconds. null uses APP_QUERY_TIMEOUT.
+	 * @param bool $checkBreaker Whether to honor the fail-fast breaker. Pass false for the
+	 *   dblist replication probe, which must test the real connection to keep its safety check.
+	 * @return Result
+	 * @throws DriverException
+	 */
+	private function runQuery(
+		Project|string $project,
+		string $sql,
+		array $params,
+		array $types,
+		?int $timeout,
+		bool $checkBreaker
+	): Result {
 		try {
 			$timeout = $timeout ?? $this->queryTimeout;
 			$sql = "SET STATEMENT max_statement_time = $timeout FOR\n" . $sql;
 
-			return $this->getProjectsConnection( $project, $checkBreaker )->executeQuery( $sql, $params );
+			return $this->getProjectsConnection( $project, $checkBreaker )
+				->executeQuery( $sql, $params, $types );
 		} catch ( DriverException $e ) {
 			if ( in_array( $e->getCode(), self::CONNECT_ERROR_CODES ) ) {
 				// Connection refused/unreachable: trip the breaker so subsequent requests
@@ -471,27 +531,6 @@ abstract class Repository {
 					self::REPLICA_BREAKER_COOLDOWN
 				);
 			}
-			$this->handleDriverError( $e, $timeout );
-		}
-	}
-
-	/**
-	 * Execute a query using the projects connection, handling certain Exceptions.
-	 * @param QueryBuilder $qb
-	 * @param int|null $timeout Maximum statement time in seconds. null will use the
-	 *   default specified by the APP_QUERY_TIMEOUT env variable.
-	 * @return Result
-	 * @throws HttpException
-	 * @throws DriverException
-	 * @codeCoverageIgnore
-	 */
-	public function executeQueryBuilder( QueryBuilder $qb, ?int $timeout = null ): Result {
-		try {
-			$timeout = $timeout ?? $this->queryTimeout;
-			$sql = "SET STATEMENT max_statement_time = $timeout FOR\n" . $qb->getSQL();
-			// FIXME
-			return $qb->executeQuery( $sql, $qb->getParameters(), $qb->getParameterTypes() );
-		} catch ( DriverException $e ) {
 			$this->handleDriverError( $e, $timeout );
 		}
 	}

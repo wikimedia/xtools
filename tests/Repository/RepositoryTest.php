@@ -10,6 +10,11 @@ use App\Repository\Repository;
 use App\Repository\SimpleEditCounterRepository;
 use App\Repository\UserRepository;
 use App\Tests\TestAdapter;
+use Doctrine\DBAL\ArrayParameterType;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ParameterType;
+use Doctrine\DBAL\Query\QueryBuilder;
+use Doctrine\DBAL\Result;
 use Doctrine\Persistence\ManagerRegistry;
 use GuzzleHttp\Client;
 use Psr\Cache\CacheItemPoolInterface;
@@ -162,5 +167,96 @@ class RepositoryTest extends TestAdapter {
 			" AND rev_timestamp >= '20170101000000' AND rev_timestamp <= '20180201235959'",
 			$this->repository->getDateConditions( $start, $end, $offset )
 		);
+	}
+
+	/**
+	 * executeQueryBuilder() is the path new queries should use, because it forwards the builder's
+	 * parameter types and so can bind an array parameter (an IN list) that executeProjectsQuery()
+	 * can't express. Both halves of that were previously silent no-ops: the method handed its
+	 * assembled SQL, params and types to QueryBuilder::executeQuery(), which takes no arguments
+	 * and re-ran the builder's own un-prefixed SQL instead, discarding the statement timeout and
+	 * the types along with it. Assert on what actually reaches the connection.
+	 */
+	public function testExecuteQueryBuilderAppliesTimeoutAndForwardsParameterTypes(): void {
+		$recorded = [];
+		$repository = $this->makeRecordingRepository( $recorded );
+
+		$qb = new QueryBuilder( $this->createMock( Connection::class ) );
+		$qb->select( 'page_id' )
+			->from( 'page' )
+			->where( 'page_namespace = :ns' )
+			->andWhere( 'page_id IN (:ids)' )
+			->setParameter( 'ns', 0 )
+			->setParameter( 'ids', [ 1, 2, 3 ], ArrayParameterType::INTEGER );
+
+		$repository->executeQueryBuilder( $qb, 's1' );
+
+		// The timeout prefix is prepended to the builder's SQL, not dropped.
+		static::assertStringStartsWith( "SET STATEMENT max_statement_time = 30 FOR\n", $recorded['sql'] );
+		static::assertStringContainsString( $qb->getSQL(), $recorded['sql'] );
+		// Params and their types both arrive, so ArrayParameterType can expand the IN list.
+		static::assertSame( [ 'ns' => 0, 'ids' => [ 1, 2, 3 ] ], $recorded['params'] );
+		static::assertSame( [ 'ns' => ParameterType::STRING, 'ids' => ArrayParameterType::INTEGER ],
+			$recorded['types'] );
+	}
+
+	/**
+	 * An explicit $timeout overrides the APP_QUERY_TIMEOUT default in the prefix.
+	 */
+	public function testExecuteQueryBuilderHonoursExplicitTimeout(): void {
+		$recorded = [];
+		$repository = $this->makeRecordingRepository( $recorded );
+
+		$qb = new QueryBuilder( $this->createMock( Connection::class ) );
+		$qb->select( '1' );
+
+		$repository->executeQueryBuilder( $qb, 's1', 5 );
+
+		static::assertStringStartsWith( "SET STATEMENT max_statement_time = 5 FOR\n", $recorded['sql'] );
+	}
+
+	/**
+	 * executeProjectsQuery() has no types to forward, and must keep passing an empty array rather
+	 * than acquiring types from somewhere: it shares runQuery() with executeQueryBuilder() now.
+	 */
+	public function testExecuteProjectsQueryStillPassesNoTypes(): void {
+		$recorded = [];
+		$repository = $this->makeRecordingRepository( $recorded );
+
+		$repository->executeProjectsQuery( 's1', 'SELECT 1', [ 'a' => 'b' ] );
+
+		static::assertStringStartsWith( "SET STATEMENT max_statement_time = 30 FOR\n", $recorded['sql'] );
+		static::assertSame( [ 'a' => 'b' ], $recorded['params'] );
+		static::assertSame( [], $recorded['types'] );
+	}
+
+	/**
+	 * A Repository whose connection records the SQL, params and types it was handed. 's1' is
+	 * passed as the project throughout: resolveSlice() returns a configured connection name
+	 * unchanged, so the dblist is never probed.
+	 * @param array &$recorded Populated with 'sql', 'params' and 'types'.
+	 */
+	private function makeRecordingRepository( array &$recorded ): Repository {
+		$connection = $this->createMock( Connection::class );
+		$connection->method( 'executeQuery' )->willReturnCallback(
+			function ( string $sql, array $params = [], array $types = [] ) use ( &$recorded ): Result {
+				$recorded = [ 'sql' => $sql, 'params' => $params, 'types' => $types ];
+				return $this->createMock( Result::class );
+			}
+		);
+		$registry = $this->createMock( ManagerRegistry::class );
+		$registry->method( 'getConnectionNames' )->willReturn( [ 's1' => 'doctrine.dbal.s1_connection' ] );
+		$registry->method( 'getConnection' )->willReturn( $connection );
+
+		return new class(
+			$registry,
+			$this->createMock( CacheItemPoolInterface::class ),
+			$this->createMock( Client::class ),
+			new NullLogger(),
+			$this->createMock( ParameterBagInterface::class ),
+			true,
+			30
+		) extends Repository {
+		};
 	}
 }
