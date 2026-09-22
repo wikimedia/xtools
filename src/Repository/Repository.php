@@ -34,6 +34,12 @@ abstract class Repository {
 	/** @var string[]|null Request-lifetime memo of the assembled dblist, keyed by database name. */
 	private ?array $dbListCache = null;
 
+	/** @var string[]|null Request-lifetime memo of the links dblist, keyed by database name. */
+	private ?array $linksDbListCache = null;
+
+	/** @var bool Whether a links connection couldn't be read the last time we looked. */
+	private bool $linksDbListIncomplete = false;
+
 	/** @var array<string,string>|null Request-lifetime memo of the configured connection names. */
 	private ?array $connectionNames = null;
 
@@ -188,15 +194,42 @@ abstract class Repository {
 			return $this->dbListCache;
 		}
 
+		// Enumerate the replica connections: everything but the internal metadata db, toolsdb,
+		// and the links connections. The links exclusion is load-bearing, not tidiness: a links
+		// section serves the same schema name as the wiki it was split from (commonswiki_p lives
+		// on both s4 and x4), and this map is last-write-wins. Including x4 would make every
+		// Commons query resolve to whichever connection Doctrine happened to enumerate last,
+		// sending revision/logging queries to a host that holds no such tables.
+		$replicaConns = array_diff_key(
+			$this->connectionNames(),
+			array_flip( array_merge( self::NON_REPLICA_CONNECTIONS, $this->getLinksConnectionNames() ) )
+		);
+		// The probe must reach the real connection to keep its safety check, hence no breaker.
+		$dbList = $this->probeDbList( array_keys( $replicaConns ), checkBreaker: false );
+
+		// Memoize only a non-empty result. A request that assembled nothing (every slice skipped)
+		// must stay free to re-probe on its next call rather than serving [] for its whole lifetime.
+		if ( $dbList !== [] ) {
+			$this->dbListCache = $dbList;
+		}
+		return $dbList;
+	}
+
+	/**
+	 * Ask each of the given connections which schemas it serves, and merge the answers into one
+	 * database-name => connection-name map. Shared by getDbList() and getLinksDbList().
+	 * @param string[] $connNames Connection names to probe.
+	 * @param bool $checkBreaker Whether to honor the fail-fast breaker.
+	 * @return string[] Keys are database names (i.e. 'enwiki_p'), values are connection names.
+	 */
+	private function probeDbList( array $connNames, bool $checkBreaker, ?array &$unread = null ): array {
 		$dbList = [];
-		// Enumerate the replica connections: everything but the internal metadata db and toolsdb.
-		$replicaConns = array_diff_key( $this->connectionNames(), array_flip( self::NON_REPLICA_CONNECTIONS ) );
+		$unread = [];
 		// Exclude MySQL's own metadata schemas.
 		$sql = "SELECT DISTINCT table_schema
 				FROM information_schema.tables
 				WHERE table_schema NOT IN ('information_schema','performance_schema','mysql','sys')";
-		// Loop through the relevant connections to build the project db list.
-		foreach ( array_keys( $replicaConns ) as $conn ) {
+		foreach ( $connNames as $conn ) {
 			$cacheKey = 'dblist_' . $conn;
 			if ( $this->cache->hasItem( $cacheKey ) ) {
 				$projectList = $this->cache->getItem( $cacheKey )->get();
@@ -206,19 +239,21 @@ abstract class Repository {
 				// noc.wikimedia.org is less accurate and obviously not
 				// available for non-WMF installations.
 				try {
-					$projectList = $this->executeProjectsQuery( $conn, $sql, checkBreaker: false )
+					$projectList = $this->executeProjectsQuery( $conn, $sql, checkBreaker: $checkBreaker )
 						->fetchFirstColumn();
 				} catch ( HttpException ) {
 					// Slice reported unavailable, overloaded, or timed-out: skip it so the
 					// healthy slices still resolve, and let a later request re-probe. Anything
 					// else (an unexpected driver error, a programming bug) propagates rather
 					// than silently dropping the slice's projects.
+					$unread[] = $conn;
 					continue;
 				}
 				// An empty probe means the slice answered but returned nothing: the
 				// stale/empty-dblist failure mode. Skip it without caching, so the next request
 				// re-probes rather than serving a poisoned list for a week.
 				if ( $projectList === [] ) {
+					$unread[] = $conn;
 					continue;
 				}
 				// Cache the slice's project list for one week.
@@ -228,13 +263,121 @@ abstract class Repository {
 				$dbList[$project] = $conn;
 			}
 		}
+		return $dbList;
+	}
 
-		// Memoize only a non-empty result. A request that assembled nothing (every slice skipped)
-		// must stay free to re-probe on its next call rather than serving [] for its whole lifetime.
-		if ( $dbList !== [] ) {
-			$this->dbListCache = $dbList;
+	/**
+	 * The connections that serve links tables split out of their wiki's own section, i.e. ['x4']
+	 * for Commons (T398709). Empty unless DATABASE_REPLICA_LINKS_CONNECTIONS says otherwise, which
+	 * is what keeps third-party installs and every unsplit wiki on the single-connection path.
+	 * @return string[]
+	 */
+	protected function getLinksConnectionNames(): array {
+		if ( !$this->parameterBag->has( 'app.links_connections' ) ) {
+			return [];
+		}
+		return array_filter( (array)$this->parameterBag->get( 'app.links_connections' ) );
+	}
+
+	/**
+	 * Which links connection serves each database, assembled the same way as getDbList() but over
+	 * the links connections only. Empty when nothing is split.
+	 * @return string[] Keys are database names (i.e. 'commonswiki_p'), values are connection names.
+	 */
+	protected function getLinksDbList(): array {
+		if ( isset( $this->linksDbListCache ) ) {
+			$this->linksDbListIncomplete = false;
+			return $this->linksDbListCache;
+		}
+		$connNames = $this->getLinksConnectionNames();
+		if ( $connNames === [] ) {
+			// Nothing configured: no wiki is split, so an empty map is the complete answer
+			// and there's no reason to open a connection to find that out.
+			$this->linksDbListIncomplete = false;
+			return [];
+		}
+		// Unlike getDbList(), honor the breaker here. Once a links section has been seen its
+		// dblist is cached for a week, so a later outage surfaces as a real 503 rather than
+		// silently falling back to the wiki's own section, where the links tables are stale.
+		$dbList = $this->probeDbList( $connNames, checkBreaker: true, unread: $unread );
+		$this->linksDbListIncomplete = $unread !== [];
+		// Only memoize a complete answer. A partial one would otherwise be indistinguishable
+		// from a full one on the next call, and the connection that failed is the one that
+		// would have told us a wiki is split.
+		if ( $dbList !== [] && $unread === [] ) {
+			$this->linksDbListCache = $dbList;
 		}
 		return $dbList;
+	}
+
+	/**
+	 * Where the links tables for $project live. Falls back to the project's own database and
+	 * slice when its links tables aren't split out, so callers need no special-casing.
+	 * @param Project|string $project Project instance or database name (i.e. 'commonswiki_p').
+	 * @return array{0:string,1:string} [database name, connection name].
+	 */
+	private function resolveLinksDb( Project|string $project ): array {
+		$dbName = $project instanceof Project ? $project->getDatabaseName() : $project;
+		// A links section serves the schema under the same name as the wiki's own section does,
+		// so the wiki's database name is what we look for.
+		$conn = $this->getLinksDbList()[$dbName] ?? null;
+		if ( $conn !== null ) {
+			return [ $dbName, $conn ];
+		}
+		if ( $this->linksDbListIncomplete ) {
+			// A links connection couldn't be read, so "not in the map" doesn't mean "not
+			// split" — it means we don't know. Falling back to the wiki's own section would
+			// read the links tables left behind there, which are stale, and which disappear
+			// once the split finishes: an unhandled 1146 instead of a retryable 503.
+			throw new ServiceUnavailableHttpException( 30, 'error-replica-unavailable', null, 503 );
+		}
+		return [ $dbName, $this->resolveSlice( $project ) ];
+	}
+
+	/**
+	 * Whether $project's links tables live on a section of their own.
+	 * @param Project|string $project
+	 * @return bool
+	 */
+	public function hasSplitLinks( Project|string $project ): bool {
+		$dbName = $project instanceof Project ? $project->getDatabaseName() : $project;
+		return isset( $this->getLinksDbList()[$dbName] );
+	}
+
+	/**
+	 * The connection name to run $project's links-table queries on. Pass this where you would
+	 * otherwise pass the project itself, i.e. executeQueryBuilder( $qb, $this->getLinksSlice( $p ) ).
+	 * @param Project|string $project
+	 * @return string
+	 */
+	public function getLinksSlice( Project|string $project ): string {
+		return $this->resolveLinksDb( $project )[1];
+	}
+
+	/**
+	 * The database holding $project's links tables.
+	 * @param Project|string $project
+	 * @return string
+	 */
+	public function getLinksDatabaseName( Project|string $project ): string {
+		return $this->resolveLinksDb( $project )[0];
+	}
+
+	/**
+	 * Fully-qualified name of a links table, i.e. `commonswiki_p`.`categorylinks`. Project's own
+	 * getTableName() can't be used for these: it hardcodes the project's database, which is the
+	 * wrong one once the links tables are split onto their own section.
+	 * @param Project|string $project
+	 * @param string $tableName
+	 * @param string|null $tableExtension Optional table extension, see getTableName().
+	 * @return string
+	 */
+	public function getLinksTableName(
+		Project|string $project,
+		string $tableName,
+		?string $tableExtension = null
+	): string {
+		return $this->getTableName( $this->getLinksDatabaseName( $project ), $tableName, $tableExtension );
 	}
 
 	/**

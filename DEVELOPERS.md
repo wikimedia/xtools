@@ -67,6 +67,7 @@ ssh -N \
   -L 0.0.0.0:4716:s6.web.db.svc.wikimedia.cloud:3306 \
   -L 0.0.0.0:4717:s7.web.db.svc.wikimedia.cloud:3306 \
   -L 0.0.0.0:4718:s8.web.db.svc.wikimedia.cloud:3306 \
+  -L 0.0.0.0:4719:links.commonswiki.web.db.svc.wikimedia.cloud:3306 \
   -L 0.0.0.0:4720:tools.db.svc.eqiad.wmflabs:3306 \
   <username>@login.toolforge.org
 ```
@@ -75,3 +76,10 @@ The `0.0.0.0` prefix matters: `host.docker.internal` resolves to the docker
 bridge gateway, not host loopback, so a default loopback-only tunnel isn't
 reachable from the containers. You need at least the sections for the wikis you
 test, plus s7 (the meta lookup most pages depend on).
+
+Commons needs **both** s4 and x4. Its links tables (`categorylinks`,
+`pagelinks`, `templatelinks` and the rest) moved to their own section, `x4`,
+while `revision`, `logging` and everything else stayed on s4. XTools queries
+each on its own connection and joins the results in PHP, because the two
+sections are different hosts. `DATABASE_REPLICA_LINKS_CONNECTIONS` lists the
+links sections; set it empty to turn the split handling off.

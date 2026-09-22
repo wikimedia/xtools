@@ -116,6 +116,128 @@ class ReplicaOutageTest extends TestCase {
 		static::assertTrue( $this->cache->hasItem( 'replica-breaker.s1' ) );
 	}
 
+	/**
+	 * The collision that makes the links split dangerous: x4 serves a schema called
+	 * commonswiki_p, exactly as s4 does. getDbList() is last-write-wins, so if x4 were probed
+	 * alongside the ordinary slices, 'commonswiki' would resolve to whichever of the two
+	 * Doctrine enumerated last, and every revision/logging query for Commons could be sent to a
+	 * host that holds no such table. Links connections must stay out of that map entirely.
+	 */
+	public function testLinksConnectionIsExcludedFromTheDbList(): void {
+		$this->emptyCache();
+		$repo = $this->makeRepository(
+			$this->registryReturning( [
+				's1' => [ 'enwiki' ],
+				's4' => [ 'commonswiki' ],
+				's7' => [ 'meta' ],
+				'x4' => [ 'commonswiki' ],
+			] ),
+			linksConnections: [ 'x4' ]
+		);
+
+		// Commons still resolves to its own section, not the links one.
+		static::assertSame( 's4', $repo->getDbList()['commonswiki'] );
+		// And the links lookup finds x4 for it.
+		static::assertSame( 'x4', $repo->getLinksSlice( 'commonswiki' ) );
+		static::assertTrue( $repo->hasSplitLinks( 'commonswiki' ) );
+	}
+
+	/**
+	 * A cold probe that fails must not look like "this wiki isn't split". Falling back to the
+	 * wiki's own section would read the links tables left behind there, and once the split is
+	 * finished those tables are gone, so the fallback turns into an unhandled 1146 rather than
+	 * a retryable 503. When the probe couldn't answer, say so.
+	 */
+	public function testFailedLinksProbeIsNotMistakenForAnUnsplitWiki(): void {
+		$this->emptyCache();
+		$repo = $this->makeRepository(
+			$this->registryReturning( [
+				's4' => [ 'commonswiki' ],
+				'x4' => $this->driverError( 2002 ),
+			] ),
+			linksConnections: [ 'x4' ]
+		);
+
+		$this->expectException( HttpException::class );
+		$repo->getLinksSlice( 'commonswiki' );
+	}
+
+	/**
+	 * One links connection failing doesn't condemn a wiki another one answered for. The refusal
+	 * is for wikis we couldn't place, not for every wiki in the request.
+	 */
+	public function testPartialLinksProbeStillPlacesTheWikisItFound(): void {
+		$this->emptyCache();
+		$repo = $this->makeRepository(
+			$this->registryReturning( [
+				's4' => [ 'commonswiki' ],
+				'x4' => [ 'commonswiki' ],
+				'x5' => $this->driverError( 2002 ),
+			] ),
+			linksConnections: [ 'x4', 'x5' ]
+		);
+
+		static::assertSame( 'x4', $repo->getLinksSlice( 'commonswiki' ) );
+		// The partial answer is not memoized: x5 is the connection that would have told us
+		// about the wikis it serves, so a later call must probe it again rather than treat
+		// this map as the whole picture.
+		static::assertSame( [], $repo->readLinksMemo() );
+	}
+
+	/**
+	 * A wiki with no split links falls back to its own slice, so callers need no special-casing.
+	 */
+	public function testUnsplitWikiFallsBackToItsOwnSlice(): void {
+		$this->emptyCache();
+		$repo = $this->makeRepository(
+			$this->registryReturning( [
+				's1' => [ 'enwiki' ],
+				's4' => [ 'commonswiki' ],
+				's7' => [ 'meta' ],
+				'x4' => [ 'commonswiki' ],
+			] ),
+			linksConnections: [ 'x4' ]
+		);
+
+		static::assertSame( 's1', $repo->getLinksSlice( 'enwiki' ) );
+		static::assertFalse( $repo->hasSplitLinks( 'enwiki' ) );
+	}
+
+	/**
+	 * With no links connections configured — third-party installs, and WMF before the split was
+	 * enabled — nothing is split, and no connection is opened to find that out.
+	 */
+	public function testNoLinksConnectionsConfiguredOpensNoConnection(): void {
+		$this->emptyCache();
+		$registry = $this->createMock( ManagerRegistry::class );
+		$registry->method( 'getConnectionNames' )->willReturn( $this->connectionNames() );
+		$registry->expects( static::never() )->method( 'getConnection' );
+		$repo = $this->makeRepository( $registry );
+
+		static::assertFalse( $repo->hasSplitLinks( 'commonswiki' ) );
+		static::assertSame( [], $repo->getLinksDbList() );
+	}
+
+	/**
+	 * getLinksTableName() qualifies with the links database rather than the project's own, and
+	 * still runs the name through getTableName()'s Labs rules.
+	 */
+	public function testGetLinksTableNameUsesTheLinksDatabase(): void {
+		$this->emptyCache();
+		$repo = $this->makeRepository(
+			$this->registryReturning( [
+				's4' => [ 'commonswiki_p' ],
+				'x4' => [ 'commonswiki_p' ],
+			] ),
+			linksConnections: [ 'x4' ]
+		);
+
+		static::assertSame(
+			'`commonswiki_p`.`categorylinks`',
+			$repo->getLinksTableName( 'commonswiki_p', 'categorylinks' )
+		);
+	}
+
 	public function testNonConnectErrorDoesNotTripTheBreaker(): void {
 		$repo = $this->makeRepository( $this->registryThrowing( 1969 ) );
 
@@ -331,16 +453,34 @@ class ReplicaOutageTest extends TestCase {
 	 * an empty subclass is enough to exercise the connection-layer behaviour in isolation
 	 * (no ProjectRepository, whose constructor differs across this arc's commits).
 	 */
-	private function makeRepository( ManagerRegistry $registry, ?Client $guzzle = null ): Repository {
+	private function makeRepository(
+		ManagerRegistry $registry,
+		?Client $guzzle = null,
+		array $linksConnections = []
+	): Repository {
+		$params = $linksConnections === [] ? [] : [ 'app.links_connections' => $linksConnections ];
 		return new class(
 			$registry,
 			$this->cache,
 			$guzzle ?? $this->createMock( Client::class ),
 			new NullLogger(),
-			new ParameterBag( [] ),
+			new ParameterBag( $params ),
 			true,
 			30
 		) extends Repository {
+			public function getDbList(): array {
+				return parent::getDbList();
+			}
+
+			public function getLinksDbList(): array {
+				return parent::getLinksDbList();
+			}
+
+			/** The memo behind getLinksDbList(), for asserting it wasn't poisoned. */
+			public function readLinksMemo(): array {
+				$prop = new \ReflectionProperty( Repository::class, 'linksDbListCache' );
+				return $prop->getValue( $this ) ?? [];
+			}
 		};
 	}
 }

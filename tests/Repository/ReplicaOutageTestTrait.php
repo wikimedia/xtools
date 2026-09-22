@@ -22,10 +22,15 @@ trait ReplicaOutageTestTrait {
 	/**
 	 * Fresh cache, pre-primed with a per-slice dblist so resolveSlice() maps db -> slice
 	 * without probing the network. getDbList() reads one cache entry per replica connection.
+	 * x4 is primed empty: it is a configured connection, so an unprimed entry would send the
+	 * tests that assert on connection use off to probe it. Tests that care about the links
+	 * section call emptyCache() and let it probe for real.
 	 */
 	private function primeReplicaCache(): void {
 		$this->cache = new ArrayAdapter();
-		foreach ( [ 's1' => [ 'enwiki' ], 's4' => [ 'commonswiki' ], 's7' => [ 'meta' ] ] as $slice => $projects ) {
+		$slices = [ 's1' => [ 'enwiki' ], 's4' => [ 'commonswiki' ], 's7' => [ 'meta' ],
+			'x4' => [], 'x5' => [] ];
+		foreach ( $slices as $slice => $projects ) {
 			$item = $this->cache->getItem( 'dblist_' . $slice );
 			$item->set( $projects );
 			$this->cache->save( $item );
@@ -41,8 +46,11 @@ trait ReplicaOutageTestTrait {
 	}
 
 	/**
-	 * The Doctrine connection names getDbList() iterates: two it ignores (default, toolsdb) and
-	 * the three replica slices the primed cache describes. Only the keys matter to getDbList().
+	 * The Doctrine connection names getDbList() iterates: two it ignores (default, toolsdb), the
+	 * three replica slices the primed cache describes, and x4, the links section. x4 is a
+	 * configured connection but only becomes a *links* connection when a test says so via
+	 * makeRepository()'s $linksConnections; otherwise it is an ordinary slice that happens to
+	 * report nothing. Only the keys matter to getDbList().
 	 * @return array<string, string>
 	 */
 	private function connectionNames(): array {
@@ -52,6 +60,8 @@ trait ReplicaOutageTestTrait {
 			's1' => 'doctrine.dbal.s1_connection',
 			's4' => 'doctrine.dbal.s4_connection',
 			's7' => 'doctrine.dbal.s7_connection',
+			'x4' => 'doctrine.dbal.x4_connection',
+			'x5' => 'doctrine.dbal.x5_connection',
 		];
 	}
 

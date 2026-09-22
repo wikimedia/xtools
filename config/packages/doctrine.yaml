@@ -57,3 +57,11 @@ doctrine:
                 port:     '%env(DATABASE_REPLICA_PORT_S8)%'
                 user:     '%env(DATABASE_REPLICA_USER)%'
                 password: '%env(DATABASE_REPLICA_PASSWORD)%'
+            # Commons' links tables live on their own section (T398709). It serves the same
+            # schema name as s4 does, so it is kept out of the main dblist; see
+            # Repository::getDbList(). DATABASE_REPLICA_LINKS_CONNECTIONS is what activates it.
+            x4:
+                host:     '%env(DATABASE_REPLICA_HOST_X4)%'
+                port:     '%env(DATABASE_REPLICA_PORT_X4)%'
+                user:     '%env(DATABASE_REPLICA_USER)%'
+                password: '%env(DATABASE_REPLICA_PASSWORD)%'
