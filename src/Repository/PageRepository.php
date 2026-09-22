@@ -302,10 +302,13 @@ class PageRepository extends Repository {
 	 *                  'links_in_count' and 'redirects_count'
 	 */
 	public function countLinksAndRedirects( Page $page ): array {
-		$externalLinksTable = $page->getProject()->getTableName( 'externallinks' );
-		$pageLinksTable = $page->getProject()->getTableName( 'pagelinks' );
-		$linkTargetTable = $page->getProject()->getTableName( 'linktarget' );
-		$redirectTable = $page->getProject()->getTableName( 'redirect' );
+		// All four live on the links section for wikis whose links tables were split out
+		// (Commons, T398709). `redirect` is replicated to both sections, so the UNION stays
+		// whole: a cross-host UNION would be as impossible as a cross-host JOIN.
+		$externalLinksTable = $this->getLinksTableName( $page->getProject(), 'externallinks' );
+		$pageLinksTable = $this->getLinksTableName( $page->getProject(), 'pagelinks' );
+		$linkTargetTable = $this->getLinksTableName( $page->getProject(), 'linktarget' );
+		$redirectTable = $this->getLinksTableName( $page->getProject(), 'redirect' );
 
 		$sql = "SELECT 'links_ext_count' AS type, COUNT(*) AS value
 				FROM $externalLinksTable WHERE el_from = :id
@@ -327,7 +330,8 @@ class PageRepository extends Repository {
 			'namespace' => $page->getNamespace(),
 		];
 
-		return $this->executeProjectsQuery( $page->getProject(), $sql, $params )->fetchAllKeyValue();
+		return $this->executeProjectsQuery( $this->getLinksSlice( $page->getProject() ), $sql, $params )
+			->fetchAllKeyValue();
 	}
 
 	/**

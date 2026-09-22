@@ -178,9 +178,11 @@ class PageInfoRepository extends AutoEditsRepository {
 			return $this->cache->getItem( $cacheKey )->get();
 		}
 
-		$categorylinksTable = $page->getProject()->getTableName( 'categorylinks' );
-		$templatelinksTable = $page->getProject()->getTableName( 'templatelinks' );
-		$imagelinksTable = $page->getProject()->getTableName( 'imagelinks' );
+		// These three live on the links section for wikis whose links tables were split out
+		// (Commons, T398709), so they resolve their own database and run on their own connection.
+		$categorylinksTable = $this->getLinksTableName( $page->getProject(), 'categorylinks' );
+		$templatelinksTable = $this->getLinksTableName( $page->getProject(), 'templatelinks' );
+		$imagelinksTable = $this->getLinksTableName( $page->getProject(), 'imagelinks' );
 		$sql = "(
 					SELECT 'categories' AS `key`, COUNT(*) AS val
 					FROM $categorylinksTable
@@ -194,7 +196,11 @@ class PageInfoRepository extends AutoEditsRepository {
 					FROM $imagelinksTable
 					WHERE il_from = :pageId
 				)";
-		$resultQuery = $this->executeProjectsQuery( $page->getProject(), $sql, [ 'pageId' => $page->getId() ] );
+		$resultQuery = $this->executeProjectsQuery(
+			$this->getLinksSlice( $page->getProject() ),
+			$sql,
+			[ 'pageId' => $page->getId() ]
+		);
 		$transclusionCounts = [];
 
 		// phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
