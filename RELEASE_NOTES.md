@@ -1,5 +1,10 @@
 # Release Notes #
 
+## 3.26.2 ##
+- CategoryEdits (T437830): Intersect categories and revisions in code
+- PageInfo, Page (T437830): Read links tables from the links connection
+- Localization updates.
+
 ## 3.26.1 ##
 - GlobalContribs: hotfix; ensure DB names from CentralAuth get the _p suffix.
 
