@@ -151,6 +151,7 @@
 	"error-deleted-data-msg": "$1 versie{{PLURAL:$1||s}} van deze pagina bevat{{PLURAL:$1||ten}} informatie die $2. Als gevolg hiervan kunnen sommige gegevens onnauwkeurig of misleidend zijn.",
 	"error-denied": "Uw toegang tot XTools is geblokkeerd wegens misbruik of verstorende automatisering. Neem contact op met $1",
 	"error-ip-range-unsupported": "Sorry, deze functionaliteit is niet beschikbaar voor IP-ranges. Voer een enkele gebruikersnaam of IP-adres in.",
+	"error-category-links-too-many": "Deze zoekopdracht levert te veel categorieleden op om te verwerken. Kies minder of kleinere categorieën, of beperk het datumbereik.",
 	"error-lock-contention": "XTools kon uw verzoek niet voltooien vanwege tijdelijke databaseproblemen. Probeer het over een moment opnieuw.",
 	"error-login": "Aanmelden mislukt! Probeer het opnieuw.",
 	"error-login-required": "Om prestatieredenen zijn de gevraagde gegevens alleen beschikbaar voor aangemelde gebruikers.",

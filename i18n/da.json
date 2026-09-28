@@ -142,6 +142,7 @@
 	"error-deleted-data-msg": "$1 {{PLURAL:$1|sideversion|sideversioner}} af denne side {{PLURAL:$1|indeholder}} oplysninger, som {{PLURAL:$1|har}} været $2. Som følge heraf kan nogle data være unøjagtige eller vildledende.",
 	"error-denied": "Din adgang til XTools er blevet blokeret på grund af tilsyneladende misbrug eller forstyrrende automatisering. Kontakt venligst $1",
 	"error-ip-range-unsupported": "Denne funktion er desværre ikke tilgængelig for IP-områder. Angiv enten et brugernavn eller en IP-adresse.",
+	"error-category-links-too-many": "Denne forespørgsel matcher for mange kategorimedlemmer til at kunne behandles. Vælg venligst færre eller mindre kategorier, eller indsnævre datointervallet.",
 	"error-lock-contention": "XTools kunne ikke fuldføre din anmodning på grund af midlertidig databasekonflikt. Prøv igen om et øjeblik.",
 	"error-login": "Login mislykkedes! Prøv igen.",
 	"error-login-required": "Af ydeevneårsager er de anmodede data kun tilgængelige for brugere, der er logget ind.",

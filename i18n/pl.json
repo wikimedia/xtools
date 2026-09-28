@@ -152,6 +152,7 @@
 	"error-deleted-data-msg": "$1 {{PLURAL:$1|wersja|wersje|wersji}} tej strony {{PLURAL:$1| zawiera|zawierają|zawiera}} informację, że zostało $2. W rezultacie niektóre dane mogą być niedokładne lub wprowadzać w błąd.",
 	"error-denied": "Twoj dostęp do XTools został zablokowany za oczywiste nadużycie lub przeszkadzającej automacji. Proszę się zkontaktować z $1",
 	"error-ip-range-unsupported": "Przepraszamy, ta funkcja nie jest dostępna dla zakresów adresów IP. Wprowadź pojedynczą nazwę użytkownika lub adres IP.",
+	"error-category-links-too-many": "To zapytanie zwraca zbyt wiele elementów kategorii, by można je było przetworzyć. Wybierz mniej kategorii lub mniejsze kategorie albo zawęź zakres dat.",
 	"error-login": "Logowanie nieudane! Spróbuj ponownie.",
 	"error-login-required": "Ze względów wydajnościowych żądane dane są dostępne wyłącznie dla zalogowanych użytkowników.",
 	"error-login-required-link": "Zaloguj się, aby kontynuować.",

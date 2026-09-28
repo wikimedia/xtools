@@ -177,6 +177,7 @@
 	"error-deleted-data-msg": "此页面{{PLURAL:$1|修订}} $1 {{PLURAL:$1|包含}}{{PLURAL:$1|已}}$2的信息。因此，某些数据可能不准确或是有误导內容。",
 	"error-denied": "您进行了某些滥用行为或破坏性的自动操作，已被暂时禁止使用XTools。请联系$1以解决问题",
 	"error-ip-range-unsupported": "抱歉，此功能不适用于IP段。请输入单个用户名或IP地址。",
+	"error-category-links-too-many": "此查询匹配到的分类成员过多，无法处理。请选择较少或较小的分类，或缩小日期范围。",
 	"error-lock-contention": "由于数据库暂时拥塞，XTools无法完成您的请求。请稍后重试。",
 	"error-login": "登录失败！请重试。",
 	"error-login-required": "出于效能因素，请求的资料仅供已登入用户使用。",

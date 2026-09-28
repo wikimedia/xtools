@@ -138,6 +138,7 @@
 	"error-deleted-data-msg": "$1 {{PLURAL:$1|semakan}} pada laman ini {{PLURAL:$1|mengandungi}} maklumat yang {{PLURAL:$1|telah}} di$2. Akibatnya, sesetengah data mungkin kurang tepat atau mengelirukan.",
 	"error-denied": "Akses anda kepada XTools telah disekat kerana penyalahgunaan nyata atau gangguan automasi. Sila hubungi $1",
 	"error-ip-range-unsupported": "Maaf, fungsi ini tidak tersedia untuk julat IP. Sila masukkan maklumat tunggal sama ada nama pengguna atau alamat IP.",
+	"error-category-links-too-many": "Pertanyaan ini berpadanan dengan terlalu banyak ahli kategori untuk diproses. Sila pilih kategori yang kurang sedikit atau lebih kecil, atau kecilkan julat tarikh.",
 	"error-lock-contention": "XTools tidak dapat menyelesaikan permintaan anda kerana perselisihan sementara pangkalan data. Sila cuba lagi dalam satu saat.",
 	"error-login": "Daftar masuk gagal! Sila cuba lagi.",
 	"error-login-required": "Atas sebab prestasi, data yang diminta hanya tersedia bagi pengguna yang log masuk.",
