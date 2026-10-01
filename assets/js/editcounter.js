@@ -535,12 +535,12 @@ xtools.editcounter.setupTimecard = function ( timeCardDatasets, days ) {
 			.on( 'click', function () {
 				const offset = $( this ).is( ':checked' ) ? timezoneOffset : -timezoneOffset;
 				const colorList = new Array( 7 );
-				chart.data.datasets.forEach( ( day ) => colorList[ day.data[ 0 ].dayOfWeek - 1 ] = day.backgroundColor[ 0 ] );
+				chart.data.datasets.forEach( ( day ) => colorList[ day.data[ 0 ].day_of_week - 1 ] = day.backgroundColor[ 0 ] );
 				chart.data.datasets = chart.data.datasets.map( ( day ) => {
 					const backgroundColors = [];
 					day.data = day.data.map( ( datum ) => {
 						let newHour = ( parseFloat( datum.hour ) - offset );
-						let newDay = parseInt( datum.dayOfWeek, 10 );
+						let newDay = parseInt( datum.day_of_week, 10 );
 						if ( newHour < 0 ) {
 							newHour = 24 + newHour;
 							newDay = newDay - 1;
@@ -556,7 +556,8 @@ xtools.editcounter.setupTimecard = function ( timeCardDatasets, days ) {
 						}
 						datum.hour = newHour.toString();
 						datum.x = newHour.toString();
-						datum.dayOfWeek = newDay.toString();
+						// eslint-disable-next-line camelcase
+						datum.day_of_week = newDay.toString();
 						datum.y = ( 8 - newDay ).toString();
 						backgroundColors.push( colorList[ newDay - 1 ] );
 						return datum;

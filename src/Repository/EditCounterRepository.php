@@ -506,7 +506,7 @@ class EditCounterRepository extends Repository {
 		$xCalc = "ROUND(HOUR($column)/$hourInterval) * $hourInterval";
 
 		$sql = "
-			SELECT DAYOFWEEK($column) AS `dayOfWeek`,
+			SELECT DAYOFWEEK($column) AS `day_of_week`,
 				$xCalc AS `hour`,
 				COUNT($column) AS `value`
 			FROM $table

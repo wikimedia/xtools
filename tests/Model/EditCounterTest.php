@@ -485,13 +485,13 @@ class EditCounterTest extends TestAdapter {
 			->willReturn( [
 				[
 					// Sunday, 2 AM
-					'dayOfWeek' => 1,
+					'day_of_week' => 1,
 					'hour' => 2,
 					'value' => 42,
 				],
 				[
 					// Wednesday, 3 PM
-					'dayOfWeek' => 4,
+					'day_of_week' => 4,
 					'hour' => 15,
 					'value' => 33,
 				],
@@ -507,7 +507,7 @@ class EditCounterTest extends TestAdapter {
 		// The days are 24 of each of the seven, in order
 		static::assertEquals(
 			array_merge( ...array_map( static fn ( $day ) => array_fill( 0, 24, $day ), $days ) ),
-			array_map( static fn ( $row ) => $row['dayOfWeek'], $results )
+			array_map( static fn ( $row ) => $row['day_of_week'], $results )
 		);
 		// All values are positive
 		static::assertCount(
