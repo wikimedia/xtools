@@ -84,25 +84,57 @@ class AppExtensionTest extends TestAdapter {
 	 */
 	public function testFormatDuration(): void {
 		static::assertEquals(
-			[ 30, 'num-seconds' ],
+			[ [ 30, 'num-seconds' ] ],
 			$this->appExtension->formatDuration( 30, false )
 		);
 		static::assertEquals(
-			[ 1, 'num-minutes' ],
+			[ [ 1, 'num-minutes' ], [ 10, 'num-seconds' ] ],
 			$this->appExtension->formatDuration( 70, false )
 		);
 		static::assertEquals(
-			[ 50, 'num-minutes' ],
+			[ [ 50, 'num-minutes' ] ],
 			$this->appExtension->formatDuration( 3000, false )
 		);
 		static::assertEquals(
-			[ 2, 'num-hours' ],
+			[ [ 2, 'num-hours' ], [ 5, 'num-minutes' ] ],
 			$this->appExtension->formatDuration( 7500, false )
 		);
 		static::assertEquals(
-			[ 10, 'num-days' ],
+			[ [ 10, 'num-days' ] ],
 			$this->appExtension->formatDuration( 864000, false )
 		);
+
+		// T406182: large durations break years and months out of the day count.
+		static::assertEquals(
+			[ [ 10, 'num-years' ], [ 8, 'num-months' ] ],
+			$this->appExtension->formatDuration( 3891 * 86400, false )
+		);
+		static::assertEquals(
+			[ [ 1, 'num-months' ], [ 15, 'num-days' ] ],
+			$this->appExtension->formatDuration( 45 * 86400, false )
+		);
+
+		// Zero-sized tiers in the middle are skipped (10 years, 0 months, 5 days).
+		static::assertEquals(
+			[ [ 10, 'num-years' ], [ 5, 'num-days' ] ],
+			$this->appExtension->formatDuration( ( 10 * 365 + 5 ) * 86400, false )
+		);
+
+		// Zero seconds still renders as a duration.
+		static::assertEquals(
+			[ [ 0, 'num-seconds' ] ],
+			$this->appExtension->formatDuration( 0, false )
+		);
+	}
+
+	/**
+	 * Format a time duration as a translated string, separating two units with a comma.
+	 */
+	public function testFormatDurationTranslated(): void {
+		static::assertSame( '0 seconds', $this->appExtension->formatDuration( 0 ) );
+		static::assertSame( '10 days', $this->appExtension->formatDuration( 864000 ) );
+		static::assertSame( '2 hours, 5 minutes', $this->appExtension->formatDuration( 7500 ) );
+		static::assertSame( '10 years, 8 months', $this->appExtension->formatDuration( 3891 * 86400 ) );
 	}
 
 	/**

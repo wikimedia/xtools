@@ -592,54 +592,79 @@ class AppExtension extends AbstractExtension {
 	}
 
 	/**
-	 * Format a time duration as humanized string.
+	 * Format a time duration as humanized string, showing at most the two largest
+	 * non-zero units (e.g. '10 years, 8 months', '2 hours, 30 minutes').
 	 * @param int $seconds Number of seconds.
 	 * @param bool $translate Used for unit testing. Set to false to return
-	 *   the value and i18n key, instead of the actual translation.
-	 * @return string|array Examples: '30 seconds', '2 minutes', '15 hours', '500 days',
-	 *   or [30, 'num-seconds'] (etc.) if $translate is false.
+	 *   the values and i18n keys, instead of the actual translation.
+	 * @return string|array Examples: '30 seconds', '2 hours, 5 minutes', '15 hours',
+	 *   '500 days', '10 years, 8 months', or the [int value, string i18n key] pairs
+	 *   they came from (e.g. [ [ 10, 'num-years' ], [ 8, 'num-months' ] ]) if $translate is false.
 	 */
 	public function formatDuration( int $seconds, bool $translate = true ): string|array {
-		[ $val, $key ] = $this->getDurationMessageKey( $seconds );
+		$parts = $this->getDurationParts( $seconds );
 
 		// The following messages are used here:
+		// * comma-character
 		// * num-days
 		// * num-hours
 		// * num-minutes
-		if ( $translate ) {
-			return $this->numberFormat( $val ) . ' ' . $this->i18n->msg( "num-$key", [ $val ] );
-		} else {
-			return [ $this->numberFormat( $val ), "num-$key" ];
+		// * num-months
+		// * num-seconds
+		// * num-years
+		if ( !$translate ) {
+			return array_map( static fn ( array $part ) => [
+				$part['value'],
+				"num-{$part['unit']}",
+			], $parts );
 		}
+
+		$phrases = array_map( fn ( array $part ) => $this->numberFormat( $part['value'] ) . ' ' .
+			$this->i18n->msg( "num-{$part['unit']}", [ $part['value'] ] ), $parts );
+
+		if ( count( $phrases ) === 1 ) {
+			return $phrases[0];
+		}
+
+		// Separating two units: 'comma-character'
+		return implode( $this->i18n->msg( 'comma-character' ) . ' ', $phrases );
 	}
 
 	/**
-	 * Given a time duration in seconds, generate a i18n message key and value.
+	 * Given a time duration in seconds, decompose it into at most two parts: the largest
+	 * non-zero unit of time, and the next non-zero smaller unit (skipping empty tiers).
+	 *
+	 * Years and months are approximated as 365 and 30 days respectively.
 	 * @param int $seconds Number of seconds.
-	 * @return array<integer|string> [int - message value, string - message key]
+	 * @return array<int, array{value: int, unit: string}> e.g. [ [ 'value' => 10, 'unit' => 'years' ] ]
 	 */
-	private function getDurationMessageKey( int $seconds ): array {
-		// Value to show in message
-		$val = $seconds;
+	private function getDurationParts( int $seconds ): array {
+		$tiers = [
+			[ 'unit' => 'years', 'secs' => 365 * 86400 ],
+			[ 'unit' => 'months', 'secs' => 30 * 86400 ],
+			[ 'unit' => 'days', 'secs' => 86400 ],
+			[ 'unit' => 'hours', 'secs' => 3600 ],
+			[ 'unit' => 'minutes', 'secs' => 60 ],
+			[ 'unit' => 'seconds', 'secs' => 1 ],
+		];
 
-		// Unit of time, used in the key for the i18n message
-		$key = 'seconds';
+		$parts = [];
+		$remaining = max( $seconds, 0 );
 
-		if ( $seconds >= 86400 ) {
-			// Over a day
-			$val = (int)floor( $seconds / 86400 );
-			$key = 'days';
-		} elseif ( $seconds >= 3600 ) {
-			// Over an hour, less than a day
-			$val = (int)floor( $seconds / 3600 );
-			$key = 'hours';
-		} elseif ( $seconds >= 60 ) {
-			// Over a minute, less than an hour
-			$val = (int)floor( $seconds / 60 );
-			$key = 'minutes';
+		foreach ( $tiers as $index => $tier ) {
+			$value = $index === count( $tiers ) - 1 ? $remaining : (int)floor( $remaining / $tier['secs'] );
+			$remaining %= $tier['secs'];
+
+			if ( $value > 0 || ( $parts === [] && $remaining === 0 && $index === count( $tiers ) - 1 ) ) {
+				$parts[] = [ 'value' => $value, 'unit' => $tier['unit'] ];
+			}
+
+			if ( count( $parts ) === 2 ) {
+				break;
+			}
 		}
 
-		return [ $val, $key ];
+		return $parts;
 	}
 
 	/**
