@@ -1,5 +1,10 @@
 # Release Notes #
 
+## 3.26.3 ##
+- EditCounter (T439249): Restore `day_of_week` property in the
+  `/api/user/timecard/` API response.
+- Localization updates.
+
 ## 3.26.2 ##
 - CategoryEdits (T437830): Intersect categories and revisions in code
 - PageInfo, Page (T437830): Read links tables from the links connection
