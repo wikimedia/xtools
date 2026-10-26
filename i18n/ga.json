@@ -137,6 +137,7 @@
 	"error-deleted-data-msg": "Tá faisnéis ann atá $2 i $1 {{PLURAL:$1|athbhreithniú|athbhreithnithe}} den leathanach seo. Mar thoradh air sin, d'fhéadfadh roinnt sonraí a bheith míchruinn nó míthreorach.",
 	"error-denied": "Tá bac curtha ar do rochtain ar XTools mar gheall ar mhí-úsáid shoiléir nó uathoibriú suaiteach. Téigh i dteagmháil le $1 le do thoil.",
 	"error-ip-range-unsupported": "Tá brón orm, níl an fheidhmiúlacht seo ar fáil do raonta IP. Cuir isteach ainm úsáideora nó seoladh IP amháin le do thoil.",
+	"error-category-links-too-many": "Tá an iomarca ball catagóire ag teacht leis an gceist seo chun í a phróiseáil. Roghnaigh níos lú catagóirí nó catagóirí níos lú, nó cúngaigh an raon dátaí.",
 	"error-lock-contention": "Níorbh fhéidir le XTools d'iarratas a chomhlánú mar gheall ar áitiú bunachar sonraí sealadach. Bain triail eile as i gceann nóiméad le do thoil.",
 	"error-login": "Theip ar an logáil isteach! Déan iarracht arís.",
 	"error-login-required": "Ar chúiseanna feidhmíochta, níl na sonraí iarrtha ar fáil ach d’úsáideoirí atá logáilte isteach.",
