@@ -19,6 +19,15 @@ Containers run as UID 1000 so files they write back (vendor, node_modules) stay
 yours. If your host user isn't 1000, export `DOCKER_UID` and `DOCKER_GID`
 before `up`.
 
+### Running commands
+
+You can use `docker compose exec app bash` to open a Bash shell in the main app
+container. You can then run one or more commands as needed and stay within the
+container shell.
+
+You can also run a single command in the container directly from your host shell,
+for example: `docker compose exec app ./bin/console c:c` to clear the cache.
+
 ### Front-end assets
 
 The compiled assets in `public/build` are committed, so the stack serves them
