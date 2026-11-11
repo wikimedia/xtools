@@ -1,5 +1,10 @@
 # Release Notes #
 
+## 3.26.4 ##
+- PageInfo: Remove only the outermost matches in prose stats.
+- (T406182): Show time durations into at most two units of time
+- Localization updates.
+
 ## 3.26.3 ##
 - EditCounter (T439249): Restore `day_of_week` property in the
   `/api/user/timecard/` API response.
