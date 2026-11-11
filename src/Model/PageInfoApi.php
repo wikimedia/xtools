@@ -10,6 +10,7 @@ use App\Helper\I18nHelper;
 use App\Repository\PageInfoRepository;
 use App\Repository\Repository;
 use DateTime;
+use SplObjectStorage;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
@@ -163,13 +164,14 @@ class PageInfoApi extends Model {
 		$crawler = new Crawler( $html );
 		$refs = $crawler->filter( '[typeof~="mw:Extension/ref"]' );
 
-		[ $bytes, $chars, $words ] = $this->countCharsAndWords( $crawler );
-
+		// Read the references before countCharsAndWords() removes them from the DOM.
 		$refContent = [];
 		$refs->each( static function ( $ref ) use ( &$refContent ): void {
 			$refContent[] = $ref->text();
 		} );
 		$uniqueRefs = count( array_unique( $refContent ) );
+
+		[ $bytes, $chars, $words ] = $this->countCharsAndWords( $crawler );
 
 		$this->proseStats = [
 			'bytes' => $bytes,
@@ -191,23 +193,38 @@ class PageInfoApi extends Model {
 		$totalBytes = 0;
 		$totalChars = 0;
 		$totalWords = 0;
-		$paragraphs = $crawler->filter( 'section > p' );
 
 		// Remove templates, TemplateStyles, math and reference tags.
-		$crawler->filter( implode( ',', [
+		$matches = new SplObjectStorage();
+		foreach ( $crawler->filter( implode( ',', [
 			'#coordinates',
 			'[class*="emplate"]',
 			'[typeof~="mw:Extension/templatestyles"]',
 			'[typeof~="mw:Extension/math"]',
 			'[typeof~="mw:Extension/ref"]',
-		] ) )->each( static function ( Crawler $subCrawler ) {
-			foreach ( $subCrawler as $subNode ) {
-				// don't remove the node if it was removed already (crashes)
-				if ( $subNode->isConnected ) {
-					$subNode->parentNode->removeChild( $subNode );
+		] ) ) as $node ) {
+			$matches->attach( $node );
+		}
+
+		// Find the outermost matches before the DOM changes. The removal of an outer match
+		// also removes the matches in it. Do not touch nodes in a removed subtree:
+		// PHP 8.2 can free them, and access to a freed node causes a fatal error (T424866).
+		$outermost = [];
+		foreach ( $matches as $node ) {
+			for ( $ancestor = $node->parentNode; $ancestor !== null; $ancestor = $ancestor->parentNode ) {
+				if ( $matches->contains( $ancestor ) ) {
+					continue 2;
 				}
 			}
-		} );
+			$outermost[] = $node;
+		}
+
+		foreach ( $outermost as $node ) {
+			$node->parentNode->removeChild( $node );
+		}
+
+		// Select the paragraphs after the removal. Paragraphs in removed nodes are not prose.
+		$paragraphs = $crawler->filter( 'section > p' );
 
 		$paragraphs->each( static function ( $node ) use ( &$totalBytes, &$totalChars, &$totalWords ): void {
 			/** @var Crawler $node */

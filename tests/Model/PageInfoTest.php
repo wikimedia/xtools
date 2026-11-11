@@ -609,6 +609,102 @@ class PageInfoTest extends TestAdapter {
 	}
 
 	/**
+	 * Wrap Parsoid-like body content in a full HTML document.
+	 * @param string $body
+	 * @return string
+	 */
+	private function getParsoidHtml( string $body ): string {
+		return "<!DOCTYPE html>\n<html><head><meta charset=\"utf-8\"/></head><body>$body</body></html>";
+	}
+
+	/**
+	 * @dataProvider provideProseStatsFromHtml
+	 * @param string $body
+	 * @param array $expected
+	 */
+	public function testProseStatsFromHtml( string $body, array $expected ): void {
+		$this->page->expects( static::once() )
+			->method( 'getHTMLContent' )
+			->willReturn( $this->getParsoidHtml( $body ) );
+		static::assertSame( $expected, $this->pageInfo->getProseStats() );
+	}
+
+	/**
+	 * @return array
+	 */
+	public static function provideProseStatsFromHtml(): array {
+		return [
+			'removes refs, math, TemplateStyles, templates and coordinates' => [
+				'<section data-mw-section-id="0">'
+					. '<p>Alpha beta<sup typeof="mw:Extension/ref"><a>[1]</a></sup> gamma.</p>'
+					. '<p>Math <span typeof="mw:Extension/math">x+y</span>here.</p>'
+					. '<p><style typeof="mw:Extension/templatestyles">.x{}</style>'
+					. 'Delta <span class="templateA">template text</span>epsilon.</p>'
+					. '<p>Zeta<span id="coordinates">52°N 21°E</span>.</p>'
+					. '</section>',
+				[
+					// "Alpha beta gamma." + "Math here." + "Delta epsilon." + "Zeta."
+					'bytes' => 46,
+					'characters' => 46,
+					'words' => 8,
+					'references' => 1,
+					'unique_references' => 1,
+					'sections' => 1,
+				],
+			],
+			'counts bytes and characters separately' => [
+				'<section data-mw-section-id="0"><p>Zażółć gęślą</p></section>',
+				[
+					'bytes' => 19,
+					'characters' => 12,
+					'words' => 2,
+					'references' => 0,
+					'unique_references' => 0,
+					'sections' => 1,
+				],
+			],
+			'counts only paragraphs that are direct children of a section' => [
+				'<section data-mw-section-id="0">'
+					. '<p>Real prose.</p>'
+					. '<div><p>Not prose.</p></div>'
+					. '<blockquote><p>Also not prose.</p></blockquote>'
+					. '</section>',
+				[
+					'bytes' => 11,
+					'characters' => 11,
+					'words' => 2,
+					'references' => 0,
+					'unique_references' => 0,
+					'sections' => 1,
+				],
+			],
+			// T424866: matches nested in other matches crashed on PHP 8.2.
+			'handles nested matches and skips paragraphs in removed templates' => [
+				'<section data-mw-section-id="0">'
+					. '<div class="templateOuter">'
+					. '<section data-mw-section-id="1"><p>Template documentation text.</p></section>'
+					. '<div class="templateInner"><span class="templateDeep">'
+					. '<sup typeof="mw:Extension/ref">[1]</sup>'
+					. '</span></div>'
+					. '<link typeof="mw:Extension/templatestyles"/>'
+					. '</div>'
+					. '<p>Real prose<sup typeof="mw:Extension/ref">[1]</sup>'
+					. '<sup typeof="mw:Extension/ref">[2]</sup>.</p>'
+					. '</section>',
+				[
+					'bytes' => 11,
+					'characters' => 11,
+					'words' => 2,
+					// The ref in the removed template still counts as a reference.
+					'references' => 3,
+					'unique_references' => 2,
+					'sections' => 1,
+				],
+			],
+		];
+	}
+
+	/**
 	 * Ensure we react appropriately when getHTMLContent fails
 	 */
 	public function testProseStatFallback(): void {
