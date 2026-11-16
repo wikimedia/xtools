@@ -28,6 +28,7 @@
 			"The RedBurn",
 			"Thibaut120094",
 			"Urhixidur",
+			"Uriel",
 			"VIGNERON",
 			"Verdy p",
 			"Wladek92"
@@ -133,7 +134,7 @@
 	"deleted-edits": "Modifications supprimées",
 	"deleted-pages": "Pages supprimées",
 	"delpagesfilter-all": "Inclure les pages actives et les pages supprimées",
-	"delpagesfilter-deleted": "Inclure seulement les pages supprimées",
+	"delpagesfilter-deleted": "Inclure uniquement les pages supprimées",
 	"delpagesfilter-live": "Exclure les pages supprimées",
 	"diff": "Différence",
 	"diff-empty": "Vide",
